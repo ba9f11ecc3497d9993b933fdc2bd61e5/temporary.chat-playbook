@@ -1,0 +1,51 @@
+---
+# file: roles/common/tasks/enable_restart_service.yaml
+
+- name: Restart service httpd
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  service:
+    name: nginx
+    state: restarted
+
+- name: Restart service uwsgi
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  service:
+    name: uwsgi
+    state: restarted
+
+- name: Start service room_master
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  service:
+    name: room_master
+    state: started
+
+- name: Restart service httpd
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  service:
+    name: nginx
+    enabled: yes
+
+- name: Restart service uwsgi
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  service:
+    name: uwsgi
+    enabled: yes
+
+- name: Start service room_master
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  service:
+    name: room_master
+    enabled: yes
+

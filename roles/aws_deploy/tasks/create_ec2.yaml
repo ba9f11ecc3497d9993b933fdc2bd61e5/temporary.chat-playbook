@@ -1,0 +1,39 @@
+---
+# file: roles/aws_deploy/tasks/create_ec2.yaml
+
+- name: fetch instance by tag
+  shell: aws ec2 --region {{ aws_region }} describe-instances --filters Name=tag-key,Values=Name --query 'Reservations[*].Instances[*].{Name:Tags[?Key==`Name`]|[0].Value}' --output=text
+  register: discovered_ec2_names
+
+- name: print found vms 
+  debug: msg="found vms with the following name tags {{ ":" }} {{ discovered_ec2_names.stdout }}"
+
+- name: print warning and exit
+  debug: msg="ABORTING, we found that an aws instance with name tag {{ aws_tag }} already exist"
+  when: discovered_ec2_names.stdout is search(aws_tag)
+
+- meta: end_play
+  when: discovered_ec2_names.stdout is search(aws_tag)
+
+- name: create aws instance if it does not already exist
+  shell: aws --region {{ aws_region }} ec2 run-instances --image-id {{ aws_ami }} --count 1 --instance-type {{ aws_instance_type }} --key-name {{ aws_ssh_key }} --security-group-ids {{ aws_sg }} --subnet-id {{ aws_subnet }}
+  register: aws_reply 
+
+- name: tag instance 
+  shell: aws ec2 create-tags --resources "{{ (aws_reply.stdout | from_json | json_query('Instances[].InstanceId | [0]')) }}" --tags Key=Name,Value={{ aws_tag }}
+
+- name: get public ip
+  shell: aws ec2 --region us-east-1 describe-instances --instance-id "{{ (aws_reply.stdout | from_json | json_query('Instances[].InstanceId | [0]')) }}" --query 'Reservations[].Instances[].NetworkInterfaces[].Association[].PublicIp | [0]'
+  register: public_ip
+
+- name: add to inventory
+  copy:
+    dest: staging/host
+    content: |
+      [localhost]
+      127.0.0.1 ansible_connection=local
+      ["{{ aws_tag }}"]
+      "{{ public_ip.stdout }}" ansible_ssh_private_key_file={{ local_ssh_key_path }} ansible_user=ubuntu
+
+- name: remove extra double quotes in inventory file
+  shell: sed -i 's/"//g' staging/host

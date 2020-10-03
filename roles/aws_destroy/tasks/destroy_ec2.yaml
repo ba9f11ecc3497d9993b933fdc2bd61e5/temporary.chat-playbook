@@ -1,0 +1,16 @@
+---
+# file: roles/aws_destroy/tasks/destroy_ec2.yaml
+
+- name: fetch the instance id by tag
+  shell: aws ec2 --region {{ aws_region }} describe-instances --filters Name=tag:Name,Values={{ aws_tag }} --query 'Reservations[*].Instances[*].InstanceId | [0]' --output=text
+  register: instance_to_destroy
+
+- name: print found vms 
+  debug: msg="found vm to destroy {{ ":" }} instance id {{ ":" }} {{ instance_to_destroy.stdout }}"
+
+- name: remove the tags 
+  shell: aws --region {{ aws_region }} ec2 delete-tags --resources {{ instance_to_destroy.stdout }} --tags Key=Name,Value={{ aws_tag }} 
+
+- name: terminate the instance
+  shell: aws --region {{ aws_region }} ec2 terminate-instances --instance-ids {{ instance_to_destroy.stdout }}
+

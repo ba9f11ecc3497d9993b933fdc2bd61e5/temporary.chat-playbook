@@ -1,0 +1,13 @@
+---
+# file: roles/common/tasks/insert_cron.yaml
+
+- name: cron "/root/cleanup-destroyed-rooms.sh"
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  cron:
+    name: "install cron room destroyer"
+    user: root
+    minute: "0"
+    hour: "*"
+    job: "cleanup-destroyed-rooms.sh"

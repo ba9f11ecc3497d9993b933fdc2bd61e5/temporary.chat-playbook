@@ -1,0 +1,269 @@
+---
+# file : roles/common/tasks/certbot.yaml
+
+- name: install certbot
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command:
+    cmd: snap install --beta --classic certbot
+
+- name: copy letsencrypt files
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy: 
+    src: roles/common/files/certbot/letsencrypt
+    dest: /etc/
+    owner: root
+    group: root
+    mode: 0400
+
+- name: change /etc/letsencrypt folder to the right permissions
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/letsencrypt
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: change /etc/letsencrypt/accounts folder to the right permissions
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/letsencrypt/accounts
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+
+- name: change /etc/letsencrypt/archive folder to the right permissions
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/letsencrypt/archive
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+
+- name: change /etc/letsencrypt/keys folder to the right permissions
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/letsencrypt/keys
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+
+- name: change /etc/letsencrypt/live folder to the right permissions
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/letsencrypt/live
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+
+- name: change /etc/letsencrypt/csr folder to the right permissions
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/letsencrypt/csr
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: change /etc/letsencrypt/renewal folder to the right permissions
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/letsencrypt/renewal
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+ 
+- name: change /etc/letsencrypt/renewal-hooks folder to the right permissions
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/letsencrypt/renewal-hooks
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Ensure directories in /etc/letsencrypt/accounts are 0700
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: find /etc/letsencrypt/accounts -type d -exec chmod 0700 {} \;
+
+- name: Ensure file meta.json in /etc/letsencrypt/accounts is 0644
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: find /etc/letsencrypt/accounts -type f -iname "meta.json" -exec chmod 0644 {} \;
+
+- name: Ensure file private_key.json in /etc/letsencrypt/accounts is 0600
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: find /etc/letsencrypt/accounts -type f -iname "private_key.json" -exec chmod 0600 {} \;
+
+- name: Ensure file regr.json.json in /etc/letsencrypt/accounts is 0644
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: find /etc/letsencrypt/accounts -type f -iname "regr.json" -exec chmod 0644 {} \;
+
+- name: Ensure directories in /etc/letsencrypt/archive are 0755
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: find /etc/letsencrypt/archive -type d -exec chmod 0755 {} \;
+
+- name: Ensure file cert1.pem in /etc/letsencrypt/archive is 0644
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: find /etc/letsencrypt/archive -type f -iname "cert1.pem" -exec chmod 0644 {} \;
+
+- name: Ensure file chain1.pem in /etc/letsencrypt/archive is 0644
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: find /etc/letsencrypt/archive -type f -iname "chain1.pem" -exec chmod 0644 {} \;
+
+- name: Ensure file fullchain1.pem in /etc/letsencrypt/archive is 0644
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: find /etc/letsencrypt/archive -type f -iname "fullchain1.pem" -exec chmod 0644 {} \;
+
+- name: Ensure file privkey1.pem in /etc/letsencrypt/archive is 0600
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: find /etc/letsencrypt/archive -type f -iname "privkey1.pem" -exec chmod 0600 {} \;
+
+- name: Ensure files in /etc/letsencrypt/csr are 0644
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: find /etc/letsencrypt/csr -type f -exec chmod 0644 {} \;
+
+- name: Ensure files in /etc/letsencrypt/keys are 0600
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: find /etc/letsencrypt/keys -type f -exec chmod 0600 {} \;
+
+- name: Ensure files in /etc/letsencrypt/renewal are 0644
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: find /etc/letsencrypt/renewal -type f -exec chmod 0644 {} \;
+
+- name: Ensure directories in /etc/letsencrypt/renewal-hooks are 0755
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: find /etc/letsencrypt/renewal-hooks -type d -exec chmod 0755 {} \;
+
+- name: Remove file /etc/letsencrypt/live/temporary.chat/cert.pem
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/letsencrypt/live/temporary.chat/cert.pem
+    state: absent
+
+- name: Remove file /etc/letsencrypt/live/temporary.chat/chain.pem
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/letsencrypt/live/temporary.chat/chain.pem
+    state: absent
+
+- name: Remove file /etc/letsencrypt/live/temporary.chat/fullchain.pem
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/letsencrypt/live/temporary.chat/fullchain.pem
+    state: absent
+
+- name: Remove file /etc/letsencrypt/live/temporary.chat/privkey.pem
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/letsencrypt/live/temporary.chat/privkey.pem
+    state: absent
+
+- name: Create a symbolic link /etc/letsencrypt/live/temporary.chat/cert.pem -> ../../archive/temporary.chat/cert1.pem
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    src: /etc/letsencrypt/archive/temporary.chat/cert1.pem
+    dest: /etc/letsencrypt/live/temporary.chat/cert.pem
+    owner: root
+    group: root
+    state: link
+
+- name: Create a symbolic link /etc/letsencrypt/live/temporary.chat/chain.pem -> ../../archive/temporary.chat/chain1.pem
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    src: /etc/letsencrypt/archive/temporary.chat/chain1.pem
+    dest: /etc/letsencrypt/live/temporary.chat/chain.pem
+    owner: root
+    group: root
+    state: link
+
+- name: Create a symbolic link /etc/letsencrypt/live/temporary.chat/fullchain.pem -> ../../archive/temporary.chat/fullchain1.pem
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    src: /etc/letsencrypt/archive/temporary.chat/fullchain1.pem
+    dest: /etc/letsencrypt/live/temporary.chat/fullchain.pem
+    owner: root
+    group: root
+    state: link
+
+- name: Create a symbolic link /etc/letsencrypt/live/temporary.chat/privkey.pem -> ../../archive/temporary.chat/privkey1.pem
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    src: /etc/letsencrypt/archive/temporary.chat/privkey1.pem
+    dest: /etc/letsencrypt/live/temporary.chat/privkey.pem
+    owner: root
+    group: root
+    state: link
+
+- name: run certbot
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command:
+    cmd: certbot renew 

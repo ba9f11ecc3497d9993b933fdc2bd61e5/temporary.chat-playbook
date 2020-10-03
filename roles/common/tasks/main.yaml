@@ -1,0 +1,15 @@
+---
+# file: main.yaml
+- include: user.yaml
+- include: packages.yaml
+- include: copy_files.yaml
+- include: folders_and_files.yaml
+- include: install_bootstrap.yaml
+- include: configure_nginx.yaml
+- include: create_virtualenv.yaml
+- include: install_templates.yaml
+- include: install_scripts.yaml
+- include: insert_cron.yaml
+- include: systemd.yaml
+- include: certbot.yaml
+- include: enable_restart_service.yaml

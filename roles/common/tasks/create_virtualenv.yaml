@@ -1,0 +1,30 @@
+---
+# file : roles/common/tasks/create_virtualenv.yaml
+
+- name: copy python package list in /var/www/temporary.chat/app
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/common/files/python/packages.txt
+    dest: /var/www/temporary.chat/app/packages.txt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: create a virtualenv in /var/www/temporary.chat/app
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command:
+    cmd: virtualenv /var/www/temporary.chat/app -p python3.8
+    creates: "/var/www/temporary.chat/app"
+
+- name: Install python packages
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  pip: 
+    requirements: /var/www/temporary.chat/app/packages.txt
+    virtualenv: /var/www/temporary.chat/app
+    virtualenv_python: python3.8

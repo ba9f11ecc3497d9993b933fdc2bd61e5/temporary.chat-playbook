@@ -1,0 +1,8 @@
+---
+# file : roles/common/tasks/user.yaml
+- name: Ensure user "app" exists
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  user:
+    name: app

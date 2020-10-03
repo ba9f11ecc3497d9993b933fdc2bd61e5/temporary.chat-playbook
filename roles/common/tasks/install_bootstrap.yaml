@@ -1,0 +1,39 @@
+---
+# file : role/common/tasks/install_bootstrap.yaml
+
+- name: Extract bootstrap.tgz into /var/www/temporary.chat/html/
+  become: yes
+  become_method: sudo
+  unarchive:
+    src: /var/www/temporary.chat/html/bootstrap-4.0.0-dist.zip 
+    dest: /var/www/temporary.chat/html
+    owner: www-data
+    group: www-data
+    mode: 0400
+    remote_src: yes
+ 
+- name: delete bootstrap installation .zip file
+  become: yes
+  become_method: sudo
+  file:
+    path: /var/www/temporary.chat/html/bootstrap-4.0.0-dist.zip
+    state: absent
+
+- name: change css folder to the right permissions
+  become: yes
+  become_method: sudo
+  file:
+    path: /var/www/temporary.chat/html/css
+    owner: www-data
+    group: www-data
+    mode: 0500
+
+- name: change js folder to the right permissions
+  become: yes
+  become_method: sudo
+  file:
+    path: /var/www/temporary.chat/html/js
+    owner: www-data
+    group: www-data
+    mode: 0500
+

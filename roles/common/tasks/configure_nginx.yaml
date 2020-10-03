@@ -1,0 +1,36 @@
+---
+# file : roles/common/tasks/configure_nginx.yaml
+
+- name: copy nginx main configuration file
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/common/files/nginx/nginx.conf
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: copy nginx temporary.chat in sites-available
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/common/files/nginx/temporary.chat
+    dest: /etc/nginx/sites-available
+    owner: root
+    group: root
+    mode: 0644
+
+- name: symlink sites-available/temporary.chat -> sites-enabled/temporary.chat
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    src: /etc/nginx/sites-available/temporary.chat
+    dest: /etc/nginx/sites-enabled/temporary.chat
+    owner: root
+    group: root
+    state: link
+

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/ico" href="/200013.ico">
+    <title>temporary.chat</title>
+  <head/>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+
+<body>
+  
+<style>
+   .hide { 
+     position:absolute;
+     top:-1px;
+     left:-1px;
+     width:1px;
+     height:1px;
+   }
+   .main {
+     width: 100%;
+   }
+   /*Position and style for the sidebar*/
+   .sidebar {
+     height: 100%;
+     width: 0;
+     position: fixed;
+     /*Stays in place */
+     overflow-x: hidden;
+     /*for Disabling horizontal scroll */
+  }
+  /* Position and style for the sidebar links */
+  .sidebar a {
+    padding: 10px 10px 10px;
+    font-size: 25px;
+    color: #111;
+    display: block;
+    transition: 0.3s;
+  }
+  /* the links change color when mouse hovers upon them*/
+  .sidebar a:hover {
+    color: #FFFFFF;
+  }
+  /* Position and style the for cross button */
+  .sidebar .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+  }
+  
+  /* pushes the page content to the left when you open the side navigation */
+  #main {
+    transition: margin-right .5s;
+    /* If you want a transition effect */
+    padding: 10px;
+  }
+
+  .conversation {
+    height: 15.0em;
+    line-height: 1;
+    overflow: auto;
+  }
+</style>
+
+
+<iframe name="hiddenFrame" class="hide"></iframe>
+
+<div class="container-fluid">
+
+ <div class="conversation" id="conversation"></div>
+
+ <div class="row">
+   <div class="col-xl">
+     <form target="hiddenFrame" onsubmit="this.submit(); this.reset(); return false;">
+       <div class="input-group-sm mb-1">
+         <div class="input-group-append">
+           <span class="input-group-text" id="basic-addon1">-✉-</span>
+           <input id="post" type="text" autocomplete="off" class="form-control" placeholder="Message" aria-describedby="basic-addon2">
+           <button class="btn btn-outline-secondary" onclick="post_message();" type="submit">Send</button>
+         </div>
+       </div>
+     </form>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-xl">
+      <div class="float-right">
+	<button class="openbtn" onclick="openNav()">Menu</button>
+      </div>
+      <div id="sidebar" class="sidebar" >
+        <form target="hiddenFrame" onsubmit="this.submit(); this.reset(); return false;">
+          <div class="input-group-sm col-md-5">
+            <div class="input-group-append">
+              <span class="input-group-text input-sm" id="basic-addon1">-@-</span>
+              <input id="user_name" type="text" class="form-control input-sm" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+              <button class="btn btn-outline-secondary btn-sm" type="submit" onclick="set_user_name();">Save</button>
+            </div>
+	  </div>
+	</form>
+        <form enctype="multipart/form-data" method="post" target="hiddenFrame" onsubmit="this.submit(); this.reset(); return false;">
+	  <div class="input-group-sm col-md-5">
+		<input type="file" id="file"><br>
+                <input type="submit" value="submit" onclick="upload_file();">
+	  </div>
+        </form>
+	<div class="input-group-sm col-md-5">
+            <button type="submit" class="btn btn-outline-dark btn-sm" onclick="user_quit();">Quit</button>
+            <button type="submit" class="btn-outline-danger btn-sm" onclick="destroy();">Destroy</button>
+            <button type="submit" class="btn btn-outline-dark btn-sm" onclick="closeNav();">Close menu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+var user_name = document.cookie;
+
+if (user_name === "") {
+  document.cookie = "Anonymous";
+}
+
+function set_user_name() {
+  var user_name = document.getElementById('user_name').value;
+  document.cookie = user_name + ";"
+}
+
+async function post_message() {
+  const url = 'https://temporary.chat/app/post';
+  var message = document.getElementById('post').value;
+  var user_name = document.cookie;
+  let formData = new FormData();
+  formData.append("user_name", user_name);
+  formData.append("message", message);
+  fetch(url, {body:formData,method:"post"});
+}
+
+async function user_quit() {
+  const url = 'https://temporary.chat/app/quit';
+  var user_name = document.cookie;
+  let formData = new FormData();
+  formData.append("user_name", user_name);
+  let response = await fetch(url, {body:formData,method:"post"});
+  if (response.ok == true) {
+    window.location.href = 'https://duckduckgo.com/';
+  }
+}
+
+function destroy() {
+  const url = 'https://temporary.chat/app/destroy';
+  var user_name = document.cookie;
+  let formData = new FormData();
+  formData.append("user_name", user_name);
+  fetch(url, {body:formData,method:"post"});
+}
+
+function upload_file() {
+  const url = 'https://temporary.chat/app/upload';
+  var user_name = document.cookie;
+  var fileInput = document.getElementById('file');
+  var file = fileInput.files[0];
+  let formData = new FormData();
+  formData.append("user_name", user_name);
+  formData.append("file", file);
+  fetch(url, {body:formData,method:"post"});
+}
+
+function scroll_down() {
+var textarea = document.getElementById('conversation');
+textarea.scrollTop = textarea.scrollHeight;
+}
+
+setInterval(scroll_down, 1000);
+
+
+async function updateDiv() {
+$(document).ready(function () {       // load text file using jquery ajax
+    $('#conversation').load('conversation.txt');    // load text data
+});
+}
+
+setInterval(updateDiv, 1000);
+
+
+function openNav() {
+  document.getElementById("sidebar").style.width = "300px";
+  document.getElementById("main").style.marginRight = "250px";
+}
+
+function closeNav() {
+  document.getElementById("sidebar").style.width = "0";
+  document.getElementById("main").style.marginLeft = "0";
+}
+</script>
+</html>
+</body>
+

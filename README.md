@@ -48,7 +48,9 @@ a playbook to deploy a chat server where you can generate random rooms (public o
   - text should auto refresh AND be scrollable
   - menu button should not take to much space on mobile
   - interface should not be fugly 
-
+- replace all hard coded instances of "temporary.chat" so it can be deployed with any fqdn
+- create self signed certificate when the server is only accessible via ip (+ put the fingerprint and ip in the html main page?)
+- make a hackish solution to use dynamic dns + let's encrypt? 
 - create api for expert users that want to manage their encryption
 - add database backend for text 
 - preview urls shared in the room

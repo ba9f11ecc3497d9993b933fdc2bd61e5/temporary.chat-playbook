@@ -1,0 +1,34 @@
+{
+  "HostedZoneId": "Z04750303W271V39JV6OR",
+  "ChangeBatch": {
+  "Comment": "updated via ansible playbook",
+  "Changes": [
+    { 
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "temporary.chat",
+        "Type": "A",
+        "TTL": 60,
+        "ResourceRecords": [
+          { 
+            "Value": "1.1.1.1"
+          }
+        ]
+      }
+    },
+      {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "*.temporary.chat",
+        "Type": "A",
+        "TTL": 60,
+        "ResourceRecords": [
+          { 
+            "Value": "1.1.1.1"
+          }
+        ]
+      }
+      }
+  ]         
+}
+}

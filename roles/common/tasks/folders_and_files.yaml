@@ -103,7 +103,7 @@
 - name: Create a app socket in /var/www/temporary.chat/app/app.sock
   remote_user: ubuntu
   become: yes
-  become_metho^d: sudo
+  become_method: sudo
   file:
     path: /var/www/temporary.chat/app/app.sock
     state: touch

@@ -10,6 +10,7 @@ I do not plan on maintaining this playbook for everyone to use it, this is not t
 - having pre-existing resources in aws
   - a iam user with an ssh public key and appropriate permission to deploy ec2 instances and update route 53 records
   - a security group with port 22,80,443 to you, your friends or the whole world   
+  - a hosted zone in route53   
 
 #### notes :
 - this playbook will automatically add the new deployed host to the inventory file staging/hosts so you can run the playbook temporary.chat.yaml without editing your inventory

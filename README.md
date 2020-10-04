@@ -1,6 +1,7 @@
 
 # aws deploy
-### description : I do not plan on maintaining this playbook for general usage, but assuming you know your way around AWS, I made as easy as possible to use it. My goal is not to focus on the aws deployment but rather, keep my time for the chat server and it's features... that being said, feel free to use it.
+#### description : 
+I do not plan on maintaining this playbook for general usage, but assuming you know your way around AWS, I made as easy as possible to use it. My goal is not to focus on the aws deployment but rather, keep my time for the chat server and the features... that being said, feel free to use it.
 #### requirements : 
 - having ansible installed
 - having an aws account
@@ -10,27 +11,44 @@
   - a security group with port 22,80,443 to you, your friends or the whole world   
 
 #### note : this playbook will automatically add the new deployed host to the inventory file staging/hosts so you can run the playbook temporary.chat.yaml without editing your inventory
-#### usage example:
+#### usage example :
 `ansible-playbook --extra-vars "aws_region=us-east-1" --extra-vars "aws_vpc=vpc-23abcf46" --extra-vars "aws_subnet=subnet-1b6b1a6a" --extra-vars "aws_ami=ami-0dba2cb6798deb6d8" --extra-vars "aws_instance_type=t2.nano" --extra-vars "aws_sg=sg-008a34845ce896322" --extra-vars "aws_ssh_key=name_of_your_key_in_aws" --extra-vars "aws_tag=temporary.chat" --extra-vars "local_ssh_key_path=/home/your_local_user/.ssh/id_rsa" aws_deploy.yaml`
 
 
 # temporary.chat
-### description : a playbook to deploy a chat server where you can generate random rooms
-####
-ansible-playbook -i staging temporary_chat.yaml
+#### description : 
+a playbook to deploy a chat server where you can generate random rooms (public or private, expert mode will come later.)
+#### requirements : 
+- having a ubuntu server 20.04 LTS with ssh access
+- having port 22,80 and 444 open
+- having a domain name? (I will try very hard to make this optional as the goal is to make this accessible to as many as possible.)
+#### usage example :
+`ansible-playbook -i staging temporary_chat.yaml`
 
 
 # aws destroy
-ansible-playbook --extra-vars="aws_region=us-east-1" --extra-vars="aws_tag=temporary.chat" aws_destroy.yaml
+#### usage example :
+`ansible-playbook --extra-vars="aws_region=us-east-1" --extra-vars="aws_tag=temporary.chat" aws_destroy.yaml`
 
 # the services
 
-# the goals
+# the (ambitious) goals
 
-- decentralize communications
-- offer a free service that will remain free
-- offer a paying service with more options
-- offer the possibility to anyone to roll out their own
-- end to end encryption
+- decentralize communications (less facebook chats!)
+- offer a free service that will remain free and ad free ( temporary.chat )
+- offer a paying service with more options/storage/features ( permanent.chat )
+- offer the possibility to anyone to roll out their own instance of "temporary.chat" for free (with a different domain or simply an ip?)
+- create an api expert mode with end to end encryption managed by the user
 
 # the roadmap (oh god!)
+
+- fix the user interface because it is not great.
+  - text should auto refresh AND be scrollable
+  - menu button should not take to much space on mobile
+  - interface should not be fugly 
+
+- create api for expert users that want to manage their encryption
+- add database backend for text 
+- preview urls shared in the room
+- fix javascript upload on firefox mobile
+- notifications on android/iphone? is it even possible for website? 

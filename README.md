@@ -25,7 +25,7 @@ a playbook to deploy a chat server where you can generate random rooms (public o
 #### requirements : 
 - having ansible installed
 - having a ubuntu server 20.04 LTS with ssh access
-- having port 22,80 and 444 open
+- having port 22,80 and 443 open
 - having a domain name? (I will try very hard to make this optional as the goal is to make this accessible to as many as possible.)
 #### usage example :
 `ansible-playbook -i staging temporary_chat.yaml`

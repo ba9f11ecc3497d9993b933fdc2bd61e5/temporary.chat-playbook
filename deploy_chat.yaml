@@ -1,5 +1,5 @@
 ---
-- hosts: temporary.chat
+- hosts: {{ my_fqdn }}
   roles:
-    - common
+    - chat_server
 

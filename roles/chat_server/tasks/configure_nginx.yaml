@@ -12,24 +12,24 @@
     group: root
     mode: 0644
 
-- name: copy nginx temporary.chat in sites-available
+- name: copy nginx [my_fqdn] in sites-available
   remote_user: ubuntu
   become: yes
   become_method: sudo
   copy:
-    src: roles/common/files/nginx/temporary.chat
+    src: {{ 'roles/common/files/nginx/' + my_fqdn }}
     dest: /etc/nginx/sites-available
     owner: root
     group: root
     mode: 0644
 
-- name: symlink sites-available/temporary.chat -> sites-enabled/temporary.chat
+- name: symlink sites-available/[my_fqdn] -> sites-enabled/[my_fqdn]
   remote_user: ubuntu
   become: yes
   become_method: sudo
   file:
-    src: /etc/nginx/sites-available/temporary.chat
-    dest: /etc/nginx/sites-enabled/temporary.chat
+    src: {{ '/etc/nginx/sites-available/' + my_fqdn }}
+    dest: {{ '/etc/nginx/sites-enabled/' + my_fqdn }}
     owner: root
     group: root
     state: link

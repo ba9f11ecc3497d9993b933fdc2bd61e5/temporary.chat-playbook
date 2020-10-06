@@ -1,0 +1,16 @@
+# file : roles/common/tasks/install_templates.yaml
+
+- name : add template chat.html
+  src: roles/common/files/templates/chat.j2
+  dest: /home/app/templates/chat.html
+
+- name: fix permissions on /home/app/templates/chat.html
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /home/app/templates/chat.html
+    state: file
+    owner: www-data
+    group: www-data
+    mode: 0400

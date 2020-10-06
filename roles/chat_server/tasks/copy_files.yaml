@@ -6,7 +6,7 @@
   become_method: sudo
   copy: 
     src: roles/common/files/html
-    dest: /var/www/temporary.chat/
+    dest: {{ '/var/www/' + my_fqdn + '/' }}
     owner: www-data
     group: www-data
     mode: 0400
@@ -17,17 +17,17 @@
   become_method: sudo
   copy:
     src: roles/common/files/app
-    dest: /var/www/temporary.chat/
+    dest: {{ '/var/www/' + my_fqdn + '/' }}
     owner: app
     group: app
     mode: 0400
 
-- name: fix permissions on /var/www/temporary.chat/app/rooms
+- name: fix permissions on /var/www/[my_fqdn]/app/rooms
   remote_user: ubuntu
   become: yes
   become_method: sudo
   file:
-    path: /var/www/temporary.chat/app/rooms
+    path: {{ '/var/www/' + my_fqdn + '/app/rooms' }}
     state: directory
     owner: app
     group: www-data

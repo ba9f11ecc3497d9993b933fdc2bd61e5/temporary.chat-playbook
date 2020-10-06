@@ -21,3 +21,8 @@
     owner: root
     group: root
     mode: 0644
+
+- name: create a systemd unit file for uwsgi
+  template:
+        src: hello_world.j2
+        dest: /Users/mdtutorials2/Documents/Ansible/hello_world.txt

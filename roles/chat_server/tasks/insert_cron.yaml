@@ -1,5 +1,5 @@
 ---
-# file: roles/common/tasks/insert_cron.yaml
+# file: roles/chat_server/tasks/insert_cron.yaml
 
 - name: cron "/root/cleanup-destroyed-rooms.sh"
   remote_user: ubuntu

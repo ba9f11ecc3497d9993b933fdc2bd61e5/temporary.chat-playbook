@@ -1,0 +1,46 @@
+# file : roles/chat_server/tasks/install_templates.yaml
+
+- name: create template dir
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /home/app/templates
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0400
+
+- name : add template chat
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/templates/chat.j2
+    dest: /home/app/templates/chat.html
+    owner: www-data
+    group: www-data
+    mode: 0400
+
+- name : copy css 
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/templates/css
+    dest: /home/app/templates/
+    owner: www-data
+    group: www-data
+    mode: 0400
+
+
+- name : copy js 
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/templates/js
+    dest: /home/app/templates/
+    owner: www-data
+    group: www-data
+    mode: 0400

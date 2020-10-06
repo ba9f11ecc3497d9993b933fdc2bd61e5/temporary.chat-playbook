@@ -1,5 +1,5 @@
 ---
-# file : roles/common/tasks/user.yaml
+# file : roles/chat_server/tasks/user.yaml
 - name: Ensure user "app" exists
   remote_user: ubuntu
   become: yes

@@ -1,12 +1,12 @@
 ---
-# file : role/common/tasks/install_bootstrap.yaml
+# file : role/chat_server/tasks/install_bootstrap.yaml
 
-- name: Extract bootstrap.tgz into /var/www/temporary.chat/html/
+- name: Extract bootstrap.tgz into /var/www/[my_fqdn]/html/
   become: yes
   become_method: sudo
   unarchive:
-    src: /var/www/temporary.chat/html/bootstrap-4.0.0-dist.zip 
-    dest: /var/www/temporary.chat/html
+    src: "{{ '/var/www/' + my_fqdn + '/html/bootstrap-4.0.0-dist.zip' }}"
+    dest: "{{ '/var/www/' + my_fqdn + '/html' }}"
     owner: www-data
     group: www-data
     mode: 0400
@@ -16,14 +16,14 @@
   become: yes
   become_method: sudo
   file:
-    path: /var/www/temporary.chat/html/bootstrap-4.0.0-dist.zip
+    path: "{{ '/var/www/' + my_fqdn + '/html/bootstrap-4.0.0-dist.zip' }}"
     state: absent
 
 - name: change css folder to the right permissions
   become: yes
   become_method: sudo
   file:
-    path: /var/www/temporary.chat/html/css
+    path: "{{ '/var/www/' + my_fqdn + '/html/css' }}"
     owner: www-data
     group: www-data
     mode: 0500
@@ -32,7 +32,7 @@
   become: yes
   become_method: sudo
   file:
-    path: /var/www/temporary.chat/html/js
+    path: "{{ '/var/www/' + my_fqdn + '/html/js' }}"
     owner: www-data
     group: www-data
     mode: 0500

@@ -1,0 +1,5 @@
+---
+- hosts: "{{ my_fqdn }}"
+  roles:
+    - chat_server
+

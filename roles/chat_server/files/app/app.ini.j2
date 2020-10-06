@@ -1,0 +1,14 @@
+[uwsgi]
+callable = app
+uid = app 
+gid = www-data
+chdir = /var/www/{{ my_fqdn }}/app
+venv = /var/www/{{ my_fqdn }}/app
+wsgi-file = /var/www/{{ my_fqdn }}/app/app.py
+master = true
+processes = 5
+socket = /var/www/{{ my_fqdn }}/app/app.sock
+chmod-socket = 664
+logto = /var/log/uwsgi/app.log
+die-on-term = true
+pidfile= /var/www/{{ my_fqdn }}/app/app.pid

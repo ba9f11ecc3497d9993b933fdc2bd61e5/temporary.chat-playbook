@@ -8,7 +8,7 @@
 		<link href="css/main.css" rel="stylesheet" />
 		<script type="text/javascript" src="js/jquery.min.js"></script>
 		<title>
-			temporary.chat
+			{{ my_fqdn }}
 		</title>
 	<head/>
 	<body>
@@ -82,7 +82,7 @@
 			}
 
 			async function post_message() {
-				const url = 'https://temporary.chat/app/post';
+				const url = 'https://{{ my_fqdn }}/app/post';
 				var message = document.getElementById('post').value;
 				var user_name = document.cookie;
 				let formData = new FormData();
@@ -92,7 +92,7 @@
 			}
 
 			async function user_quit() {
-				const url = 'https://temporary.chat/app/quit';
+				const url = 'https://{{ my_fqdn }}/app/quit';
 				var user_name = document.cookie;
 				let formData = new FormData();
 				formData.append("user_name", user_name);
@@ -104,7 +104,7 @@
 			}
 
 			function destroy() {
-				const url = 'https://temporary.chat/app/destroy';
+				const url = 'https://{{ my_fqdn }}/app/destroy';
 				var user_name = document.cookie;
 				let formData = new FormData();
 				formData.append("user_name", user_name);
@@ -112,7 +112,7 @@
 			}
 
 			function upload_file() {
-				const url = 'https://temporary.chat/app/upload';
+				const url = 'https://{{ my_fqdn }}/app/upload';
 				var user_name = document.cookie;
 				var fileInput = document.getElementById('file');
 				var file = fileInput.files[0];

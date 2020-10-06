@@ -16,7 +16,7 @@ I do not plan on maintaining this playbook for everyone to use it, this is not t
 - this playbook will automatically add the new deployed host to the inventory file staging/hosts so you can run the playbook temporary.chat.yaml without editing your inventory
 - the aws_tag is also the fqdn of the server
 #### usage example :
-`ansible-playbook --extra-vars "aws_region=us-east-1" --extra-vars "aws_vpc=vpc-23ebcf46" --extra-vars "aws_subnet=subnet-1d6b1a6a" --extra-vars "aws_ami=ami-0dba2cb6798deb6d8" --extra-vars "aws_instance_type=t2.nano" --extra-vars "aws_sg=sg-008a34845ce896322" --extra-vars "aws_ssh_key=luciano" --extra-vars "aws_tag=temporary.chat" --extra-vars "local_ssh_key_path=/home/luciano/.ssh/id_rsa" --extra-vars "aws_route53_zoneid=Z04750303W271V39JV6OR" --extra-vars "env=staging" aws_deploy.yaml`
+`ansible-playbook --extra-vars "aws_region=us-east-1" --extra-vars "aws_vpc=vpc-23ebcf46" --extra-vars "aws_subnet=subnet-1d6b1a6a" --extra-vars "aws_ami=ami-0dba2cb6798deb6d8" --extra-vars "aws_instance_type=t2.nano" --extra-vars "aws_sg=sg-008a34845ce896322" --extra-vars "aws_ssh_key=luciano" --extra-vars "aws_tag=temporary.chat" --extra-vars "local_ssh_key_path=/home/luciano/.ssh/id_rsa" --extra-vars "aws_route53_zoneid=Z04750303W271V39JV6OR" --extra-vars "env=staging" deploy_aws.yaml`
 
 
 # temporary.chat
@@ -28,11 +28,11 @@ a playbook to deploy a chat server where you can generate random rooms (public o
 - having port 22,80 and 443 open
 - having a domain name? (I will try very hard to make this optional as the goal is to make this accessible to as many as possible.)
 #### usage example :
-`ansible-playbook -i staging temporary_chat.yaml`
+`ansible-playbook -i staging deploy_chat.yaml`
 
 # aws destroy
 #### usage example :
-`ansible-playbook --extra-vars="aws_region=us-east-1" --extra-vars="aws_tag=temporary.chat" aws_destroy.yaml`
+`ansible-playbook --extra-vars="aws_region=us-east-1" --extra-vars="aws_tag=temporary.chat" destroy_aws.yaml`
 
 # the (ambitious) goals
 

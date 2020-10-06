@@ -1,5 +1,5 @@
 ---
-# file: roles/common/tasks/enable_restart_service.yaml
+# file: roles/chat_server/tasks/enable_restart_service.yaml
 
 - name: Restart service httpd
   remote_user: ubuntu

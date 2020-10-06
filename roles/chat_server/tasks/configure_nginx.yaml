@@ -1,24 +1,24 @@
 ---
-# file : roles/common/tasks/configure_nginx.yaml
+# file : roles/chat_server/tasks/configure_nginx.yaml
 
 - name: copy nginx main configuration file
   remote_user: ubuntu
   become: yes
   become_method: sudo
   copy:
-    src: roles/common/files/nginx/nginx.conf
+    src: roles/chat_server/files/nginx/nginx.conf
     dest: /etc/nginx/nginx.conf
     owner: root
     group: root
     mode: 0644
 
-- name: copy nginx [my_fqdn] in sites-available
+- name: create nginx [my_fqdn] in sites-available
   remote_user: ubuntu
   become: yes
   become_method: sudo
-  copy:
-    src: {{ 'roles/common/files/nginx/' + my_fqdn }}
-    dest: /etc/nginx/sites-available
+  template:
+    src: roles/chat_server/files/nginx/site.j2
+    dest: "{{ '/etc/nginx/sites-available/' + my_fqdn }}"
     owner: root
     group: root
     mode: 0644
@@ -28,8 +28,8 @@
   become: yes
   become_method: sudo
   file:
-    src: {{ '/etc/nginx/sites-available/' + my_fqdn }}
-    dest: {{ '/etc/nginx/sites-enabled/' + my_fqdn }}
+    src: "{{ '/etc/nginx/sites-available/' + my_fqdn }}"
+    dest: "{{ '/etc/nginx/sites-enabled/' + my_fqdn }}"
     owner: root
     group: root
     state: link

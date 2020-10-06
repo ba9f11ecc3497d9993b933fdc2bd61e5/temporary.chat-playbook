@@ -1,0 +1,38 @@
+#!/bin/bash
+
+while true;do
+  for site in $(ls /var/www/{{ my_fqdn }}/app/sites);do
+    UUID=$(echo $site | cut -d "." -f 1)
+    mv /var/www/{{ my_fqdn }}/app/sites/$site /etc/nginx/sites-available/$site
+    cp -rvp /home/app/templates/* /var/www/{{ my_fqdn }}/app/rooms/$UUID/
+    touch /var/www/{{ my_fqdn }}/app/rooms/$UUID/conversation.txt
+    mkdir /var/www/{{ my_fqdn }}/app/rooms/$UUID/files
+    chown www-data:app /var/www/{{ my_fqdn }}/app/rooms/$UUID/files
+    chmod g+rw /var/www/{{ my_fqdn }}/app/rooms/$UUID/files
+    chmod u+rw /var/www/{{ my_fqdn }}/app/rooms/$UUID/files
+    chmod o+rw /var/www/{{ my_fqdn }}/app/rooms/$UUID/files
+    chown -R www-data:app /var/www/{{ my_fqdn }}/app/rooms/$UUID/*
+    chmod g+rw /var/www/{{ my_fqdn }}/app/rooms/$UUID/conversation.txt
+    chmod u+rw /var/www/{{ my_fqdn }}/app/rooms/$UUID/conversation.txt
+    chmod o+w /var/www/{{ my_fqdn }}/app/rooms/$UUID/conversation.txt
+    chmod g+w /var/www/{{ my_fqdn }}/app/rooms/$UUID
+    chmod u+w /var/www/{{ my_fqdn }}/app/rooms/$UUID
+    ln -s /etc/nginx/sites-available/$site /etc/nginx/sites-enabled/$site
+    systemctl reload nginx
+  done
+  for passwd in $(ls /var/www/{{ my_fqdn }}/app/passwds);do
+    UUID=$(echo $passwd | cut -d "." -f 1)
+    mv /var/www/{{ my_fqdn }}/app/passwds/${UUID}\.htpasswd /var/www/{{ my_fqdn }}/app/rooms/$UUID/\.htpasswd
+    systemctl reload nginx
+  done
+  for room in $(ls /var/www/{{ my_fqdn }}/app/rooms);do
+  if [ -f "/var/www/{{ my_fqdn }}/app/rooms/${room}/destroy" ];then
+    echo '<html><body><h1>This room was destroyed</h1></body></html>' > /var/www/{{ my_fqdn }}/app/rooms/${room}/chat.html
+    rm -vrf /var/www/{{ my_fqdn }}/app/rooms/${room}/js
+    rm -vrf /var/www/{{ my_fqdn }}/app/rooms/${room}/css
+    rm -vrf /var/www/{{ my_fqdn }}/app/rooms/${room}/conversation.txt
+    touch /var/www/{{ my_fqdn }}/app/rooms/${room}/destroyed
+  fi
+  done
+  sleep 1    
+done 

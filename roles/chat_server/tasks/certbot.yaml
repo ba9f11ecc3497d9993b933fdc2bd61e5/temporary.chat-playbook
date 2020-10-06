@@ -1,5 +1,5 @@
 ---
-# file : roles/common/tasks/certbot.yaml
+# file : roles/chat_server/tasks/certbot.yaml
 
 - name: install certbot
   remote_user: ubuntu
@@ -13,7 +13,7 @@
   become: yes
   become_method: sudo
   copy: 
-    src: roles/common/files/certbot/letsencrypt
+    src: roles/chat_server/files/certbot/letsencrypt
     dest: /etc/
     owner: root
     group: root
@@ -185,78 +185,78 @@
   become_method: sudo
   command: find /etc/letsencrypt/renewal-hooks -type d -exec chmod 0755 {} \;
 
-- name: Remove file /etc/letsencrypt/live/temporary.chat/cert.pem
+- name: Remove file /etc/letsencrypt/live/{{ my_fqdn }}/cert.pem
   remote_user: ubuntu
   become: yes
   become_method: sudo
   file:
-    path: /etc/letsencrypt/live/temporary.chat/cert.pem
+    path: /etc/letsencrypt/live/{{ my_fqdn }}/cert.pem
     state: absent
 
-- name: Remove file /etc/letsencrypt/live/temporary.chat/chain.pem
+- name: Remove file /etc/letsencrypt/live/{{ my_fqdn }}/chain.pem
   remote_user: ubuntu
   become: yes
   become_method: sudo
   file:
-    path: /etc/letsencrypt/live/temporary.chat/chain.pem
+    path: /etc/letsencrypt/live/{{ my_fqdn }}/chain.pem
     state: absent
 
-- name: Remove file /etc/letsencrypt/live/temporary.chat/fullchain.pem
+- name: Remove file /etc/letsencrypt/live/{{ my_fqdn }}/fullchain.pem
   remote_user: ubuntu
   become: yes
   become_method: sudo
   file:
-    path: /etc/letsencrypt/live/temporary.chat/fullchain.pem
+    path: /etc/letsencrypt/live/{{ my_fqdn }}/fullchain.pem
     state: absent
 
-- name: Remove file /etc/letsencrypt/live/temporary.chat/privkey.pem
+- name: Remove file /etc/letsencrypt/live/{{ my_fqdn }}/privkey.pem
   remote_user: ubuntu
   become: yes
   become_method: sudo
   file:
-    path: /etc/letsencrypt/live/temporary.chat/privkey.pem
+    path: /etc/letsencrypt/live/{{ my_fqdn }}/privkey.pem
     state: absent
 
-- name: Create a symbolic link /etc/letsencrypt/live/temporary.chat/cert.pem -> ../../archive/temporary.chat/cert1.pem
+- name: Create a symbolic link /etc/letsencrypt/live/{{ my_fqdn }}/cert.pem -> ../../archive/{{ my_fqdn }}/cert1.pem
   remote_user: ubuntu
   become: yes
   become_method: sudo
   file:
-    src: /etc/letsencrypt/archive/temporary.chat/cert1.pem
-    dest: /etc/letsencrypt/live/temporary.chat/cert.pem
+    src: /etc/letsencrypt/archive/{{ my_fqdn }}/cert1.pem
+    dest: /etc/letsencrypt/live/{{ my_fqdn }}/cert.pem
     owner: root
     group: root
     state: link
 
-- name: Create a symbolic link /etc/letsencrypt/live/temporary.chat/chain.pem -> ../../archive/temporary.chat/chain1.pem
+- name: Create a symbolic link /etc/letsencrypt/live/{{ my_fqdn }}/chain.pem -> ../../archive/{{ my_fqdn }}/chain1.pem
   remote_user: ubuntu
   become: yes
   become_method: sudo
   file:
-    src: /etc/letsencrypt/archive/temporary.chat/chain1.pem
-    dest: /etc/letsencrypt/live/temporary.chat/chain.pem
+    src: /etc/letsencrypt/archive/{{ my_fqdn }}/chain1.pem
+    dest: /etc/letsencrypt/live/{{ my_fqdn }}/chain.pem
     owner: root
     group: root
     state: link
 
-- name: Create a symbolic link /etc/letsencrypt/live/temporary.chat/fullchain.pem -> ../../archive/temporary.chat/fullchain1.pem
+- name: Create a symbolic link /etc/letsencrypt/live/{{ my_fqdn }}/fullchain.pem -> ../../archive/{{ my_fqdn }}/fullchain1.pem
   remote_user: ubuntu
   become: yes
   become_method: sudo
   file:
-    src: /etc/letsencrypt/archive/temporary.chat/fullchain1.pem
-    dest: /etc/letsencrypt/live/temporary.chat/fullchain.pem
+    src: /etc/letsencrypt/archive/{{ my_fqdn }}/fullchain1.pem
+    dest: /etc/letsencrypt/live/{{ my_fqdn }}/fullchain.pem
     owner: root
     group: root
     state: link
 
-- name: Create a symbolic link /etc/letsencrypt/live/temporary.chat/privkey.pem -> ../../archive/temporary.chat/privkey1.pem
+- name: Create a symbolic link /etc/letsencrypt/live/{{ my_fqdn }}/privkey.pem -> ../../archive/{{ my_fqdn }}/privkey1.pem
   remote_user: ubuntu
   become: yes
   become_method: sudo
   file:
-    src: /etc/letsencrypt/archive/temporary.chat/privkey1.pem
-    dest: /etc/letsencrypt/live/temporary.chat/privkey.pem
+    src: /etc/letsencrypt/archive/{{ my_fqdn }}/privkey1.pem
+    dest: /etc/letsencrypt/live/{{ my_fqdn }}/privkey.pem
     owner: root
     group: root
     state: link

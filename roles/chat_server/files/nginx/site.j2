@@ -1,10 +1,10 @@
 server {
         listen 443 ssl;
-        root /var/www/temporary.chat/html;
+        root /var/www/{{ my_fqdn }}/html;
         index index.html;
-        server_name temporary.chat;
-	ssl_certificate /etc/letsencrypt/live/temporary.chat/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/temporary.chat/privkey.pem;
+        server_name {{ my_fqdn }};
+	ssl_certificate /etc/letsencrypt/live/{{ my_fqdn }}/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/{{ my_fqdn }}/privkey.pem;
 	add_header Access-Control-Allow-Origin *;
         location / {
                 try_files $uri $uri/ =404;
@@ -12,30 +12,30 @@ server {
 	location /app/create {
 		include uwsgi_params;
 		add_header Access-Control-Allow-Origin *;
-		uwsgi_pass unix:/var/www/temporary.chat/app/app.sock;
+		uwsgi_pass unix:/var/www/{{ my_fqdn }}/app/app.sock;
 	}
 	location /app/post {
 		include uwsgi_params;
 		add_header Access-Control-Allow-Origin *;
 		add_header Content-type 'application/json';
-		uwsgi_pass unix:/var/www/temporary.chat/app/app.sock;
+		uwsgi_pass unix:/var/www/{{ my_fqdn }}/app/app.sock;
 	}
 	location /app/quit {
 		include uwsgi_params;
 		add_header Access-Control-Allow-Origin *;
 		add_header Content-type 'application/json';
-		uwsgi_pass unix:/var/www/temporary.chat/app/app.sock;
+		uwsgi_pass unix:/var/www/{{ my_fqdn }}/app/app.sock;
 	}
 	location /app/destroy {
 		include uwsgi_params;
 		add_header Access-Control-Allow-Origin *;
 		add_header Content-type 'application/json';
-		uwsgi_pass unix:/var/www/temporary.chat/app/app.sock;
+		uwsgi_pass unix:/var/www/{{ my_fqdn }}/app/app.sock;
 	}
 	location /app/upload {
 		include uwsgi_params;
 		add_header Access-Control-Allow-Origin *;
 		add_header Content-type 'application/json';
-		uwsgi_pass unix:/var/www/temporary.chat/app/app.sock;
+		uwsgi_pass unix:/var/www/{{ my_fqdn }}/app/app.sock;
 	}
 }

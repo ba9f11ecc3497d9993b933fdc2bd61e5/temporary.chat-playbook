@@ -1,5 +1,0 @@
----
-- hosts: temporary.chat
-  roles:
-    - common
-

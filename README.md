@@ -28,7 +28,7 @@ a playbook to deploy a chat server where you can generate random rooms (public o
 - having port 22,80 and 443 open
 - having a domain name? (I will try very hard to make this optional as the goal is to make this accessible to as many as possible.)
 #### usage example :
-`ansible-playbook -i staging -e '{have_fqdn:true}' -e "my_fqdn=temporary.chat" deploy_chat.yaml`
+`ansible-playbook -i staging -e '{"have_fqdn":true}' -e "my_fqdn=temporary.chat" deploy_chat.yaml`
 
 # aws destroy
 #### usage example :

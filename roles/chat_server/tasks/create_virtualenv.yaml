@@ -1,13 +1,13 @@
 ---
-# file : roles/common/tasks/create_virtualenv.yaml
+# file : roles/chat_server/tasks/create_virtualenv.yaml
 
 - name: copy python package list in /var/www/[my_fqdn]/app
   remote_user: ubuntu
   become: yes
   become_method: sudo
   copy:
-    src: roles/common/files/python/packages.txt
-    dest: {{ '/var/www/' + my_fqdn + '/app/packages.txt' }}
+    src: roles/chat_server/files/python/packages.txt
+    dest: "{{ '/var/www/' + my_fqdn + '/app/packages.txt' }}"
     owner: root
     group: root
     mode: 0644
@@ -17,14 +17,14 @@
   become: yes
   become_method: sudo
   command:
-    cmd: virtualenv {{ '/var/www/' + my_fqdn + '/app -p python3.8' }}
-    creates: "{{ '/var/www/' + my_fqdn + 'temporary.chat/app' }}"
+    cmd: virtualenv "{{ '/var/www/' + my_fqdn + '/app -p python3.8' }}"
+    creates: "{{ '/var/www/' + my_fqdn + '/app' }}"
 
 - name: Install python packages
   remote_user: ubuntu
   become: yes
   become_method: sudo
   pip: 
-    requirements: {{ '/var/www/' + my_fqdn + '/app/packages.txt' }}
-    virtualenv: {{ '/var/www/' + my_fqdn + '/app' }}
+    requirements: "{{ '/var/www/' + my_fqdn + '/app/packages.txt' }}"
+    virtualenv: "{{ '/var/www/' + my_fqdn + '/app' }}"
     virtualenv_python: python3.8

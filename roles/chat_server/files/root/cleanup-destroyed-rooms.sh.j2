@@ -1,0 +1,9 @@
+#!/bin/bash
+for room in $(ls /var/www/{{ my_fqdn }}/app/rooms);do
+if [ -f "/var/www/{{ my_fqdn }}/app/rooms/${room}/destroyed" ];then
+  rm -vrf /var/www/{{ my_fqdn }}/app/rooms/${room}
+  rm -vrf /etc/nginx/sites-available/${room}.{{ my_fqdn }}
+  rm -vrf /etc/nginx/sites-enabled/${room}.{{ my_fqdn }}
+  systemctl reload nginx
+fi
+done

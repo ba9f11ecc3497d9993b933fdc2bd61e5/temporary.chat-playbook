@@ -1,33 +1,68 @@
 ---
-# file : roles/common/tasks/copy_files.yaml
+# file : roles/chat_server/tasks/copy_files.yaml
+
+- name: create /var/www/[my_fqdn]/
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0500
+
 - name: copy html files
   remote_user: ubuntu
   become: yes
   become_method: sudo
   copy: 
-    src: roles/common/files/html
-    dest: {{ '/var/www/' + my_fqdn + '/' }}
+    src: roles/chat_server/files/html
+    dest: "{{ '/var/www/' + my_fqdn + '/' }}"
     owner: www-data
     group: www-data
     mode: 0400
 
-- name: copy app files
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  copy:
-    src: roles/common/files/app
-    dest: {{ '/var/www/' + my_fqdn + '/' }}
-    owner: app
-    group: app
-    mode: 0400
-
-- name: fix permissions on /var/www/[my_fqdn]/app/rooms
+- name: create /var/www/[my_fqdn]/app
   remote_user: ubuntu
   become: yes
   become_method: sudo
   file:
-    path: {{ '/var/www/' + my_fqdn + '/app/rooms' }}
+    path: "{{ '/var/www/' + my_fqdn + '/app' }}"
+    state: directory
+    owner: app
+    group: app
+    mode: 0755
+
+- name: create app.ini
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/app/app.ini.j2
+    dest: "{{ '/var/www/' + my_fqdn + '/app/app.ini' }}"
+    owner: app
+    group: app
+    mode: 0400
+
+- name: create app.py
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/app/app.py.j2
+    dest: "{{ '/var/www/' + my_fqdn + '/app/app.py' }}"
+    owner: app
+    group: app
+    mode: 0400
+
+
+- name: create /var/www/[my_fqdn]/app/rooms
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/app/rooms' }}"
     state: directory
     owner: app
     group: www-data

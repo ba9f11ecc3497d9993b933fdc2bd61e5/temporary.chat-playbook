@@ -16,7 +16,7 @@ I do not plan on maintaining this playbook for everyone to use it, this is not t
 - this playbook will automatically add the new deployed host to the inventory file staging/hosts so you can run the playbook temporary.chat.yaml without editing your inventory
 - the aws_tag is also the fqdn of the server
 #### usage example :
-`ansible-playbook --extra-vars "aws_region=us-east-1" --extra-vars "aws_vpc=vpc-23ebcf46" --extra-vars "aws_subnet=subnet-1d6b1a6a" --extra-vars "aws_ami=ami-0dba2cb6798deb6d8" --extra-vars "aws_instance_type=t2.nano" --extra-vars "aws_sg=sg-008a34845ce896322" --extra-vars "aws_ssh_key=luciano" --extra-vars "aws_tag=temporary.chat" --extra-vars "local_ssh_key_path=/home/luciano/.ssh/id_rsa" --extra-vars "aws_route53_zoneid=Z04750303W271V39JV6OR" aws_deploy.yaml`
+`ansible-playbook --extra-vars "aws_region=us-east-1" --extra-vars "aws_vpc=vpc-23ebcf46" --extra-vars "aws_subnet=subnet-1d6b1a6a" --extra-vars "aws_ami=ami-0dba2cb6798deb6d8" --extra-vars "aws_instance_type=t2.nano" --extra-vars "aws_sg=sg-008a34845ce896322" --extra-vars "aws_ssh_key=luciano" --extra-vars "aws_tag=temporary.chat" --extra-vars "local_ssh_key_path=/home/luciano/.ssh/id_rsa" --extra-vars "aws_route53_zoneid=Z04750303W271V39JV6OR" --extra-vars "env=staging" aws_deploy.yaml`
 
 
 # temporary.chat
@@ -44,10 +44,11 @@ a playbook to deploy a chat server where you can generate random rooms (public o
 
 # the roadmap (oh god!)
 
-- fix the user interface because it is not great.
-  - text should auto refresh AND be scrollable
-  - menu button should not take to much space on mobile
-  - interface should not be fugly 
+##### UI:
+ - Icons to buttons (especially menu button) 
+ - Each row in the conversation should be wrapped in an element (not using br) and styled
+ - Preview file before uploading
+##### APP:
 - replace all hard coded instances of "temporary.chat" so it can be deployed with any fqdn
 - create self signed certificate when the server is only accessible via ip (+ put the fingerprint and ip in the html main page?)
 - make a hackish solution to use dynamic dns + let's encrypt? 

@@ -28,7 +28,7 @@
 
 - name: add to inventory
   copy:
-    dest: staging/host
+    dest: "{{ env + '/host' }}"
     content: |
       [localhost]
       127.0.0.1 ansible_connection=local
@@ -39,4 +39,4 @@
   shell: aws route53 change-resource-record-sets --cli-input-json '{"HostedZoneId":"{{ aws_route53_zoneid }}","ChangeBatch":{"Comment":"updated via ansible playbook","Changes":[{"Action":"UPSERT","ResourceRecordSet":{"Name":"{{ aws_tag }}","Type":"A","TTL":60,"ResourceRecords":[{"Value":{{ public_ip.stdout }}}]}},{"Action":"UPSERT","ResourceRecordSet":{"Name":"*.{{ aws_tag }}","Type":"A","TTL":60,"ResourceRecords":[{"Value":{{ public_ip.stdout }}}]}}]}}'
 
 - name: remove extra double quotes in inventory file
-  shell: sed -i 's/"//g' staging/host
+  shell: sed -i 's/"//g' "{{ env + '/host' }}"

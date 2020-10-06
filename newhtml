@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="shortcut icon" type="image/ico" href="/200013.ico" />
-		<link href="css/main.css" rel="stylesheet" />
+		<link href="main.css" rel="stylesheet" />
 		<script type="text/javascript" src="js/jquery.min.js"></script>
 		<title>
 			temporary.chat

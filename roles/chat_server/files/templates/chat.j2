@@ -127,13 +127,16 @@
 				textarea.scrollTop = textarea.scrollHeight;
 			}
 
-			async function updateDiv() {
-				$(document).ready(function () {       // load text file using jquery ajax
-					$('#conversation').load('conversation.txt', scroll_down);    // load text data
-				});
-			}
-
-			setInterval(updateDiv, 1000);
+                        function loadForever(selector, uriToLoad, timeout) {
+                          $(selector).load(uriToLoad, function() {
+                          scroll_down();
+                          setTimeout(loadForever, timeout, selector, uriToLoad, timeout);
+                          });
+                        }
+ 
+                        $(document).ready(function() {
+                          loadForever('#conversation', 'conversation.txt', 500);
+                        });
 
 			function toggleSidebar() { document.body.classList.toggle('sidebar-open'); }
 		</script>

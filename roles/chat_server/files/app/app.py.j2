@@ -131,7 +131,7 @@ def upload():
   print(path_to_file)
   print(public_path_to_file)
   file_data.save(path_to_file)
-  formatted_message = '=> ' + user_name + ' have uploaded a file : ' + '<a href="' + public_path_to_file + '">' + file_data.filename + '</a>\n'
+  formatted_message = '=> ' + user_name + ' have uploaded a file : ' + '<a href="' + public_path_to_file + '">' + file_data.filename + '</a><br>'
   print(formatted_message)
   file = open(path_to_room, "a")
   file.write(formatted_message)

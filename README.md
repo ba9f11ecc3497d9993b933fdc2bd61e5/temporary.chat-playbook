@@ -45,13 +45,12 @@ a playbook to deploy a chat server where you can generate random rooms (public o
 # the roadmap (oh god!)
 
 ##### UI:
+ - FEATURE/refreshing div constantly is resource expensive, try to think of better
  - Icons to buttons (especially menu button) 
  - Each row in the conversation should be wrapped in an element (not using br) and styled
  - Preview file before uploading
 ##### APP:
-- BUG : conversation.txt needs refresh for the div to refesh, strange
-- BUG : fix problem with password protected rooms (probably nothing)
-- create a real let's encrypt module if domain have a fqdn || a self signed certificate when the server is only accessible via ip (+ put the fingerprint the CA in the html page port 80?)
+- FEATURE/create a real let's encrypt module if domain have a fqdn || a self signed certificate when the server is only accessible via ip (+ put the fingerprint the CA in the html page port 80?)
 - create api for expert users that want to manage their encryption
 - make the random chatrooms optional? (only one room (for people who may want it))
 - add database backend for text 

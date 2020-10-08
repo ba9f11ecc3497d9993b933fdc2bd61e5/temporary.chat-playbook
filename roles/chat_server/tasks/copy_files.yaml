@@ -46,6 +46,27 @@
     mode: 0400
   when: my_fqdn == "temporary.chat"
 
+- name: copy css for the spinner
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy: 
+    src: roles/chat_server/files/html/spinner.css
+    dest: "{{ '/var/www/' + my_fqdn + '/html/spinner.css' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+
+- name: copy jquery
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy: 
+    src: roles/chat_server/files/html/jquery.min.js
+    dest: "{{ '/var/www/' + my_fqdn + '/html/jquery.min.js' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
 
 - name: create /var/www/[my_fqdn]/app
   remote_user: ubuntu

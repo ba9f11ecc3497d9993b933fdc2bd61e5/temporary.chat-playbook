@@ -6,7 +6,7 @@
   become: yes
   become_method: sudo
   cron:
-    name: "install cron room destroyer"
+    name: "install cron cleanup-destroyed-rooms.sh"
     user: root
     minute: "0"
     hour: "*"

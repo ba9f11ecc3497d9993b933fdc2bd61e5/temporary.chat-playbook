@@ -12,16 +12,40 @@
     group: www-data
     mode: 0500
 
+- name: create /var/www/[my_fqdn]/html
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0500
+
+- name: create main website from template
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/html/index.html.j2
+    dest: "{{ '/var/www/' + my_fqdn + '/html/index.html' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+
 - name: copy html files
   remote_user: ubuntu
   become: yes
   become_method: sudo
   copy: 
-    src: roles/chat_server/files/html
+    src: roles/chat_server/files/html/*
     dest: "{{ '/var/www/' + my_fqdn + '/' }}"
     owner: www-data
     group: www-data
     mode: 0400
+  when: my_fqdn == "temporary.chat"
+
 
 - name: create /var/www/[my_fqdn]/app
   remote_user: ubuntu
@@ -55,6 +79,28 @@
     owner: app
     group: app
     mode: 0400
+
+- name: copy create_room.sh
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/app/create_room.sh
+    dest: "{{ '/var/www/' + my_fqdn + '/app/create_room.sh' }}"
+    owner: app 
+    group: app
+    mode: 0770
+
+- name: copy destroy_room.sh
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/app/destroy_room.sh
+    dest: "{{ '/var/www/' + my_fqdn + '/app/destroy_room.sh' }}"
+    owner: app 
+    group: app
+    mode: 0770
 
 
 - name: create /var/www/[my_fqdn]/app/rooms

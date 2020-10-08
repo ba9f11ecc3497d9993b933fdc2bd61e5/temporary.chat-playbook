@@ -11,6 +11,9 @@ import string
 #import os to create directories
 import os
 
+#import subproces for room creation
+import subprocess
+
 #import html to sanitize user input
 import html
 
@@ -23,40 +26,35 @@ app = Flask(__name__)
 
 @app.route("/app/create_private")
 def create_private():
+    room_type = "private"
+    the_domain = "{{ my_fqdn }}"
+    the_uuid = str(uuid.uuid4())
     letters = string.ascii_letters
     digits = string.digits
     chars = letters + digits
     user = "".join(random.choices(chars, k=20))
     passwd = "".join(random.choices(chars, k=30))
-    the_uuid = str(uuid.uuid4())
-    url = "https://" + the_uuid + ".{{ my_fqdn }}"
-    server_name = the_uuid + ".{{ my_fqdn }}"
-    site_file = "./sites/" + the_uuid + ".{{ my_fqdn }}"
-    file = open(site_file, "w")
-    file.write("server {\n  listen 443 ssl;\n  root /var/www/{{ my_fqdn }}/html/rooms/" + the_uuid + ";\n  index chat.html;\n  server_name " + server_name +";\n  ssl_certificate /etc/letsencrypt/live/{{ my_fqdn }}/fullchain.pem;\n  ssl_certificate_key /etc/letsencrypt/live/{{ my_fqdn }}/privkey.pem;\n  location / {\n    index chat.html;\n    auth_basic \"Restricted Content\";\n    auth_basic_user_file /var/www/{{ my_fqdn }}/html/rooms/" + the_uuid + "/.htpasswd;\n  }\n }\n")
-    file.close
     password_file_path = "./passwds/" + the_uuid + ".htpasswd"
     ht = HtpasswdFile(password_file_path, new=True, default_scheme="bcrypt")
     ht.set_password(user, passwd)
     ht.save()
-    os.mkdir("rooms/" + the_uuid)
+    command = 'sudo /var/www/' + the_domain + '/app/create_room.sh ' + room_type + ' ' + the_uuid + ' ' +  the_domain
+    shell_result = subprocess.call([command], shell=True)
+    url = "https://" + the_uuid + ".{{ my_fqdn }}"
+    server_name = the_uuid + ".{{ my_fqdn }}"
     return "<h6>User : " + user + "</h6><br>" + "<h6>Password : " + passwd + "</h6><br>" + "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
 
 
 @app.route("/app/create_public")
 def create_public():
-    letters = string.ascii_letters
-    digits = string.digits
-    chars = letters + digits
+    room_type = "public"
+    the_domain = "{{ my_fqdn }}"
     the_uuid = str(uuid.uuid4())
-    url = "https://" + the_uuid + ".{{ my_fqdn }}"
-    server_name = the_uuid + ".{{ my_fqdn }}"
-    site_file = "./sites/" + the_uuid + ".{{ my_fqdn }}"
-    file = open(site_file, "w")
-    file.write("server {\n  listen 443 ssl;\n  root /var/www/{{ my_fqdn }}/html/rooms/" + the_uuid + ";\n  index chat.html;\n  server_name " + server_name +";\n  ssl_certificate /etc/letsencrypt/live/{{ my_fqdn }}/fullchain.pem;\n  ssl_certificate_key /etc/letsencrypt/live/{{ my_fqdn }}/privkey.pem;\n  location / {\n    index chat.html;\n  }\n }\n")
-    file.close
-    os.mkdir("rooms/" + the_uuid)
+    command = 'sudo /var/www/' + the_domain + '/app/create_room.sh ' + room_type + ' ' + the_uuid + ' ' +  the_domain
+    shell_result = subprocess.call([command], shell=True)
+    url = 'https://' + the_uuid + '.' + the_domain
     return "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
+
 
 
 @app.route("/app/post", methods=['GET', 'POST'])
@@ -77,7 +75,6 @@ def post():
     file.close
     res = make_response("OK")
     return res
-    #return '', 200
 
 @app.route("/app/quit", methods=['GET', 'POST'])
 def quit():
@@ -99,22 +96,14 @@ def quit():
 @app.route("/app/destroy", methods=['GET', 'POST'])
 def destroy():
   print(request.form)
+  the_domain = "{{ my_fqdn }}"
   user_name = request.form['user_name']
   user_name = html.escape(user_name)
   referer = request.referrer
-  room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
-  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.txt'
-  path_to_destroy = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/destroy'
-  formatted_message = '=> ' + user_name + ' has requested the destruction of this room' + '\n'
-  print(formatted_message)
-  file = open(path_to_room, "a")
-  file.write(formatted_message)
-  file.close
-  file = open(path_to_destroy, "w")
-  file.write("true")
-  file.close
-  res = make_response("OK")
-  return res
+  the_uuid = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  command = 'sudo /var/www/' + the_domain + '/app/destroy_room.sh ' + user_name + ' ' + the_uuid + ' ' +  the_domain
+  shell_result = subprocess.call([command], shell=True)
+  return "<h6>OK BOSS</h6>" 
 
 
 @app.route("/app/upload", methods=['GET', 'POST'])

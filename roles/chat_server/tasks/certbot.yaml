@@ -1,13 +1,13 @@
 ---
 # file : roles/chat_server/tasks/certbot.yaml
 
-- name: stop service httpd
+- name: Restart service httpd
   remote_user: ubuntu
   become: yes
   become_method: sudo
   service:
     name: nginx
-    state: stopped 
+    state: started
 
 - name: install certbot
   remote_user: ubuntu
@@ -22,5 +22,5 @@
   become: yes
   become_method: sudo
   command:
-    cmd: certbot certonly ---webroot -w /var/www/html -m all@200013.net --agree-tos -n  -d "{{ my_fqdn }}"
+    cmd: certbot certonly --webroot -w /var/www/html -m all@200013.net --agree-tos -n  -d "{{ my_fqdn }}"
   when: have_fqdn == True

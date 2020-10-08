@@ -1,4 +1,4 @@
 [localhost]
 127.0.0.1 ansible_connection=local
 [poubelle.cc]
-34.228.21.164 ansible_ssh_private_key_file=/home/luciano/.ssh/id_rsa ansible_user=ubuntu
+54.90.232.158 ansible_ssh_private_key_file=/home/luciano/.ssh/id_rsa ansible_user=ubuntu

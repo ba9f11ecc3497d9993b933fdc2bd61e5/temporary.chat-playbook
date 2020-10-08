@@ -1,6 +1,7 @@
 ---
 # file: main.yaml
 - include: user.yaml
+- include: sudoers.yaml
 - include: packages.yaml
 - include: copy_files.yaml
 - include: folders_and_files.yaml

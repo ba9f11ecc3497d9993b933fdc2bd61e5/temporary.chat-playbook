@@ -1,12 +1,22 @@
 ---
 # file : role/chat_server/tasks/install_bootstrap.yaml
 
+- name: Upload bootstrap
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/html/bootstrap-4.0.0-dist.zip
+    dest: "{{ '/var/www/' + my_fqdn + '/html/bootstrap-4.0.0-dist.zip' }}"
+    owner: root
+    group: root
+    mode: 0444
+
 - name: Extract bootstrap.tgz into /var/www/[my_fqdn]/html/
   become: yes
   become_method: sudo
   unarchive:
     src: "{{ '/var/www/' + my_fqdn + '/html/bootstrap-4.0.0-dist.zip' }}"
-    dest: "{{ '/var/www/' + my_fqdn + '/html' }}"
+    dest: "{{ '/var/www/' + my_fqdn + '/html/' }}"
     owner: www-data
     group: www-data
     mode: 0400

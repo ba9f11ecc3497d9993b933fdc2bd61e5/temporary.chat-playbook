@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
    <head>
@@ -9,7 +7,9 @@
       <link rel="shortcut icon" type="image/ico" href="/200013.ico">
       <title>{{ my_fqdn }}</title>
       <head/>
-         <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="screen" />
+	 <script src="jquery.min.js"></script>
+	 <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="screen" />
+	 <link href="spinner.css" rel="stylesheet" type="text/css" media="screen" />
    <body>
       <div class="jumbotron text-center">
          <h1>{{ my_fqdn }}</h1>
@@ -53,20 +53,30 @@
          </div>
          <div class="row h-10 justify-content-center align-items-center">
             <p id="room_info"></p>
-         </div>
+        </div><br>
+          <div id="spinner_row" class="row h-50 justify-content-center align-items-center">
+        <div id="spinner" class="spin row h-30 justify-content-center"></div>
+      </div>
+
       </div>
       <script>
 
+	 $('#spinner').hide()
+
+
          async function create_room() {
+	 $('#spinner').show()
          document.getElementById("newroom");
 	 var room_type_private = document.getElementById('room_type_private').checked;
 	 if (room_type_private == true) {
            let response = await fetch('https://{{ my_fqdn }}/app/create_private');
            let responseText = await getTextFromStream(response.body);
+	   $('#spinner').hide()
            document.getElementById("room_info").innerHTML = responseText;
 	 } else {
            let response = await fetch('https://{{ my_fqdn }}/app/create_public');
            let responseText = await getTextFromStream(response.body);
+	   $('#spinner').hide()
            document.getElementById("room_info").innerHTML = responseText;
 	 }
 

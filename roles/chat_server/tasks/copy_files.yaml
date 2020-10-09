@@ -30,7 +30,7 @@
   become_method: sudo
   copy: 
     src: roles/chat_server/files/html
-    dest: "{{ '/var/www/' + my_fqdn + '/html' }}"
+    dest: "{{ '/var/www/' + my_fqdn + '/' }}"
     owner: www-data
     group: www-data
     mode: 0400

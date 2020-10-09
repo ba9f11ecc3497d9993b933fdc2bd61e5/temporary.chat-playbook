@@ -63,6 +63,7 @@ if you used the aws deploy playbook above, you will like this one to destroy you
  - Preview file before uploading
 ##### APP:
 - FEATURE/create a self signed certificate when the server is only accessible via ip (+ put the the CA cert in the html page port 80)
+- create a real let's encrypt module if domain have a fqdn || a self signed certificate when the server is only accessible via ip (+ put the fingerprint the CA in the html page port 80?)
 - create api for expert users that want to manage their encryption
 - make the random chatrooms optional? (only one room (for people who may want it))
 - add database backend for text (not sure if this fits the model) 

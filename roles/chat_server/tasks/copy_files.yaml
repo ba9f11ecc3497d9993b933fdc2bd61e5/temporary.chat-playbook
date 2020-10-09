@@ -23,6 +23,19 @@
     group: www-data
     mode: 0500
 
+
+- name: add extra html files if domain is temporary.chat
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy: 
+    src: roles/chat_server/files/html
+    dest: "{{ '/var/www/' + my_fqdn + '/html' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: my_fqdn == "temporary.chat"
+
 - name: create main website from template
   remote_user: ubuntu
   become: yes
@@ -33,18 +46,6 @@
     owner: www-data
     group: www-data
     mode: 0400
-
-- name: copy html files
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  copy: 
-    src: roles/chat_server/files/html/*
-    dest: "{{ '/var/www/' + my_fqdn + '/' }}"
-    owner: www-data
-    group: www-data
-    mode: 0400
-  when: my_fqdn == "temporary.chat"
 
 - name: copy css for the spinner
   remote_user: ubuntu

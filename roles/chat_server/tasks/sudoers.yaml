@@ -1,0 +1,13 @@
+---
+
+- name: create sudoers
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/sudoers/sudoers.j2 
+    dest: /etc/sudoers
+    owner: root
+    group: root
+    mode: 0440
+

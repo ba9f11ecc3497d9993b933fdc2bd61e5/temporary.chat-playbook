@@ -43,9 +43,11 @@ I wanted to abstract this totally from the user but it is not possible (see opti
 #### usage example :
 `ansible-playbook -i staging -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=temporary.chat" -e "tls_mode=wildcard" deploy_chat.yaml`
 ### deploy with a fully qualified domain name that you own (single room)
-#### usage example : `in developpement`
-### deploy *without* a fully qualified domain name (single room)
-#### usage example : `ansible-playbook -i staging -e '{"have_fqdn":false}' -e '{"multirooms":false}' -e "tls_mode=pki" deploy_chat.yaml`
+#### usage example : 
+`in developpement`
+### deploy *without* a fully qualified domain name (single room accessible via ip)
+#### usage example : 
+`ansible-playbook -i staging -e '{"have_fqdn":false}' -e '{"multirooms":false}' -e "tls_mode=pki" deploy_chat.yaml`
 
 
 # aws destroy

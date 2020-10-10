@@ -75,3 +75,4 @@ fi
 ln -s /etc/nginx/sites-available/${UUID}.${DOMAIN} /etc/nginx/sites-enabled/${UUID}.${DOMAIN}
 systemctl reload nginx
 
+

@@ -23,20 +23,29 @@ I do not plan on maintaining this playbook for everyone to use it, this is not t
 #### description : 
 a playbook to deploy a chat server where you can generate random rooms (public or private, expert mode will come later.)
 #### requirements : 
-- having ansible installed
-- having a ubuntu server 20.04 LTS with ssh access
-- having port 22,80 and 443 open
-- having a domain name? (I will try very hard to make this optional as the goal is to make this accessible to as many as possible.)
+- having ansible installed on a linux machine
+- having an *empty* ubuntu server 20.04 LTS with ssh access (not responsible of damages if you run this on a server with stuff on it already)
+- having port 22,80 and 443 open on the server
+## rooms options :
+- `multirooms:true` : will create a webpage where you can create random chatrooms (like temporary.chat)
+- `multirooms:false` : will create a webpage with a single chatroom
+## tls options :
+I wanted to abstract this totally from the user but it is not possible (see options below)
+- `wildcard` : running in this mode is only required if you want to run a multi room setup with more than 50 rooms a week (limitation of let's encrypt, see here https://letsencrypt.org/docs/rate-limits/)
+  - requires a fully qualified domain name e.g : example.com (you can also use dynamic dns)
+  - requires that you add a TXT entry in your dns records to verify the wildcard certificate ( manual step :-( )
+- `regular` : running in this mode will make one certificate per chatroom, good if you choose multirooms:false or if you plan to create less than 50 rooms a week (limitation of let's encrypt, see here https://letsencrypt.org/docs/rate-limits/)
+  - requires a fully qualified domain name e.g : example.com (you can also use dynamic dns)
+- `pki` : will automatically create a self sign certificate and make let you download the  certificate to verify it (so https go green)
+  - does not require anything
 ## deployment modes :
 ### deploy with a fully qualified domain name that you own with random rooms (like temporary.chat)
 #### usage example :
-`ansible-playbook -i staging -e '{"have_fqdn":true}' -e "my_fqdn=temporary.chat" deploy_chat.yaml`
+`ansible-playbook -i staging -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=temporary.chat" -e "tls_mode=wildcard" deploy_chat.yaml`
 ### deploy with a fully qualified domain name that you own (single room)
 #### usage example : `in developpement`
-### deploy *without* a fully qualified domain name with random rooms (plan is to use dynamic dns)
-#### usage example : `in developpement`
 ### deploy *without* a fully qualified domain name (single room)
-#### usage example : `in developpement`
+#### usage example : `ansible-playbook -i staging -e '{"have_fqdn":false}' -e '{"multirooms":false}' -e "tls_mode=pki" deploy_chat.yaml`
 
 
 # aws destroy

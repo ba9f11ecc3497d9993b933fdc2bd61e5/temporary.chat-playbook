@@ -4,8 +4,8 @@
 ansible-playbook --extra-vars "aws_region=us-east-1" --extra-vars "aws_vpc=vpc-23ebcf46" --extra-vars "aws_subnet=subnet-1d6b1a6a" --extra-vars "aws_ami=ami-0dba2cb6798deb6d8" --extra-vars "aws_instance_type=t2.nano" --extra-vars "aws_sg=sg-008a34845ce896322" --extra-vars "aws_ssh_key=luciano" --extra-vars "aws_tag=poubelle.cc" --extra-vars "local_ssh_key_path=/home/luciano/.ssh/id_rsa" --extra-vars "aws_route53_zoneid=Z01098613F75WPB5T7HW0" --extra-vars "env=qa" deploy_aws.yaml
 
 # app deploy
-ansible-playbook -i qa -e '{"have_fqdn":true}' -e "my_fqdn=poubelle.cc" deploy_chat.yaml
-ansible-playbook -i qa -e '{"have_fqdn":false}' deploy_chat.yaml
+ansible-playbook -i qa -e '{"have_fqdn":true}' -e '{multirooms:true}' -e "my_fqdn=poubelle.cc" deploy_chat.yaml
+ansible-playbook -i qa -e '{"have_fqdn":false}' -e '{multirooms:false}' -e "tls_mode=pki" deploy_chat.yaml
 
 # aws destroy
 ansible-playbook --extra-vars="aws_region=us-east-1" --extra-vars="aws_tag=poubelle.cc" destroy_aws.yaml

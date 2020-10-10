@@ -3,10 +3,10 @@
 - include: user.yaml
 - include: sudoers.yaml
 - include: packages.yaml
-- include: copy_files.yaml
-- include: folders_and_files.yaml
+- include: html_files.yaml
+- include: app_files.yaml
 - include: install_bootstrap.yaml
-- include: certbot.yaml
+- include: certbot_or_pki.yaml
 - include: configure_nginx.yaml
 - include: create_virtualenv.yaml
 - include: install_templates.yaml

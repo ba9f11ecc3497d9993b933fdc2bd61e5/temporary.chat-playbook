@@ -116,7 +116,12 @@ def upload():
   room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
   path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.txt'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_data.filename
+{% if multirooms == True %}
   public_path_to_file = 'https://' + room + '.{{ my_fqdn }}/files/' + file_data.filename
+{% endif %}
+{% if multirooms == False %}
+  public_path_to_file = 'https://' + '{{ my_fqdn }}' + '/files/' + file_data.filename
+{% endif %}
   print(path_to_file)
   print(public_path_to_file)
   file_data.save(path_to_file)

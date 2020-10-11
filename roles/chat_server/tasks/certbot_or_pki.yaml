@@ -16,11 +16,128 @@
   command:
     cmd: snap install --beta --classic certbot
   when: have_fqdn == True
+  when: (tls_mode == "wildcard") or
+        (tls_mode == "normal")
 
-- name: run certbot
+- name: run certbot webroot
   remote_user: ubuntu
   become: yes
   become_method: sudo
   command:
     cmd: certbot certonly --webroot -w /var/www/html -m all@200013.net --agree-tos -n  -d "{{ my_fqdn }}"
   when: have_fqdn == True
+  when: tls_mode == "normal"
+
+- name: run certbot dns verification
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command:
+    cmd: certbot certonly --webroot -w /var/www/html -m all@200013.net --agree-tos -n  -d "{{ my_fqdn }}"
+  when: have_fqdn == True
+  when: tls_mode == "wildcard"
+
+- name: Create /etc/PKI folder 
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/PKI
+    state: directory
+    owner: root 
+    group: root
+    mode: 0700
+  when: have_fqdn == False
+  when: tls_mode == "pki"
+
+- name: create pki script
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/pki/script.sh.j2
+    dest: /etc/PKI/script.sh
+    mode: 0700
+  when: have_fqdn == False
+  when: tls_mode == "pki"
+
+- name: run pki script
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: /etc/PKI/script.sh
+  args:
+    chdir: /etc/PKI
+  when: have_fqdn == False
+  when: tls_mode == "pki"
+
+- name: add fake lets encrypt dir
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/etc/letsencrypt/live/' + my_fqdn }}"
+    state: directory
+    owner: root 
+    group: root
+    mode: 0755
+  when: have_fqdn == False
+  when: tls_mode == "pki"
+
+- name: symlink self signed cert to fake lets encrypt dir
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    src: /etc/PKI/cert.pem
+    dest: "{{ '/etc/letsencrypt/live/' + my_fqdn + '/fullchain.pem' }}"
+    owner: root
+    group: root
+    state: link
+  when: have_fqdn == False
+  when: tls_mode == "pki"
+
+- name: symlink self generated key to fake lets encrypt dir
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    src: /etc/PKI/cert.key
+    dest: "{{ '/etc/letsencrypt/live/' + my_fqdn + '/privkey.pem' }}"
+    owner: root
+    group: root
+    state: link
+  when: have_fqdn == False
+  when: tls_mode == "pki"
+
+- name: get the fingerprint of the certificate and print it to the helper page
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: bash -c 'openssl x509 -in /etc/PKI/cert.pem -noout -sha256 -fingerprint | cut -d "=" -f2'
+  register: cert_fingerprint
+  when: have_fqdn == False
+  when: tls_mode == "pki"
+
+- name: copy the ca cert in the main html directory (ngnix default site)
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: /etc/PKI/ca.pem
+    dest: /var/www/html/
+    remote_src: yes
+  when: have_fqdn == False
+  when: tls_mode == "pki"
+
+- name: create a html helper site to use the cert issue by the CA
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+   src: roles/chat_server/files/pki/index.html.j2
+   dest: /var/www/html/index.nginx-debian.html
+   mode: 0644
+  when: have_fqdn == False
+  when: tls_mode == "pki"
+

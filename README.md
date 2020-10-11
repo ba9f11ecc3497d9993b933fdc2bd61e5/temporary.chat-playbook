@@ -47,7 +47,7 @@ I wanted to abstract this totally from the user but it is not possible (see opti
 `in developpement`
 ### deploy *without* a fully qualified domain name (single room accessible via ip)
 #### usage example : 
-`ansible-playbook -i staging -e '{"have_fqdn":false}' -e '{"multirooms":false}' -e "tls_mode=pki" deploy_chat.yaml`
+`IP=34.228.75.55;ansible-playbook -u ubuntu -i ${IP}, -e '{"have_fqdn":false}' -e '{"multirooms":false}' -e "my_fqdn=$IP" -e "tls_mode=pki" deploy_chat.yaml`
 
 
 # aws destroy
@@ -72,13 +72,12 @@ if you used the aws deploy playbook above, you will like this one to destroy you
  - Icons to buttons (especially menu button) 
  - Each row in the conversation should be wrapped in an element (not using br) and styled
  - Preview file before uploading
+ - preview urls shared in the room
 ##### APP:
-- FEATURE/create a self signed certificate when the server is only accessible via ip (+ put the the CA cert in the html page port 80)
+- create module to use wildcard dns with let's encrypt
 - create api for expert users that want to manage their encryption
-- make the random chatrooms optional? (only one room (for people who may want it))
 - add database backend for text (not sure if this fits the model) 
 - support other OS (centos, openbsd to start with)
 - make a hackish solution to use dynamic dns + let's encrypt? 
-- preview urls shared in the room
 - fix javascript upload on firefox mobile
 - notifications on android/iphone? is it even possible for website? 

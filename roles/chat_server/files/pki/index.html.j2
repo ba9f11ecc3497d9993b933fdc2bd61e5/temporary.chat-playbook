@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Certificate helper page</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Certificate helper page</h1>
+<p>this page is here to help you get rid of the big warning sent by your browser when you use your own certification authority (PKI)</p>
+<h3>system ip address : {{ my_fqdn }}</h3>
+<h3>fingerprint of the certificate that will be presented to you :</h3>
+<p>{{ cert_fingerprint.stdout }}<p>
+<p>install the certificate below in your browser to trust certificates signed by this certification authority.</p>
+<a href="ca.pem">ca.pem</a>
+<p>you can now navigate to <a href="https://{{ my_fqdn }}">https://{{ my_fqdn }}</a></p>
+</body>
+</html>
+

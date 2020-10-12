@@ -1,0 +1,67 @@
+---
+
+- name: Create /etc/PKI folder 
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/PKI
+    state: directory
+    owner: root 
+    group: root
+    mode: 0700
+  when: (have_fqdn == False) and
+        (tls_mode == "pki")
+
+- name: create pki script
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/pki/script.sh.j2
+    dest: /etc/PKI/script.sh
+    mode: 0700
+  when: (have_fqdn == False) and
+        (tls_mode == "pki")
+
+- name: run pki script
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: /etc/PKI/script.sh
+  args:
+    chdir: /etc/PKI
+  when: (have_fqdn == False) and
+        (tls_mode == "pki")
+
+- name: get the fingerprint of the certificate and print it to the helper page
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: bash -c 'openssl x509 -in /etc/PKI/cert.pem -noout -sha256 -fingerprint | cut -d "=" -f2'
+  register: cert_fingerprint
+  when: (have_fqdn == False) and
+        (tls_mode == "pki")
+
+- name: copy the ca cert in the main html directory (ngnix default site)
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: /etc/PKI/ca.pem
+    dest: /var/www/html/
+    remote_src: yes
+  when: (have_fqdn == False) and
+        (tls_mode == "pki")
+
+- name: create a html helper site to use the cert issue by the CA
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+   src: roles/chat_server/files/pki/index.html.j2
+   dest: /var/www/html/index.nginx-debian.html
+   mode: 0644
+  when: (have_fqdn == False) and
+        (tls_mode == "pki")
+

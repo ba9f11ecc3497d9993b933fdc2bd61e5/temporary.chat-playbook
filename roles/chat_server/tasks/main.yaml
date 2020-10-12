@@ -7,7 +7,8 @@
 - include: html_files.yaml
 - include: app_files.yaml
 - include: install_bootstrap.yaml
-- include: certbot_or_pki.yaml
+- include: certbot.yaml
+- include: pki.yaml
 - include: configure_nginx.yaml
 - include: create_virtualenv.yaml
 - include: install_templates.yaml

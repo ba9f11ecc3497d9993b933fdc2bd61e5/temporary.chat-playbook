@@ -17,14 +17,6 @@
     name: uwsgi
     state: restarted
 
-- name: Start service room_master
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  service:
-    name: room_master
-    state: started
-
 - name: Restart service httpd
   remote_user: ubuntu
   become: yes
@@ -39,13 +31,5 @@
   become_method: sudo
   service:
     name: uwsgi
-    enabled: yes
-
-- name: Start service room_master
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  service:
-    name: room_master
     enabled: yes
 

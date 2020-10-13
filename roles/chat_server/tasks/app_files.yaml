@@ -37,8 +37,8 @@
   remote_user: ubuntu
   become: yes
   become_method: sudo
-  copy:
-    src: roles/chat_server/files/app/create_room.sh
+  template:
+    src: roles/chat_server/files/app/create_room.sh.j2
     dest: "{{ '/var/www/' + my_fqdn + '/app/create_room.sh' }}"
     owner: app 
     group: app
@@ -48,8 +48,8 @@
   remote_user: ubuntu
   become: yes
   become_method: sudo
-  copy:
-    src: roles/chat_server/files/app/destroy_room.sh
+  template:
+    src: roles/chat_server/files/app/destroy_room.sh.j2
     dest: "{{ '/var/www/' + my_fqdn + '/app/destroy_room.sh' }}"
     owner: app 
     group: app
@@ -77,7 +77,7 @@
     owner: app
     group: www-data
     state: link
-
+  when: multirooms == True
 
 - name: Create /var/www/[my_fqdn]/app/passwds
   remote_user: ubuntu

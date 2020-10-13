@@ -34,15 +34,27 @@ def create_private():
     chars = letters + digits
     user = "".join(random.choices(chars, k=20))
     passwd = "".join(random.choices(chars, k=30))
+{% if multirooms == True %}
     password_file_path = "./passwds/" + the_uuid + ".htpasswd"
+{% endif %}
+{% if multirooms == False %}
+    password_file_path = "./passwds/htpasswd"
+{% endif %}
     ht = HtpasswdFile(password_file_path, new=True, default_scheme="bcrypt")
     ht.set_password(user, passwd)
     ht.save()
     command = 'sudo /var/www/' + the_domain + '/app/create_room.sh ' + room_type + ' ' + the_uuid + ' ' +  the_domain
     shell_result = subprocess.call([command], shell=True)
+{% if multirooms == True %}
     url = "https://" + the_uuid + ".{{ my_fqdn }}"
     server_name = the_uuid + ".{{ my_fqdn }}"
     return "<h6>User : " + user + "</h6><br>" + "<h6>Password : " + passwd + "</h6><br>" + "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
+{% endif %}
+{% if multirooms == False %}
+    url = "https://{{ my_fqdn }}" + '/chat.html'
+    server_name = "{{ my_fqdn }}"
+    return "<h6>User : " + user + "</h6><br>" + "<h6>Password : " + passwd + "</h6><br>" + "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
+{% endif %}
 
 
 @app.route("/app/create_public")
@@ -52,8 +64,14 @@ def create_public():
     the_uuid = str(uuid.uuid4())
     command = 'sudo /var/www/' + the_domain + '/app/create_room.sh ' + room_type + ' ' + the_uuid + ' ' +  the_domain
     shell_result = subprocess.call([command], shell=True)
+{% if multirooms == True %}
     url = 'https://' + the_uuid + '.' + the_domain
     return "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
+{% endif %}
+{% if multirooms == False %}
+    url = 'https://' + the_domain + '/chat.html'
+    return "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
+{% endif %}
 
 
 
@@ -66,7 +84,12 @@ def post():
     referer = request.referrer
     print(client_ip + ':' + client_message)
     room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+{% if multirooms == True %}
     path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.txt'
+{% endif %}
+{% if multirooms == False %}
+    path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/conversation.txt'
+{% endif %}
     client_message = html.escape(client_message)
     user_name = html.escape(user_name)
     formatted_message = user_name + ' : ' + client_message + '<br>'
@@ -83,7 +106,12 @@ def quit():
   user_name = html.escape(user_name)
   referer = request.referrer
   room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+{% if multirooms == True %}
   path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.txt'
+{% endif %}
+{% if multirooms == False %}
+  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/conversation.txt'
+{% endif %}
   formatted_message = '=> ' + user_name + ' has quit the room' + '\n'
   print(formatted_message)
   file = open(path_to_room, "a")
@@ -114,8 +142,14 @@ def upload():
   user_name = html.escape(user_name)
   referer = request.referrer
   room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+{% if multirooms == True %}
   path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.txt'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_data.filename
+{% endif %}
+{% if multirooms == False %}
+  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/conversation.txt'
+  path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/files/' + file_data.filename
+{% endif %}
 {% if multirooms == True %}
   public_path_to_file = 'https://' + room + '.{{ my_fqdn }}/files/' + file_data.filename
 {% endif %}

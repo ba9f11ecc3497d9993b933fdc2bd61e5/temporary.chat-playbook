@@ -47,19 +47,78 @@
     mode: 0400
   when: multirooms == True
 
-- name: copy css for the spinner
+- name: create /var/www/[my_fqdn]/html/launcher
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html/launcher' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0500
+
+- name: create main website from template as a launcher if single room
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/html/index.html.j2
+    dest: "{{ '/var/www/' + my_fqdn + '/html/launcher/launcher.html' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == False
+
+- name: create /var/www/[my_fqdn]/html/css
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html/css' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0500
+  when: multirooms == True
+
+- name: create /var/www/[my_fqdn]/html/launcher/css
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html/launcher/css' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0500
+  when: multirooms == False 
+
+- name: copy css for the spinner (multirooms mode)
   remote_user: ubuntu
   become: yes
   become_method: sudo
   copy: 
     src: roles/chat_server/files/html/spinner.css
-    dest: "{{ '/var/www/' + my_fqdn + '/html/spinner.css' }}"
+    dest: "{{ '/var/www/' + my_fqdn + '/html/css/spinner.css' }}"
     owner: www-data
     group: www-data
     mode: 0400
   when: multirooms == True
 
-- name: copy jquery
+- name: copy css for the spinner (single room mode)
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy: 
+    src: roles/chat_server/files/html/spinner.css
+    dest: "{{ '/var/www/' + my_fqdn + '/html/launcher/css/spinner.css' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == False
+
+- name: copy jquery html root
   remote_user: ubuntu
   become: yes
   become_method: sudo
@@ -69,31 +128,6 @@
     owner: www-data
     group: www-data
     mode: 0400
-  when: multirooms == True
-
-- name: copy single chat room
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  template:
-    src: roles/chat_server/files/templates/chat.j2
-    dest: "{{ '/var/www/' + my_fqdn + '/html/index.html' }}"
-    owner: www-data
-    group: www-data
-    mode: 0400
-  when: multirooms == False 
- 
-- name: copy single chat room css
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  copy:
-    src: roles/chat_server/files/templates/css
-    dest: "{{ '/var/www/' + my_fqdn + '/html/' }}"
-    owner: www-data
-    group: www-data
-    mode: 0400
-  when: multirooms == False 
 
 - name: copy single chat room js
   remote_user: ubuntu
@@ -101,76 +135,8 @@
   become_method: sudo
   copy:
     src: roles/chat_server/files/templates/js
-    dest: "{{ '/var/www/' + my_fqdn + '/html/' }}"
+    dest: "{{ '/var/www/' + my_fqdn + '/html/launcher' }}"
     owner: www-data
     group: www-data
     mode: 0400
-  when: multirooms == False 
-
-- name: copy single chat room js
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  copy:
-    src: roles/chat_server/files/templates/js
-    dest: "{{ '/var/www/' + my_fqdn + '/html/' }}"
-    owner: www-data
-    group: www-data
-    mode: 0400
-  when: multirooms == False 
-
-- name: create single room folder
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  file:
-    path: "{{ '/var/www/' + my_fqdn + '/app/rooms/' + my_fqdn }}"
-    state: directory
-    owner: app
-    group: www-data
-    mode: 0750
-  when: multirooms == False 
-
-- name: create conversation.txt file for single room
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  file:
-    path: "{{ '/var/www/' + my_fqdn + '/app/rooms/' + my_fqdn + '/conversation.txt' }}"
-    state: touch
-    owner: app
-    group: www-data
-    mode: 0646
-  when: multirooms == False 
-
-- name: create symlink between app/conversation.txt and html/conversation.txt file for single room
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  file:
-    src: "{{ '/var/www/' + my_fqdn + '/app/rooms/' + my_fqdn + '/conversation.txt' }}"
-    dest: "{{ '/var/www/' + my_fqdn + '/html/conversation.txt' }}"
-    state: link
-  when: multirooms == False 
-
-- name: create upload folder for single room
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  file:
-    path: "{{ '/var/www/' + my_fqdn + '/app/rooms/' + my_fqdn + '/files' }}"
-    state: directory
-    owner: app
-    group: www-data
-    mode: 0750
-  when: multirooms == False 
-
-- name: create symlink to uplaod folder for single room
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  file:
-    src: "{{ '/var/www/' + my_fqdn + '/app/rooms/' + my_fqdn + '/files' }}"
-    dest: "{{ '/var/www/' + my_fqdn + '/html/files' }}"
-    state: link
   when: multirooms == False 

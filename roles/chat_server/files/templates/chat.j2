@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta http-equiv='cache-control' content='no-cache'>
-		<meta http-equiv='expires' content='0'>
-		<meta http-equiv='pragma' content='no-cache'>
+		<meta http-equiv='cache-control' content="no-cache, no-store, must-revalidate, max-age=0" />
+		<meta http-equiv='cache-control' content="post-check=0, pre-check=0, false" />
+		<meta http-equiv='pragma' content='no-cache' />
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -126,6 +126,7 @@
 			}
 
 			function scroll_down() {
+				var conv = "https://{{ my_fqdn }}/conversation.txt";
 				var textarea = document.getElementById('conversation');
 				textarea.scrollTop = textarea.scrollHeight;
 			}

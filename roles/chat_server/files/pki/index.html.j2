@@ -18,7 +18,14 @@
 <p>{{ cert_fingerprint.stdout }}<p>
 <p>install the certificate below in your browser to trust certificates signed by this certification authority.</p>
 <a href="ca.pem">ca.pem</a>
-<p>you can now navigate to <a href="https://{{ my_fqdn }}">https://{{ my_fqdn }}</a></p>
+<p>you can now navigate to <a href="https://{{ my_fqdn }}/launcher">https://{{ my_fqdn }}/launcher</a></p>
+<h3>Instructions per browser :</h3>
+<h4>Firefox :</h4>
+<p><a href="https://wiki.mozilla.org/PSM:Changing_Trust_Settings#Trusting_an_Additional_Root_Certificate">Trusting_an_Additional_Root_Certificate</a></p>
+<h4>Chrome :</h4>
+<p><a href="https://3.91.44.168/files/Screenshot_20201002_083611.png">Documentation to hard to find, link from IBM, start at step 5</a></p>
+<h4>Safari :</h4>
+<p><a href="https://support.apple.com/en-ca/guide/keychain-access/kyca2793/10.5/mac/10.15">found a typo in the official Apple Documentation :)</a></p>
+<p>"of the certificate authority you want to issue you the certificate", english is my second language, but this is not proper english</p>
 </body>
 </html>
-

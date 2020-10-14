@@ -43,13 +43,24 @@
   when: (have_fqdn == False) and
         (tls_mode == "pki")
 
-- name: copy the ca cert in the main html directory (ngnix default site)
+- name: copy the ca.pem cert in the main html directory (ngnix default site)
   remote_user: ubuntu
   become: yes
   become_method: sudo
   copy:
     src: /etc/PKI/ca.pem
     dest: /var/www/html/
+    remote_src: yes
+  when: (have_fqdn == False) and
+        (tls_mode == "pki")
+
+- name: copy the ca.cert.crt (for windows) cert in the main html directory (ngnix default site)
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: /etc/PKI/ca.pem
+    dest: /var/www/html/ca.cert.crt
     remote_src: yes
   when: (have_fqdn == False) and
         (tls_mode == "pki")

@@ -1,0 +1,9 @@
+- name: add the above TXT records to your dns
+  debug: msg="{{ le_response.stdout }}"
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- name: Pause for 11 minutes, add the above dns txt record in your zone file and go grab a coffee
+  prompt: "Pause for 10 minutes, add the above dns txt record in your zone file and go grab a coffee"
+  pause:
+    minutes: 11

@@ -24,15 +24,53 @@
   become: yes
   become_method: sudo
   command:
-    cmd: certbot certonly --webroot -w /var/www/html -m all@200013.net --agree-tos -n  -d "{{ my_fqdn }}"
+    cmd: certbot certonly --webroot -w /var/www/html -m "{{ le_mailaddress }}" --agree-tos -n  -d "{{ my_fqdn }}"
   when: (have_fqdn == True) and
         (tls_mode == "normal")
 
-- name: run certbot dns verification
+
+- name: create expect script from template
   remote_user: ubuntu
   become: yes
   become_method: sudo
-  command:
-    cmd: certbot certonly --webroot -w /var/www/html -m all@200013.net --agree-tos -n  -d "{{ my_fqdn }}"
+  template:
+    src: roles/chat_server/files/certbot/expect_letsencrypt.sh.j2
+    dest: /root/expect_letsencrypt.sh
+    mode: 0700
   when: (have_fqdn == True) and
         (tls_mode == "wildcard")
+
+- name: run expect script that will call lets encrypt with the dns validation method (asynchronously)  
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: bash -c '/usr/bin/expect -f /root/expect_letsencrypt.sh &>> /tmp/lets_encryptdnsinfo' 
+  async: 700
+  poll: 0
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- name: Pause for 10 seconds to let lets encrypt do its thing
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  pause:
+    seconds: 10
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- name: cat the file that have dns info from lets encrypt and register the value 
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: cat /tmp/lets_encryptdnsinfo
+  register: le_response
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+        #- name: add the above TXT records to your dns 
+        #debug: msg="{{ le_response.stdout }}"
+        #when: (have_fqdn == True) and
+        #(tls_mode == "wildcard")
+
+

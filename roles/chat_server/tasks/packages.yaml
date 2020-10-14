@@ -12,6 +12,7 @@
       - python3-pip
       - python3-virtualenv
       - snapd
+      - expect
     state: present
     update_cache: true
 

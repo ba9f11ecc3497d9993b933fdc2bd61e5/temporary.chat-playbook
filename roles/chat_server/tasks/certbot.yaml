@@ -45,17 +45,17 @@
   become: yes
   become_method: sudo
   command: bash -c '/usr/bin/expect -f /root/expect_letsencrypt.sh &>> /tmp/lets_encryptdnsinfo' 
-  async: 700
+  async: 500 
   poll: 0
   when: (have_fqdn == True) and
         (tls_mode == "wildcard")
 
-- name: Pause for 10 seconds to let lets encrypt do its thing
+- name: Pause for 30 seconds to let lets encrypt do its thing
   remote_user: ubuntu
   become: yes
   become_method: sudo
   pause:
-    seconds: 10
+    seconds: 30
   when: (have_fqdn == True) and
         (tls_mode == "wildcard")
 
@@ -63,14 +63,146 @@
   remote_user: ubuntu
   become: yes
   become_method: sudo
-  command: cat /tmp/lets_encryptdnsinfo
+  command: bash -c "grep -A 3 \"Please deploy a DNS TXT record\" /tmp/lets_encryptdnsinfo | tr '\n' ' '"
   register: le_response
   when: (have_fqdn == True) and
         (tls_mode == "wildcard")
 
-        #- name: add the above TXT records to your dns 
-        #debug: msg="{{ le_response.stdout }}"
-        #when: (have_fqdn == True) and
-        #(tls_mode == "wildcard")
+- debug: 
+    msg: 
+    - "Add the first TXT record in your dns server zone file"
+    - "{{ le_response.stdout }}"
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
 
 
+- name: Pause to allow dns validation to complete
+  pause:
+    seconds: 60 
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- name: checking if google dns can see your TXT record
+  command: dig +short @8.8.8.8 _acme-challenge.{{ my_fqdn }} TXT
+  register: google_dns_answer
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- debug:
+    msg: 
+    - "google dns reply:"
+    - "{{ google_dns_answer.stdout }}"
+
+- name: Pause to allow dns validation to complete
+  pause:
+    seconds: 60
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- name: checking if google dns can see your TXT record
+  command: dig +short @8.8.8.8 _acme-challenge.{{ my_fqdn }} TXT
+  register: google_dns_answer
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- debug:
+    msg: 
+    - "google dns reply:"
+    - "{{ google_dns_answer.stdout }}"
+
+- name: Pause to allow dns validation to complete
+  pause:
+    seconds: 60
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- name: checking if google dns can see your TXT record
+  command: dig +short @8.8.8.8 _acme-challenge.{{ my_fqdn }} TXT
+  register: google_dns_answer
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- name: Pause to allow dns validation to complete
+  pause:
+    seconds: 15
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- name: checking if google dns can see your TXT record
+  command: dig +short @8.8.8.8 _acme-challenge.{{ my_fqdn }} TXT
+  register: google_dns_answer
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- debug:
+    msg: 
+    - "google dns reply:"
+    - "{{ google_dns_answer.stdout }}"
+
+
+- name: cat the file that have dns info from lets encrypt and register the value 
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  command: bash -c "grep -A 3 \"Please deploy a DNS TXT record\" /tmp/lets_encryptdnsinfo | tr '\n' ' '"
+  register: le_response
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- debug: 
+    msg: 
+    - "Add the second TXT record in your dns server zone file (do not remove the first one"
+    - "{{ le_response.stdout }}"
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- name: Pause to allow dns validation to complete
+  pause:
+    seconds: 60
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- name: checking if google dns can see your TXT record
+  command: dig +short @8.8.8.8 _acme-challenge.{{ my_fqdn }} TXT
+  register: google_dns_answer
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- debug:
+    msg: 
+    - "google dns reply:"
+    - "{{ google_dns_answer.stdout }}"
+
+- name: Pause to allow dns validation to complete
+  pause:
+    seconds: 60
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- name: checking if google dns can see your TXT record
+  command: dig +short @8.8.8.8 _acme-challenge.{{ my_fqdn }} TXT
+  register: google_dns_answer
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- debug:
+    msg: 
+    - "google dns reply:"
+    - "{{ google_dns_answer.stdout }}"
+
+- name: Pause to allow dns validation to complete
+  pause:
+    seconds: 60
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- name: checking if google dns can see your TXT record
+  command: dig +short @8.8.8.8 _acme-challenge.{{ my_fqdn }} TXT
+  register: google_dns_answer
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
+
+- debug:
+    msg: 
+    - "google dns reply:"
+    - "{{ google_dns_answer.stdout }}"

@@ -82,6 +82,18 @@
     mode: 0500
   when: multirooms == True
 
+- name: create /var/www/[my_fqdn]/html/js
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html/js' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0500
+  when: multirooms == True
+
 - name: create /var/www/[my_fqdn]/html/launcher/css
   remote_user: ubuntu
   become: yes
@@ -128,6 +140,19 @@
     owner: www-data
     group: www-data
     mode: 0400
+  when: multirooms == False
+
+- name: copy jquery html root in js folder
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy: 
+    src: roles/chat_server/files/html/jquery.min.js
+    dest: "{{ '/var/www/' + my_fqdn + '/html/js/jquery.min.js' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == True
 
 - name: copy single chat room js
   remote_user: ubuntu

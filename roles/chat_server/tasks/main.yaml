@@ -9,7 +9,6 @@
 - include: install_bootstrap.yaml
 - include: certbot.yaml
 - include: pki.yaml
-- include: output.yaml
 - include: configure_nginx.yaml
 - include: create_virtualenv.yaml
 - include: chatroom_templates.yaml

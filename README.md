@@ -34,7 +34,9 @@ I wanted to abstract this totally from the user but it is not possible due to [l
 ### deploy with a fully qualified domain name that you own in multirooms mode 
 ##### usage example :
 `FQDN=example.com;ansible-playbook -i ${FQDN},  -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=$FQDN" -e "tls_mode=wildcard" -e "le_mailaddress=myemail@example.com" deploy_chat.yaml`
+
 or
+
 `FQDN=example.com;ansible-playbook -i ${FQDN},  -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=$FQDN" -e "tls_mode=normal" -e "le_mailaddress=myemail@example.com" deploy_chat.yaml`
 ### deploy with a fully qualified domain name that you own (single room)
 ##### usage example : 

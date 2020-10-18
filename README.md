@@ -57,13 +57,17 @@ I wanted to abstract this totally from the user but it is not possible (see opti
 - Each row in the conversation should be wrapped in an element (not using br) and styled
 - FEATURE/Preview file before uploading
 - FEATURE/preview urls shared in the room
+- FEATURE/Ping a user
 - notifications on android/iphone (check if possible) 
 ##### APP:
 - fix request entity too large issue (nginx) think of a decent quota 
 - make a solution to use dynamic dns + let's encrypt for single room 
 - create api for expert users that want to manage their encryption
 - support other OS (centos, openbsd to start with)
-
+##### BACKEND:
+- system updates
+- hostname
+- etc
 
 
 

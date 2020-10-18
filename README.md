@@ -13,7 +13,7 @@ an ansible playbook to deploy a chat server on an ubuntu server.
 - `multirooms:true` : will create a webpage where you can create random chatrooms (like temporary.chat)
 - `multirooms:false` : will create a webpage where you can create a single chatroom
 ### tls options :
-I wanted to abstract this totally from the user but it is not possible due to [let's encrypt rate limit] (https://letsencrypt.org/docs/rate-limits/)
+I wanted to abstract this totally from the user but it is not possible due to [let's encrypt rate limit](https://letsencrypt.org/docs/rate-limits/)
 - `wildcard` : run this mode if you want to run a multi room setup able to create more than 50 chatrooms per week (will use let's encrypt)
   - requires a fully qualified domain name e.g : example.com
   - requires that you add a TXT entry in your dns records to verify the wildcard certificate ( the playbook will give you the info while running )
@@ -21,7 +21,7 @@ I wanted to abstract this totally from the user but it is not possible due to [l
   - when used with multirooms:true
     - requires a fully qualified domain name e.g : example.com
   - when used with multirooms: false
-    - you may be able to use a dynamic dns if it is in the [Mozilla Public Suffix List] (https://github.com/publicsuffix/list/blob/master/public_suffix_list.dat) and let's encrypt support it  
+    - you may be able to use a dynamic dns if it is in the [Mozilla Public Suffix List](https://github.com/publicsuffix/list/blob/master/public_suffix_list.dat) and let's encrypt support it  
 - `pki` : run this mode if you don't have a fully qualified domain 
   - does not require anything
   - will automatically create a self sign certificate 

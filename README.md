@@ -41,11 +41,14 @@ I wanted to abstract this totally from the user but it is not possible (see opti
 
 ### the (ambitious) goals
 
-- decentralize communications (less facebook chats!)
-- offer a free service that will remain free and ad free ( temporary.chat )
-- offer a paying service with more options/storage/features ( permanent.chat )
-- offer the possibility to anyone to roll out their own instance of "temporary.chat" for free (with a different domain or simply an ip?)
-- create an api expert mode with end to end encryption managed by the user
+- free/open source part:
+  - decentralize communications (less centralized systems!)
+  - offer the possibility for anyone to roll out their own instance of this chat server with their own domain or simply an ip
+  - offer the possibility for end to end encryption (managed by the user)
+  - offer a free service that will remain free and ad free ( temporary.chat )
+- possible business/support offer:
+  - offer a permanent/non-free service with more storage ( permanent.chat )
+  - help people to roll out their own instance of this chat server with their own domain
 
 ### the roadmap (oh god!)
 
@@ -53,12 +56,12 @@ I wanted to abstract this totally from the user but it is not possible (see opti
 - FEATURE/refreshing div constantly is resource expensive, try to think of a better way
   - https://www.shanelynn.ie/asynchronous-updates-to-a-webpage-with-flask-and-socket-io/ (need to read this after I get some sleep)
 - BUG/cant select text because of constant div refresh
-- Icons to buttons (especially menu button) 
-- Each row in the conversation should be wrapped in an element (not using br) and styled
+- FEATURE/add .ico
+- FEATURE/Icons to buttons (especially menu button) 
+- FEATURE/Each row in the conversation should be wrapped in an element (not using br) and styled
 - FEATURE/Preview file before uploading
 - FEATURE/preview urls shared in the room
-- FEATURE/Ping a user
-- notifications on android/iphone (check if possible) 
+- FEATURE/Ping a user & notifications on android/iphone
 ##### APP:
 - fix request entity too large issue (nginx) think of a decent quota 
 - make a solution to use dynamic dns + let's encrypt for single room 

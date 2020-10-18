@@ -16,10 +16,12 @@ an ansible playbook to deploy a chat server on an ubuntu server.
 I wanted to abstract this totally from the user but it is not possible due to [let's encrypt rate limit](https://letsencrypt.org/docs/rate-limits/)
 - `wildcard` : run this mode if you want to run a multi room setup able to create more than 50 chatrooms per week (will use let's encrypt)
   - requires a fully qualified domain name e.g : example.com
-  - requires that you add a TXT entry in your dns records to verify the wildcard certificate ( the playbook will give you the info while running )
+  - requires an interaction during the deployment
+    - you will need to add a TXT entry in your dns records ( the playbook will give you this information while running )
 - `normal` : run this mode if you intend to create a single chatroom or less than 50 chatrooms per week (will use let's encrypt)
   - when used with multirooms:true
     - requires a fully qualified domain name e.g : example.com
+    - requires no interaction during deployment
   - when used with multirooms: false
     - you may be able to use a dynamic dns if it is in the [Mozilla Public Suffix List](https://github.com/publicsuffix/list/blob/master/public_suffix_list.dat) and let's encrypt support it  
 - `pki` : run this mode if you don't have a fully qualified domain 
@@ -28,10 +30,12 @@ I wanted to abstract this totally from the user but it is not possible due to [l
   - will create a helper webpage to help you download/install the certificate 
     - the fingerprint of the certificate will be displayed on the helper webpage
 
-## deployment modes :
-### deploy with a fully qualified domain name that you own with random rooms (like temporary.chat)
+## deployment examples :
+### deploy with a fully qualified domain name that you own in multirooms mode 
 ##### usage example :
 `FQDN=example.com;ansible-playbook -i ${FQDN},  -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=$FQDN" -e "tls_mode=wildcard" -e "le_mailaddress=myemail@example.com" deploy_chat.yaml`
+or
+`FQDN=example.com;ansible-playbook -i ${FQDN},  -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=$FQDN" -e "tls_mode=normal" -e "le_mailaddress=myemail@example.com" deploy_chat.yaml`
 ### deploy with a fully qualified domain name that you own (single room)
 ##### usage example : 
 `in developpement`
@@ -63,11 +67,12 @@ I wanted to abstract this totally from the user but it is not possible due to [l
 - FEATURE/preview urls shared in the room
 - FEATURE/Ping a user & notifications on android/iphone
 ##### APP:
+- create an http -> https redirect when ran in multirooms mode 
 - fix request entity too large issue (nginx) think of a decent quota 
 - make a solution to use dynamic dns + let's encrypt for single room 
 - create api for expert users that want to manage their encryption
 - support other OS (centos, openbsd to start with)
-##### BACKEND:
+##### FAR BACKEND:
 - system updates
 - hostname
 - etc

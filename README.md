@@ -1,6 +1,6 @@
 # deploy_chat.yaml
 ### Overview : 
-an ansible playbook to deploy a chat server on an ubuntu server.
+an ansible playbook to deploy a chat server on an ubuntu server (see CONTRIBUTING for the vision of the project & the road map).
 - works with or without a domain name
 - can create a single room or multiples (random) rooms 
 - you can create password protected rooms
@@ -48,16 +48,6 @@ or
 ##### usage example : 
 `IP=34.228.75.55;ansible-playbook -u ubuntu -i ${IP}, -e '{"have_fqdn":false}' -e '{"multirooms":false}' -e "my_fqdn=$IP" -e "tls_mode=pki" deploy_chat.yaml`
 
-### the (ambitious) goals
-
-- free/open source part:
-  - decentralize communications (less centralized systems!)
-  - offer the possibility for anyone to roll out their own instance of this chat server with their own domain or simply an ip
-  - offer the possibility for end to end encryption (managed by the user)
-  - offer a free service that will remain free and ad free ( temporary.chat )
-- possible business/support offer:
-  - offer a permanent/non-free service with more storage ( permanent.chat )
-  - help people to roll out their own instance of this chat server with their own domain
 
 ### the roadmap (oh god!)
 

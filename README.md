@@ -8,6 +8,8 @@ an ansible playbook to deploy a chat server on an ubuntu server.
 ### requirements : 
 - having ansible installed 
 - having an *empty* ubuntu server 20.04 LTS with ssh access as a target for the deployment (not responsible of damages if you run this on a server with stuff on it already)
+  - having a user name ubuntu on the server
+  - the user ubuntu must be allowed to run sudo for all commands without a password)
 - having port 22,80 and 443 open on the server firewall
 ### rooms options :
 - `multirooms:true` : will create a webpage where you can create random chatrooms (like temporary.chat)
@@ -38,9 +40,10 @@ I wanted to abstract this totally from the user but it is not possible due to [l
 or
 
 `FQDN=example.com;ansible-playbook -i ${FQDN},  -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=$FQDN" -e "tls_mode=normal" -e "le_mailaddress=myemail@example.com" deploy_chat.yaml`
-### deploy with a fully qualified domain name that you own (single room)
+### deploy with a fully qualified domain or subdomain name that you own (single room)
 ##### usage example : 
-`in developpement`
+`FQDN=chat.example.com;ansible-playbook -i ${FQDN}, -e '{"have_fqdn":true}' -e '{"multirooms":false}' -e "my_fqdn=$FQDN" -e "tls_mode=normal" -e "le_mailaddress=all@200013.net" deploy_chat.yaml`
+(go to https://chat.example.com/launcher) to create your room once the deployment is done
 ### deploy *without* a fully qualified domain name (single room accessible via ip)
 ##### usage example : 
 `IP=34.228.75.55;ansible-playbook -u ubuntu -i ${IP}, -e '{"have_fqdn":false}' -e '{"multirooms":false}' -e "my_fqdn=$IP" -e "tls_mode=pki" deploy_chat.yaml`
@@ -69,6 +72,8 @@ or
 - FEATURE/preview urls shared in the room
 - FEATURE/Ping a user & notifications on android/iphone
 ##### APP:
+- SECURITY/add [HSTS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security)
+- SECURITY/add [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 - create an http -> https redirect when ran in multirooms mode 
 - fix request entity too large issue (nginx) think of a decent quota 
 - make a solution to use dynamic dns + let's encrypt for single room 

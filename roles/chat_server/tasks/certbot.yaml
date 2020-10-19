@@ -92,6 +92,8 @@
     msg: 
     - "google dns reply:"
     - "{{ google_dns_answer.stdout }}"
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
 
 - name: Pause to allow dns validation to complete
   pause:
@@ -109,6 +111,8 @@
     msg: 
     - "google dns reply:"
     - "{{ google_dns_answer.stdout }}"
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
 
 - name: Pause to allow dns validation to complete
   pause:
@@ -138,6 +142,8 @@
     msg: 
     - "google dns reply:"
     - "{{ google_dns_answer.stdout }}"
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
 
 
 - name: cat the file that have dns info from lets encrypt and register the value 
@@ -172,6 +178,8 @@
     msg: 
     - "google dns reply:"
     - "{{ google_dns_answer.stdout }}"
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
 
 - name: Pause to allow dns validation to complete
   pause:
@@ -189,6 +197,8 @@
     msg: 
     - "google dns reply:"
     - "{{ google_dns_answer.stdout }}"
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")
 
 - name: Pause to allow dns validation to complete
   pause:
@@ -206,3 +216,5 @@
     msg: 
     - "google dns reply:"
     - "{{ google_dns_answer.stdout }}"
+  when: (have_fqdn == True) and
+        (tls_mode == "wildcard")

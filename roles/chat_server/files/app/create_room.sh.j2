@@ -70,6 +70,7 @@ chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/css/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/chat.html
+chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/tc.ico
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.txt
 
 #if room private, copy the password file
@@ -150,6 +151,7 @@ chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/css/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/chat.html
+chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/tc.ico
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.txt
 
 #if room private, copy the password file
@@ -167,12 +169,13 @@ systemctl reload nginx
 {% endif %}
 
 
-#############################
-#####  MULTIROOM FALSE  #####
-#############################
+################################
+#####  MULTIROOM FALSE PKI #####
+################################
 
 
 {% if multirooms == False %}
+{% if tls_mode == "pki" %}
 
 #create ngnix config for public room
 if [[ "$ROOM_TYPE" == "public" ]];then
@@ -291,6 +294,7 @@ chmod 0750 /var/www/${DOMAIN}/app/rooms/files
 chmod 0440 /var/www/${DOMAIN}/app/rooms/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/css/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/chat.html
+chmod 0440 /var/www/${DOMAIN}/app/rooms/tc.ico
 chmod 0640 /var/www/${DOMAIN}/app/rooms/conversation.txt
 ln -s /var/www/${DOMAIN}/app/rooms/css /var/www/${DOMAIN}/html/css
 ln -s /var/www/${DOMAIN}/app/rooms/js /var/www/${DOMAIN}/html/js
@@ -310,4 +314,154 @@ fi
 ln -s /etc/nginx/sites-available/${DOMAIN} /etc/nginx/sites-enabled/${DOMAIN}
 systemctl reload nginx
 
+{% endif %}
+{% endif %}
+
+
+###################################
+#####  MULTIROOM FALSE NORMAL #####
+###################################
+
+
+{% if multirooms == False %}
+{% if tls_mode == "normal" %}
+
+#create ngnix config for public room
+if [[ "$ROOM_TYPE" == "public" ]];then
+cat <<EOF > /etc/nginx/sites-available/${DOMAIN}
+server {
+        listen 443 ssl;
+        root /var/www/${DOMAIN}/html;
+        index index.html;
+        server_name ${DOMAIN};
+        ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+        add_header Access-Control-Allow-Origin *;
+        location / {
+            index chat.html;
+        }
+        location /launcher {
+                index launcher.html;
+        }
+        location /app/create {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/post {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/quit {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/destroy {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/upload {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        
+}
+EOF
+fi
+
+#create ngnix config for private room
+if [[ "$ROOM_TYPE" == "private" ]];then
+
+cat <<EOF > /etc/nginx/sites-available/${DOMAIN}
+server {
+        listen 443 ssl;
+        root /var/www/${DOMAIN}/html;
+        index index.html;
+        server_name ${DOMAIN};
+        ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+        add_header Access-Control-Allow-Origin *;
+        location / {
+        index chat.html;
+        auth_basic "Private Chatroom";
+        auth_basic_user_file /var/www/${DOMAIN}/html/.htpasswd;
+        }
+        location /launcher {
+                index launcher.html;
+        }
+        location /app/create {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/post {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/quit {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/destroy {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/upload {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        
+}
+EOF
+fi
+
+
+
+#copy templates to room
+cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/
+touch /var/www/${DOMAIN}/app/rooms/conversation.txt
+mkdir /var/www/${DOMAIN}/app/rooms/files
+chmod 0640 /var/www/${DOMAIN}/app/rooms/conversation.txt
+chown -R app:www-data /var/www/${DOMAIN}/app/rooms/
+chmod 0750 /var/www/${DOMAIN}/app/rooms/files
+chmod 0440 /var/www/${DOMAIN}/app/rooms/js/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/css/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/chat.html
+chmod 0440 /var/www/${DOMAIN}/app/rooms/tc.ico
+chmod 0640 /var/www/${DOMAIN}/app/rooms/conversation.txt
+ln -s /var/www/${DOMAIN}/app/rooms/css /var/www/${DOMAIN}/html/css
+ln -s /var/www/${DOMAIN}/app/rooms/js /var/www/${DOMAIN}/html/js
+ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/files
+ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
+ln -s /var/www/${DOMAIN}/app/rooms/conversation.txt /var/www/${DOMAIN}/html/conversation.txt
+
+
+#if room private, copy the password file
+if [[ "$ROOM_TYPE" == "private" ]];then
+mv /var/www/${DOMAIN}/app/passwds/htpasswd /var/www/${DOMAIN}/app/rooms/.htpasswd
+ln -s /var/www/${DOMAIN}/app/rooms/.htpasswd /var/www/${DOMAIN}/html/.htpasswd
+fi
+
+
+#symlink nginx sites-available to sites-enabled & restart nginx
+ln -s /etc/nginx/sites-available/${DOMAIN} /etc/nginx/sites-enabled/${DOMAIN}
+systemctl reload nginx
+
+{% endif %}
 {% endif %}

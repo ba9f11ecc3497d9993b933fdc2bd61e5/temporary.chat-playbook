@@ -22,6 +22,17 @@
     group: www-data
     mode: 0400
 
+- name : add icon
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/templates/tc.ico
+    dest: /home/app/templates/
+    owner: www-data
+    group: www-data
+    mode: 0400
+
 - name : copy css 
   remote_user: ubuntu
   become: yes

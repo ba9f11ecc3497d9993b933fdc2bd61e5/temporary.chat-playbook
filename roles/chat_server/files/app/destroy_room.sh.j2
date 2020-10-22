@@ -7,14 +7,14 @@ DOMAIN=$3
 
 {% if multirooms == True %}
 rm -vrf /var/www/${DOMAIN}/app/rooms/${UUID}/*
-echo "<html><body><h1><div class="conversation" id="conversation">$USERNAME destroyed this room</div></h1></body></html>" > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.txt
+echo "<html><body><h1><div class="conversation" id="conversation">$USERNAME destroyed this room</div></h1></body></html>" > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
 touch /var/www/${DOMAIN}/app/rooms/${UUID}/destroyed
 {% endif %}
 {% if multirooms == False %}
 rm -vrf /var/www/${DOMAIN}/app/rooms/*
 rm -vrf /var/www/${DOMAIN}/app/rooms/.htpasswd
-echo "<html><body><h1><div class="conversation" id="conversation">$USERNAME destroyed this room</div></h1></body></html>" > /var/www/${DOMAIN}/app/rooms/conversation.txt
+echo "<html><body><h1><div class="conversation" id="conversation">$USERNAME destroyed this room</div></h1></body></html>" > /var/www/${DOMAIN}/app/rooms/conversation.html
 sleep 10
-rm -vrf /var/www/${DOMAIN}/app/rooms/conversation.txt
+rm -vrf /var/www/${DOMAIN}/app/rooms/conversation.html
 find /var/www/${DOMAIN}/html -type l -exec rm {} \;
 {% endif %}

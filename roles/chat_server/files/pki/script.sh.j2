@@ -1,0 +1,9 @@
+#!/bin/bash
+
+openssl genrsa -out ca.key 4096
+openssl req -x509 -new -nodes -key ca.key -sha256 -days 10000 -out ca.pem -subj "/C=CO/ST=Somewhere/L=Somewhere/O={{ my_fqdn }}/OU={{ my_fqdn }}/CN={{ my_fqdn }}"
+openssl genrsa -out cert.key 4096
+openssl req -new -key cert.key -out cert.csr -subj "/C=CO/ST=Somewhere/L=Somewhere/O={{ my_fqdn }}/OU={{ my_fqdn }}/CN={{ my_fqdn }}"
+openssl x509 -req -in cert.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out cert.pem -days 3000 -sha256
+shred ca.key
+rm ca.key

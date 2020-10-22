@@ -3,12 +3,24 @@ server {
         root /var/www/{{ my_fqdn }}/html;
         index index.html;
         server_name {{ my_fqdn }};
-	ssl_certificate /etc/letsencrypt/live/{{ my_fqdn }}/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/{{ my_fqdn }}/privkey.pem;
+{% if tls_mode == "pki" %}
+        ssl_certificate /etc/PKI/cert.pem;
+        ssl_certificate_key /etc/PKI/cert.key;
+{% else %}
+        ssl_certificate /etc/letsencrypt/live/{{ my_fqdn }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ my_fqdn }}/privkey.pem;
+{% endif %}
 	add_header Access-Control-Allow-Origin *;
+{% if multirooms == True %}
         location / {
                 try_files $uri $uri/ =404;
         }
+{% endif %}
+{% if multirooms == False %}
+        location /launcher {
+                index launcher.html;
+        }
+{% endif %}
 	location /app/create {
 		include uwsgi_params;
 		add_header Access-Control-Allow-Origin *;

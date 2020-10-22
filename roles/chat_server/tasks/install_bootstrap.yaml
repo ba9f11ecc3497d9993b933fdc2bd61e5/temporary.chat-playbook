@@ -10,6 +10,7 @@
     owner: root
     group: root
     mode: 0444
+  when: multirooms == True 
 
 - name: Extract bootstrap.tgz into /var/www/[my_fqdn]/html/
   become: yes
@@ -21,6 +22,7 @@
     group: www-data
     mode: 0400
     remote_src: yes
+  when: multirooms == True 
  
 - name: delete bootstrap installation .zip file
   become: yes
@@ -28,6 +30,7 @@
   file:
     path: "{{ '/var/www/' + my_fqdn + '/html/bootstrap-4.0.0-dist.zip' }}"
     state: absent
+  when: multirooms == True 
 
 - name: change css folder to the right permissions
   become: yes
@@ -37,6 +40,7 @@
     owner: www-data
     group: www-data
     mode: 0500
+  when: multirooms == True 
 
 - name: change js folder to the right permissions
   become: yes
@@ -46,4 +50,67 @@
     owner: www-data
     group: www-data
     mode: 0500
+  when: multirooms == True 
 
+- name: create /var/www/[my_fqdn]/html/launcher
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html/launcher' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0500
+  when: multirooms == False
+
+- name: Upload bootstrap
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/html/bootstrap-4.0.0-dist.zip
+    dest: "{{ '/var/www/' + my_fqdn + '/html/launcher/bootstrap-4.0.0-dist.zip' }}"
+    owner: root
+    group: root
+    mode: 0444
+  when: multirooms == False 
+
+- name: Extract bootstrap.tgz into /var/www/[my_fqdn]/html/launcher
+  become: yes
+  become_method: sudo
+  unarchive:
+    src: "{{ '/var/www/' + my_fqdn + '/html/launcher/bootstrap-4.0.0-dist.zip' }}"
+    dest: "{{ '/var/www/' + my_fqdn + '/html/launcher' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+    remote_src: yes
+  when: multirooms == False 
+ 
+- name: delete bootstrap installation .zip file
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html/launcher/bootstrap-4.0.0-dist.zip' }}"
+    state: absent
+  when: multirooms == False 
+
+- name: change css folder to the right permissions
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html/launcher/css' }}"
+    owner: www-data
+    group: www-data
+    mode: 0500
+  when: multirooms == False 
+
+- name: change js folder to the right permissions
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html/launcher/js' }}"
+    owner: www-data
+    group: www-data
+    mode: 0500
+  when: multirooms == False 

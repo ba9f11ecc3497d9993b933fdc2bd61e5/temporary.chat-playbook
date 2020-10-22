@@ -1,0 +1,191 @@
+---
+
+- name: create /var/www/[my_fqdn]/
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0755
+
+- name: create /var/www/[my_fqdn]/html
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0500
+
+- name: copy icon
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy: 
+    src: roles/chat_server/files/html/tc.ico
+    dest: "{{ '/var/www/' + my_fqdn + '/html/tc.ico' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == True
+
+- name: add extra html files if domain is temporary.chat
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy: 
+    src: roles/chat_server/files/html
+    dest: "{{ '/var/www/' + my_fqdn + '/' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: my_fqdn == "temporary.chat"
+
+- name: create main website from template
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/html/index.html.j2
+    dest: "{{ '/var/www/' + my_fqdn + '/html/index.html' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == True
+
+- name: create /var/www/[my_fqdn]/html/launcher
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html/launcher' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0500
+  when: multirooms == False
+
+- name: create main website from template as a launcher if single room
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/html/index.html.j2
+    dest: "{{ '/var/www/' + my_fqdn + '/html/launcher/launcher.html' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == False
+
+- name: create /var/www/[my_fqdn]/html/css
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html/css' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0500
+  when: multirooms == True
+
+- name: create /var/www/[my_fqdn]/html/js
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html/js' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0500
+  when: multirooms == True
+
+- name: create /var/www/[my_fqdn]/html/launcher/css
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html/launcher/css' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0500
+  when: multirooms == False 
+
+- name: copy css for the spinner (multirooms mode)
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy: 
+    src: roles/chat_server/files/html/spinner.css
+    dest: "{{ '/var/www/' + my_fqdn + '/html/css/spinner.css' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == True
+
+- name: copy css for the spinner (single room mode)
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy: 
+    src: roles/chat_server/files/html/spinner.css
+    dest: "{{ '/var/www/' + my_fqdn + '/html/launcher/css/spinner.css' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == False
+
+- name: copy jquery html root
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy: 
+    src: roles/chat_server/files/html/jquery.min.js
+    dest: "{{ '/var/www/' + my_fqdn + '/html/jquery.min.js' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == False
+
+- name: copy jquery html root in js folder
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy: 
+    src: roles/chat_server/files/html/jquery.min.js
+    dest: "{{ '/var/www/' + my_fqdn + '/html/js/jquery.min.js' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == True
+
+- name: copy single chat room js
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/templates/js
+    dest: "{{ '/var/www/' + my_fqdn + '/html/launcher' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == False 
+
+- name: copy icon (launcher)
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy: 
+    src: roles/chat_server/files/html/tc.ico
+    dest: "{{ '/var/www/' + my_fqdn + '/html/launcher' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == False

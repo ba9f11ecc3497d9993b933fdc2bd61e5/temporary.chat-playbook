@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		<meta http-equiv='cache-control' content="no-cache, no-store, must-revalidate, max-age=0" />
+		<meta http-equiv='cache-control' content="post-check=0, pre-check=0, false" />
+		<meta http-equiv='pragma' content='no-cache' />
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="shortcut icon" type="image/ico" href="/200013.ico" />
+		<link rel="shortcut icon" type="image/ico" href="tc.ico" />
 		<link href="css/main.css" rel="stylesheet" />
 		<script type="text/javascript" src="js/jquery.min.js"></script>
 		<title>
@@ -56,8 +59,13 @@
 				</div>
 			</div>
 		</div>
+
 		<script>
+
+			var local_version = 0;
+
 			const d = document;
+
 			var user_name = document.cookie;
 
 			if (user_name === "") {
@@ -123,20 +131,30 @@
 			}
 
 			function scroll_down() {
+				var conv = "https://{{ my_fqdn }}/conversation.html";
 				var textarea = document.getElementById('conversation');
 				textarea.scrollTop = textarea.scrollHeight;
 			}
 
-                        function loadForever(selector, uriToLoad, timeout) {
-                          $(selector).load(uriToLoad, function() {
-                          scroll_down();
-                          setTimeout(loadForever, timeout, selector, uriToLoad, timeout);
-                          });
+                        function check_version() {
+                                $.get("version.txt", function(remote_version, status){
+                                if (remote_version > local_version)
+                                        //alert("DIFFERENT VERSION remote_version : " + remote_version + "|| local_version :" + local_version );
+                                        $('#conversation').load('conversation.html');
+                                        local_version = remote_version
+                                        scroll_down();
+                                });
+                                setTimeout(pong, 750);
                         }
- 
-                        $(document).ready(function() {
-                          loadForever('#conversation', 'conversation.txt', 500);
-                        });
+
+                        function pong() {
+                                setTimeout(check_version, 375);
+                        }
+
+
+
+                        pong();
+
 
 			function toggleSidebar() { document.body.classList.toggle('sidebar-open'); }
 		</script>

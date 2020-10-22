@@ -108,3 +108,31 @@ an ansible playbook to destroy an ec2 instance based on name tag.
 ##### usage example :
 `ansible-playbook -e "aws_region=us-east-1 aws_tag=temporary.chat" destroy_aws.yaml`
 
+
+# the (ambitious) goals
+
+- decentralize communications (less facebook chats!)
+- offer a free service that will remain free and ad free ( temporary.chat )
+- offer a paying service with more options/storage/features ( permanent.chat )
+- offer the possibility to anyone to roll out their own instance of "temporary.chat" for free (with a different domain or simply an ip?)
+- create an api expert mode with end to end encryption managed by the user
+
+# the roadmap (oh god!)
+
+##### UI:
+ - FEATURE/refreshing div constantly is resource expensive, try to think of a better way
+   - https://www.shanelynn.ie/asynchronous-updates-to-a-webpage-with-flask-and-socket-io/ (need to read this after I get some sleep)
+ - Icons to buttons (especially menu button) 
+ - Each row in the conversation should be wrapped in an element (not using br) and styled
+ - Preview file before uploading
+##### APP:
+- FEATURE/create a self signed certificate when the server is only accessible via ip (+ put the the CA cert in the html page port 80)
+- create a real let's encrypt module if domain have a fqdn || a self signed certificate when the server is only accessible via ip (+ put the fingerprint the CA in the html page port 80?)
+- create api for expert users that want to manage their encryption
+- make the random chatrooms optional? (only one room (for people who may want it))
+- add database backend for text (not sure if this fits the model) 
+- support other OS (centos, openbsd to start with)
+- make a hackish solution to use dynamic dns + let's encrypt? 
+- preview urls shared in the room
+- fix javascript upload on firefox mobile
+- notifications on android/iphone? is it even possible for website? 

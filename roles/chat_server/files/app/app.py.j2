@@ -85,10 +85,12 @@ def post():
     print(client_ip + ':' + client_message)
     room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
-    path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.txt'
+    path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
+    path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/version.txt'
 {% endif %}
 {% if multirooms == False %}
-    path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/conversation.txt'
+    path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
+    path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/version.txt'
 {% endif %}
     client_message = html.escape(client_message)
     user_name = html.escape(user_name)
@@ -96,6 +98,13 @@ def post():
     file = open(path_to_room, "a")
     file.write(formatted_message)
     file.close
+    version_file = open(path_to_version, "r")
+    version = version_file.read()
+    version_file.close
+    newversion = int(version) + 1
+    version_file = open(path_to_version, "w")
+    version_file.write(str(newversion))
+    version_file.close
     res = make_response("OK")
     return res
 
@@ -107,10 +116,10 @@ def quit():
   referer = request.referrer
   room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
-  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.txt'
+  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
 {% endif %}
 {% if multirooms == False %}
-  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/conversation.txt'
+  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
 {% endif %}
   formatted_message = '=> ' + user_name + ' has quit the room' + '\n'
   print(formatted_message)
@@ -143,11 +152,13 @@ def upload():
   referer = request.referrer
   room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
-  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.txt'
+  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
+  path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/version.txt'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_data.filename
 {% endif %}
 {% if multirooms == False %}
-  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/conversation.txt'
+  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
+  path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/version.txt'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/files/' + file_data.filename
 {% endif %}
 {% if multirooms == True %}
@@ -164,5 +175,19 @@ def upload():
   file = open(path_to_room, "a")
   file.write(formatted_message)
   file.close
+  try:
+    version_file = open(path_to_version, "r")
+    version = version_file.read()
+  except IOError:
+    version_file = open(path_to_version, "w+")
+    version_file.write("1")
+    version_file.close
+    version_file = open(path_to_version, "r")
+    version = version_file.read()
+    version_file.close
+  version_file = open(path_to_version, "w")
+  newversion = int(version) + 1
+  version_file.write(str(newversion))
+  version_file.close
   res = make_response("OK")
   return res

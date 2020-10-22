@@ -15,9 +15,6 @@
 ### the roadmap (oh god!)
 
 ##### UI:
-- IMPROVEMENT/refreshing div constantly is resource expensive, try to think of a better way
-  - https://www.shanelynn.ie/asynchronous-updates-to-a-webpage-with-flask-and-socket-io/ (need to read this after I get some sleep)
-- IMPROVEMENT/cant select text because of constant div refresh
 - FEATURE/Icons to buttons (especially menu button) 
 - FEATURE/Each row in the conversation should be wrapped in an element (not using br) and styled
 - FEATURE/Preview file before uploading

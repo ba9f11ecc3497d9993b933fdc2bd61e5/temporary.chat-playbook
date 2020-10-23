@@ -15,7 +15,6 @@
 ### the roadmap (oh god!)
 
 ##### UI:
-- FEATURE/Add content refresh on post & uplaod to get a snapiness feeling
 - FEATURE/Icons to buttons (especially menu button) 
 - FEATURE/Each row in the conversation should be wrapped in an element (not using br) and styled
 - FEATURE/Preview file before uploading

@@ -97,6 +97,8 @@
 				formData.append("user_name", user_name);
 				formData.append("message", message);
 				fetch(url, {body:formData,method:"post"});
+				$('#conversation').load('conversation.html');
+				scroll_down();
 			}
 
 			async function user_quit() {
@@ -128,6 +130,8 @@
 				formData.append("user_name", user_name);
 				formData.append("file", file);
 				fetch(url, {body:formData,method:"post"});
+				$('#conversation').load('conversation.html');
+				scroll_down();
 			}
 
 			function scroll_down() {

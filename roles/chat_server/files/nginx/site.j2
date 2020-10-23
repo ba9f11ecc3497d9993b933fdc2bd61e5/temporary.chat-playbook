@@ -1,3 +1,11 @@
+{% if tls_mode != "pki" %}
+server {
+	listen 80;
+	server_name {{ my_fqdn }};
+	return 301 https://{{ my_fqdn }}$request_uri;
+}
+{% endif %}
+
 server {
         listen 443 ssl;
         root /var/www/{{ my_fqdn }}/html;
@@ -11,6 +19,7 @@ server {
         ssl_certificate_key /etc/letsencrypt/live/{{ my_fqdn }}/privkey.pem;
 {% endif %}
 	add_header Access-Control-Allow-Origin *;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 {% if multirooms == True %}
         location / {
                 try_files $uri $uri/ =404;

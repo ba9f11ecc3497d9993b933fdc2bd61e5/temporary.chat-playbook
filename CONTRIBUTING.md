@@ -15,6 +15,7 @@
 ### the roadmap (oh god!)
 
 ##### UI:
+- FEATURE/Add content refresh on post & uplaod to get a snapiness feeling
 - FEATURE/Icons to buttons (especially menu button) 
 - FEATURE/Each row in the conversation should be wrapped in an element (not using br) and styled
 - FEATURE/Preview file before uploading
@@ -23,11 +24,9 @@
 - FEATURE/add timestamp on messages
 - FEATURE/copy url to the clipboard & invite people on room creation
 ##### APP:
-- SECURITY/add [HSTS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security)
 - SECURITY/add [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
-- SECURITY/create an http -> https redirect when ran in multirooms mode 
 - IMPROVEMENT/fix request entity too large issue (nginx) think of a decent quota 
-- FEATURE/make a solution to use dynamic dns + let's encrypt for single room 
+- FEATURE/make a solution to use dynamic dns + let's encrypt for single room (does this already work? need to test) 
 - FEATURE/create api for expert users that want to manage their encryption
 - FEATURE/support other OS (centos, openbsd to start with)
 ##### FAR BACKEND:

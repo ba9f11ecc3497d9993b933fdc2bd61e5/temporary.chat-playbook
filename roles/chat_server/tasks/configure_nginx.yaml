@@ -34,3 +34,29 @@
     group: root
     state: link
 
+- name: delete ngnix default webpage
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /var/www/html/index.nginx-debian.html
+    state: absent
+  when: tls_mode != "pki"
+
+- name: delete ngnix site-available default 
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/nginx/sites-available/default
+    state: absent
+  when: tls_mode != "pki"
+
+- name: delete ngnix site-enabled default 
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  when: tls_mode != "pki"

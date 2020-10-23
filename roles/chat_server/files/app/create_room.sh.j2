@@ -29,6 +29,7 @@ cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
     server_name ${UUID}.${DOMAIN};
     ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
     location /
         {
         index chat.html;
@@ -48,6 +49,7 @@ cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
     server_name ${UUID}.${DOMAIN};
     ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
     location /
         {
         index chat.html;
@@ -112,6 +114,7 @@ cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
     server_name ${UUID}.${DOMAIN};
     ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
     location /
         {
         index chat.html;
@@ -131,6 +134,7 @@ cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
     server_name ${UUID}.${DOMAIN};
     ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
     location /
         {
         index chat.html;
@@ -191,6 +195,7 @@ server {
         ssl_certificate /etc/PKI/cert.pem;
         ssl_certificate_key /etc/PKI/cert.key;
         add_header Access-Control-Allow-Origin *;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
         location / {
             index chat.html;
         }
@@ -243,6 +248,7 @@ server {
         ssl_certificate /etc/PKI/cert.pem;
         ssl_certificate_key /etc/PKI/cert.key;
         add_header Access-Control-Allow-Origin *;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
         location / {
         index chat.html;
         auth_basic "Private Chatroom";
@@ -342,6 +348,7 @@ server {
         ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
         add_header Access-Control-Allow-Origin *;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
         location / {
             index chat.html;
         }
@@ -394,6 +401,7 @@ server {
         ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
         add_header Access-Control-Allow-Origin *;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
         location / {
         index chat.html;
         auth_basic "Private Chatroom";

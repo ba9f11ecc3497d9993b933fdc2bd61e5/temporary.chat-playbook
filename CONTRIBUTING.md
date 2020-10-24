@@ -24,6 +24,8 @@
 - FEATURE/copy url to the clipboard & invite people on room creation
 ##### APP:
 - SECURITY/add [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+- BUG/room destroy dont parse arguments correctly if username have a space in it. 
+- IMPROVEMENT/on room destroy : display message, update version (countdown?)
 - IMPROVEMENT/fix request entity too large issue (nginx) think of a decent quota 
 - FEATURE/make a solution to use dynamic dns + let's encrypt for single room (does this already work? need to test) 
 - FEATURE/create api for expert users that want to manage their encryption

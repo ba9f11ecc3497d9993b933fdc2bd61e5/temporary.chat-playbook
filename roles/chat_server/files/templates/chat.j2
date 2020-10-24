@@ -97,6 +97,8 @@
 				formData.append("user_name", user_name);
 				formData.append("message", message);
 				fetch(url, {body:formData,method:"post"});
+				$('#conversation').load('conversation.html');
+				scroll_down();
 			}
 
 			async function user_quit() {
@@ -128,6 +130,8 @@
 				formData.append("user_name", user_name);
 				formData.append("file", file);
 				fetch(url, {body:formData,method:"post"});
+				$('#conversation').load('conversation.html');
+				scroll_down();
 			}
 
 			function scroll_down() {
@@ -137,7 +141,7 @@
 			}
 
                         function check_version() {
-                                $.get("version.txt", function(remote_version, status){
+				$.get("version.txt?v=" + Math.random(), function(remote_version, status){
                                 if (remote_version > local_version)
                                         //alert("DIFFERENT VERSION remote_version : " + remote_version + "|| local_version :" + local_version );
                                         $('#conversation').load('conversation.html');

@@ -65,8 +65,10 @@ fi
 #copy templates to room
 mkdir -p /var/www/${DOMAIN}/app/rooms/${UUID}/files
 cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/${UUID}/
-touch /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/html_top
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/messages
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/html_bottom
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/${UUID}
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
@@ -151,8 +153,10 @@ fi
 #copy templates to room
 mkdir -p /var/www/${DOMAIN}/app/rooms/${UUID}/files
 cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/${UUID}/
-touch /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/html_top
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/messages
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/html_bottom
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/${UUID}
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
@@ -297,9 +301,11 @@ fi
 
 #copy templates to room
 cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/
-touch /var/www/${DOMAIN}/app/rooms/conversation.html
 mkdir /var/www/${DOMAIN}/app/rooms/files
 chmod 0640 /var/www/${DOMAIN}/app/rooms/conversation.html
+chmod 0640 /var/www/${DOMAIN}/app/rooms/html_top
+chmod 0640 /var/www/${DOMAIN}/app/rooms/messages
+chmod 0640 /var/www/${DOMAIN}/app/rooms/html_bottom
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/
 chmod 0750 /var/www/${DOMAIN}/app/rooms/files
 chmod 0440 /var/www/${DOMAIN}/app/rooms/js/*
@@ -316,6 +322,9 @@ ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/files
 ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
 ln -s /var/www/${DOMAIN}/app/rooms/version.txt /var/www/${DOMAIN}/html/version.txt
 ln -s /var/www/${DOMAIN}/app/rooms/conversation.html /var/www/${DOMAIN}/html/conversation.html
+ln -s /var/www/${DOMAIN}/app/rooms/html_top /var/www/${DOMAIN}/html/html_top
+ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
+ln -s /var/www/${DOMAIN}/app/rooms/html_bottom /var/www/${DOMAIN}/html/html_bottom
 
 
 #if room private, copy the password file
@@ -452,9 +461,10 @@ fi
 
 #copy templates to room
 cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/
-touch /var/www/${DOMAIN}/app/rooms/conversation.html
 mkdir /var/www/${DOMAIN}/app/rooms/files
 chmod 0640 /var/www/${DOMAIN}/app/rooms/conversation.html
+chmod 0640 /var/www/${DOMAIN}/app/rooms/html_top
+chmod 0640 /var/www/${DOMAIN}/app/rooms/html_bottom
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/
 chmod 0750 /var/www/${DOMAIN}/app/rooms/files
 chmod 0440 /var/www/${DOMAIN}/app/rooms/js/*
@@ -471,6 +481,9 @@ ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/files
 ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
 ln -s /var/www/${DOMAIN}/app/rooms/version.txt /var/www/${DOMAIN}/html/version.txt
 ln -s /var/www/${DOMAIN}/app/rooms/conversation.html /var/www/${DOMAIN}/html/conversation.html
+ln -s /var/www/${DOMAIN}/app/rooms/html_top /var/www/${DOMAIN}/html/html_top
+ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
+ln -s /var/www/${DOMAIN}/app/rooms/html_bottom /var/www/${DOMAIN}/html/html_bottom
 
 
 #if room private, copy the password file

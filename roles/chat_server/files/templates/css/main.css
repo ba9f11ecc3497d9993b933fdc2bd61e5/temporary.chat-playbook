@@ -224,7 +224,7 @@ button:hover,
 .sidebar-actions .btn-close_menu {
         background: url('../icons/close_menu.png') no-repeat left;
 }
-.sidebar-actions .btn-close:hover {
+.sidebar-actions .btn-close_menu:hover {
         color: #777;
         background: url('../icons/close_menu.png') no-repeat left;
 }

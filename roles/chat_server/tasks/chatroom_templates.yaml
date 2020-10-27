@@ -66,3 +66,14 @@
     owner: www-data
     group: www-data
     mode: 0400
+
+- name : copy icons
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/templates/icons
+    dest: /home/app/templates/
+    owner: www-data
+    group: www-data
+    mode: 0400

@@ -15,9 +15,14 @@
 ### the roadmap (oh god!)
 
 ##### UI:
+- FIX/formatting when user leave a room
+- FIX/wrap over 30 char in messages
+- FIX/make the talk bubbles smaller in height
+- FIX/stop the auto scroll down when user scroll up (no idea how to do this)
 - FEATURE/detect url and link them
 - FEATURE/Preview file before uploading
-- FEATURE/preview url? & pictures shared in the room
+- FEATURE/preview pictures shared in the room
+- FEATURE/preview url 
 - FEATURE/Ping a user & Browser notifications
 - FEATURE/add timestamp on messages
 - FEATURE/copy url to the clipboard & invite people on room creation

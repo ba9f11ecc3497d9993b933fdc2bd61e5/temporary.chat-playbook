@@ -109,6 +109,7 @@ button:hover,
 	transition: transform .2s;
 }
 .openbtn {
+	background: url('../icons/menu.png') center;
 	position: absolute;
 	top: 1em;
 	right: 100%;

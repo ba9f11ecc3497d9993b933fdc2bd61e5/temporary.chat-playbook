@@ -1,14 +1,18 @@
 <html>
 <head>
+  <meta http-equiv='cache-control' content="no-cache, no-store, must-revalidate, max-age=0" />
+  <meta http-equiv='cache-control' content="post-check=0, pre-check=0, false" />
+  <meta http-equiv='pragma' content='no-cache' />
 <style>
 html, body {
+  background: #A9A9A9;
   color: #333;
   font-size: 16px;
   line-height: 20px;
 }
 
 .speech {
-  background: #efefef;
+  background: #b3ccff;
   border: 1px solid #a7a7a7;
   border-radius: 4px;
   box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);

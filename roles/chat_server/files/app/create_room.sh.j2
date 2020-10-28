@@ -79,6 +79,12 @@ chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/chat.html
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/tc.ico
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+CONV_LENGHT=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html | wc -l)
+HTML_BODY=$(($CONV_LENGHT-2))
+sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room ${UUID} on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html > /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
+cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+rm /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
+echo 2 > /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
 
 #if room private, copy the password file
 if [[ "$ROOM_TYPE" == "private" ]];then
@@ -166,6 +172,12 @@ chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/icons/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/chat.html
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/tc.ico
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+CONV_LENGHT=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html | wc -l)
+HTML_BODY=$(($CONV_LENGHT-2))
+sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room ${UUID} on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html > /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
+cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+rm cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
+echo 2 > /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
 
 #if room private, copy the password file
 if [[ "$ROOM_TYPE" == "private" ]];then
@@ -325,6 +337,12 @@ ln -s /var/www/${DOMAIN}/app/rooms/conversation.html /var/www/${DOMAIN}/html/con
 ln -s /var/www/${DOMAIN}/app/rooms/html_top /var/www/${DOMAIN}/html/html_top
 ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
 ln -s /var/www/${DOMAIN}/app/rooms/html_bottom /var/www/${DOMAIN}/html/html_bottom
+CONV_LENGHT=$(cat /var/www/${DOMAIN}/app/rooms/conversation.html | wc -l)
+HTML_BODY=$(($CONV_LENGHT-2))
+sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/conversation.html > /var/www/${DOMAIN}/app/rooms/temp.html
+cat /var/www/${DOMAIN}/app/rooms/temp.html > /var/www/${DOMAIN}/app/rooms/conversation.html
+rm /var/www/${DOMAIN}/app/rooms/temp.html
+echo 2 > /var/www/${DOMAIN}/app/rooms/version.txt
 
 
 #if room private, copy the password file
@@ -462,9 +480,6 @@ fi
 #copy templates to room
 cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/
 mkdir /var/www/${DOMAIN}/app/rooms/files
-chmod 0640 /var/www/${DOMAIN}/app/rooms/conversation.html
-chmod 0640 /var/www/${DOMAIN}/app/rooms/html_top
-chmod 0640 /var/www/${DOMAIN}/app/rooms/html_bottom
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/
 chmod 0750 /var/www/${DOMAIN}/app/rooms/files
 chmod 0440 /var/www/${DOMAIN}/app/rooms/js/*
@@ -473,6 +488,9 @@ chmod 0440 /var/www/${DOMAIN}/app/rooms/icons/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/chat.html
 chmod 0440 /var/www/${DOMAIN}/app/rooms/tc.ico
 chmod 0640 /var/www/${DOMAIN}/app/rooms/conversation.html
+chmod 0640 /var/www/${DOMAIN}/app/rooms/html_top
+chmod 0640 /var/www/${DOMAIN}/app/rooms/messages
+chmod 0640 /var/www/${DOMAIN}/app/rooms/html_bottom
 chmod 0640 /var/www/${DOMAIN}/app/rooms/version.txt
 ln -s /var/www/${DOMAIN}/app/rooms/css /var/www/${DOMAIN}/html/css
 ln -s /var/www/${DOMAIN}/app/rooms/icons /var/www/${DOMAIN}/html/icons
@@ -484,6 +502,12 @@ ln -s /var/www/${DOMAIN}/app/rooms/conversation.html /var/www/${DOMAIN}/html/con
 ln -s /var/www/${DOMAIN}/app/rooms/html_top /var/www/${DOMAIN}/html/html_top
 ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
 ln -s /var/www/${DOMAIN}/app/rooms/html_bottom /var/www/${DOMAIN}/html/html_bottom
+CONV_LENGHT=$(cat /var/www/${DOMAIN}/app/rooms/conversation.html | wc -l)
+HTML_BODY=$(($CONV_LENGHT-2))
+sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/conversation.html > /var/www/${DOMAIN}/app/rooms/temp.html
+cat /var/www/${DOMAIN}/app/rooms/temp.html > /var/www/${DOMAIN}/app/rooms/conversation.html
+rm /var/www/${DOMAIN}/app/rooms/temp.html
+echo 2 > /var/www/${DOMAIN}/app/rooms/version.txt
 
 
 #if room private, copy the password file

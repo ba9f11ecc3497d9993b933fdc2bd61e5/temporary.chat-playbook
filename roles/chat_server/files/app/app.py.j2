@@ -104,12 +104,19 @@ def post():
     messages = open(path_to_messages, "a")
     messages.write(formatted_message)
     messages.close
+    htmltop = open(path_to_htmltop, "r")
     messages = open(path_to_messages, "r")
+    htmlbottom = open(path_to_htmlbottom, "r")
+    htmltop_content = htmltop.read()
+    messages_content = messages.read()
+    htmlbottom_content = htmlbottom.read()
     temp_conversation = ""
-    temp_conversation = temp_conversation + path_to_htmltop
-    temp_conversation = temp_conversation + messages
-    temp_conversation = temp_conversation + path_to_htmlbottom
+    temp_conversation = temp_conversation + htmltop_content 
+    temp_conversation = temp_conversation + messages_content
+    temp_conversation = temp_conversation + htmlbottom_content
+    htmltop.close
     messages.close
+    htmlbottom.close
     conversation = open(path_to_conversation, "w+")
     conversation.write(temp_conversation)
     conversation.close
@@ -196,12 +203,19 @@ def upload():
   messages = open(path_to_messages, "a")
   messages.write(formatted_message)
   messages.close
+  htmltop = open(path_to_htmltop, "r")
   messages = open(path_to_messages, "r")
+  htmlbottom = open(path_to_htmlbottom, "r")
+  htmltop_content = htmltop.read()
+  messages_content = messages.read()
+  htmlbottom_content = htmlbottom.read()
   temp_conversation = ""
-  temp_conversation = temp_conversation + path_to_htmltop
-  temp_conversation = temp_conversation + messages
-  temp_conversation = temp_conversation + path_to_htmlbottom
+  temp_conversation = temp_conversation + htmltop_content 
+  temp_conversation = temp_conversation + messages_content
+  temp_conversation = temp_conversation + htmlbottom_content
+  htmltop.close
   messages.close
+  htmlbottom.close
   conversation = open(path_to_conversation, "w+")
   conversation.write(temp_conversation)
   conversation.close

@@ -27,7 +27,7 @@
 		</div>
 		<div class="sidebar-container">
 			<button class="openbtn" onclick="toggleSidebar()">
-				Menu
+				
 			</button>
 			<div id="sidebar" class="sidebar">
 				<form target="hiddenFrame" onsubmit="this.submit(); this.reset(); return false;" class='username-form'>
@@ -47,13 +47,13 @@
 					<input type="submit" value="Upload file" onclick="upload_file();">
 				</form>
 				<div class='sidebar-actions'>
-					<button type="submit" onclick="user_quit();">
+					<button type="submit" class='btn-quit' onclick="user_quit();">
 						Quit
 					</button>
 					<button type="submit" class='btn-destroy' onclick="destroy();">
 						Destroy
 					</button>
-					<button type="submit" onclick="toggleSidebar();">
+					<button type="submit" class='btn-close_menu' onclick="toggleSidebar();">
 						Close menu
 					</button>
 				</div>

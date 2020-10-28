@@ -66,3 +66,58 @@
     owner: www-data
     group: www-data
     mode: 0400
+
+- name : copy icons
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/templates/icons
+    dest: /home/app/templates/
+    owner: www-data
+    group: www-data
+    mode: 0400
+
+- name : copy conversation.html
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/templates/conversation.html
+    dest: /home/app/templates/
+    owner: www-data
+    group: www-data
+    mode: 0400
+
+- name : copy html_top
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/templates/html_top
+    dest: /home/app/templates/
+    owner: www-data
+    group: www-data
+    mode: 0400
+
+- name : copy messages
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/templates/messages
+    dest: /home/app/templates/
+    owner: www-data
+    group: www-data
+    mode: 0400
+
+- name : copy html_bottom
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  copy:
+    src: roles/chat_server/files/templates/html_bottom
+    dest: /home/app/templates/
+    owner: www-data
+    group: www-data
+    mode: 0400

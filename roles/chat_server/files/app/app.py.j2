@@ -85,19 +85,41 @@ def post():
     print(client_ip + ':' + client_message)
     room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
-    path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
+    path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_top'
+    path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages'
+    path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_bottom'
+    path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
     path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/version.txt'
 {% endif %}
 {% if multirooms == False %}
-    path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
+    path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/html_top'
+    path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/messages'
+    path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/html_bottom'
+    path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
     path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/version.txt'
 {% endif %}
     client_message = html.escape(client_message)
     user_name = html.escape(user_name)
-    formatted_message = user_name + ' : ' + client_message + '<br>'
-    file = open(path_to_room, "a")
-    file.write(formatted_message)
-    file.close
+    formatted_message = '<div class="speech"><p><b>' + user_name + ' : </b>' + client_message + '</p></div>'
+    messages = open(path_to_messages, "a")
+    messages.write(formatted_message)
+    messages.close
+    htmltop = open(path_to_htmltop, "r")
+    messages = open(path_to_messages, "r")
+    htmlbottom = open(path_to_htmlbottom, "r")
+    htmltop_content = htmltop.read()
+    messages_content = messages.read()
+    htmlbottom_content = htmlbottom.read()
+    temp_conversation = ""
+    temp_conversation = temp_conversation + htmltop_content 
+    temp_conversation = temp_conversation + messages_content
+    temp_conversation = temp_conversation + htmlbottom_content
+    htmltop.close
+    messages.close
+    htmlbottom.close
+    conversation = open(path_to_conversation, "w+")
+    conversation.write(temp_conversation)
+    conversation.close
     version_file = open(path_to_version, "r")
     version = version_file.read()
     version_file.close
@@ -116,14 +138,14 @@ def quit():
   referer = request.referrer
   room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
-  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
+  path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
 {% endif %}
 {% if multirooms == False %}
-  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
+  path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
 {% endif %}
   formatted_message = '=> ' + user_name + ' has quit the room' + '\n'
   print(formatted_message)
-  file = open(path_to_room, "a")
+  file = open(path_to_conversation, "a")
   file.write(formatted_message)
   file.close
   res = make_response("OK")
@@ -152,12 +174,18 @@ def upload():
   referer = request.referrer
   room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
-  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
+  path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_top'
+  path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages'
+  path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_bottom'
+  path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
   path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/version.txt'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_data.filename
 {% endif %}
 {% if multirooms == False %}
-  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
+  path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/html_top'
+  path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/messages'
+  path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/html_bottom'
+  path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
   path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/version.txt'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/files/' + file_data.filename
 {% endif %}
@@ -170,11 +198,27 @@ def upload():
   print(path_to_file)
   print(public_path_to_file)
   file_data.save(path_to_file)
-  formatted_message = '=> ' + user_name + ' have uploaded a file : ' + '<a href="' + public_path_to_file + '">' + file_data.filename + '</a><br>'
+  formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' have uploaded a file : </b>' + '<a href="' + public_path_to_file + '">' + file_data.filename + '</a></p></div>'
   print(formatted_message)
-  file = open(path_to_room, "a")
-  file.write(formatted_message)
-  file.close
+  messages = open(path_to_messages, "a")
+  messages.write(formatted_message)
+  messages.close
+  htmltop = open(path_to_htmltop, "r")
+  messages = open(path_to_messages, "r")
+  htmlbottom = open(path_to_htmlbottom, "r")
+  htmltop_content = htmltop.read()
+  messages_content = messages.read()
+  htmlbottom_content = htmlbottom.read()
+  temp_conversation = ""
+  temp_conversation = temp_conversation + htmltop_content 
+  temp_conversation = temp_conversation + messages_content
+  temp_conversation = temp_conversation + htmlbottom_content
+  htmltop.close
+  messages.close
+  htmlbottom.close
+  conversation = open(path_to_conversation, "w+")
+  conversation.write(temp_conversation)
+  conversation.close
   try:
     version_file = open(path_to_version, "r")
     version = version_file.read()

@@ -15,18 +15,18 @@
 ### the roadmap (oh god!)
 
 ##### UI:
-- FEATURE/Icons to buttons (especially menu button) 
-- FEATURE/Each row in the conversation should be wrapped in an element (not using br) and styled
+- FEATURE/detect url and link them
 - FEATURE/Preview file before uploading
-- FEATURE/preview url & pictures shared in the room
+- FEATURE/preview url? & pictures shared in the room
 - FEATURE/Ping a user & Browser notifications
 - FEATURE/add timestamp on messages
 - FEATURE/copy url to the clipboard & invite people on room creation
 ##### APP:
 - SECURITY/add [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
-- BUG/room destroy dont parse arguments correctly if username have a space in it. 
-- IMPROVEMENT/on room destroy : display message, update version (countdown?)
-- IMPROVEMENT/fix request entity too large issue (nginx) think of a decent quota 
+- SECURITY/add regex to create & destroy rooms in case someone spoof the referer. 
+- BUG-HIGH/page no longer refresh after a while idle.
+- BUG-MEDIUM/room destroy dont parse arguments correctly if username have a space in it.
+- BUG-LOW/when in single room mode, destroying & recreating room too fast will cause issues (symlink of symlinks) have to dig further why 
 - FEATURE/make a solution to use dynamic dns + let's encrypt for single room (does this already work? need to test) 
 - FEATURE/create api for expert users that want to manage their encryption
 - FEATURE/support other OS (centos, openbsd to start with)

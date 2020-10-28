@@ -8,8 +8,18 @@ an ansible playbook to deploy a chat server on an ubuntu server (see CONTRIBUTIN
 ### requirements : 
 - having ansible installed 
 - having an *empty* ubuntu server 20.04 LTS with ssh access as a target for the deployment (not responsible of damages if you run this on a server with stuff on it already)
-  - having a user name ubuntu on the server
+  - having a user named ubuntu on the server
   - the user ubuntu must be allowed to run sudo for all commands without a password)
+  - having an ssh config the the target server : 
+    - e.g on ip: `host 3.87.87.87
+hostname 3.87.87.87 
+user ubuntu
+IdentityFile /home/user/.ssh/privatekey_rsa`
+    - e.g on fqdn or subdomain `host subdomain.domain.com
+hostname subdomain.domain.com
+user ubuntu
+IdentityFile /home/luciano/.ssh/temporarychat_rsa
+`
 - having port 22,80 and 443 open on the server firewall
 ### rooms options :
 - `multirooms:true` : will create a webpage where you can create random chatrooms (like temporary.chat)
@@ -51,32 +61,7 @@ or
 
 ### the roadmap (oh god!)
 
-##### UI:
-- FEATURE/refreshing div constantly is resource expensive, try to think of a better way
-  - https://www.shanelynn.ie/asynchronous-updates-to-a-webpage-with-flask-and-socket-io/ (need to read this after I get some sleep)
-- BUG/cant select text because of constant div refresh
-- FEATURE/add .ico
-- FEATURE/Icons to buttons (especially menu button) 
-- FEATURE/Each row in the conversation should be wrapped in an element (not using br) and styled
-- FEATURE/Preview file before uploading
-- FEATURE/preview urls shared in the room
-- FEATURE/Ping a user & notifications on android/iphone
-##### APP:
-- SECURITY/add [HSTS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security)
-- SECURITY/add [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
-- create an http -> https redirect when ran in multirooms mode 
-- fix request entity too large issue (nginx) think of a decent quota 
-- make a solution to use dynamic dns + let's encrypt for single room 
-- create api for expert users that want to manage their encryption
-- support other OS (centos, openbsd to start with)
-##### FAR BACKEND:
-- system updates
-- hostname
-- etc
-
-
-
-
+see CONTRIBUTING.md
 
 
 

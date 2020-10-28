@@ -6,15 +6,25 @@ UUID=$2
 DOMAIN=$3
 
 {% if multirooms == True %}
+for countdown in {15..0};do
+echo "<html><body><img src=\"../icons/bomb.png\" alt=\"bomb\"><h1 style=\"background-color:#000000;color:#e62e00\">$USERNAME ordered the destruction of this room total destruction in $countdown seconds</h1><img src=\"../icons/bomb.png\" alt=\"bomb\"></body></html>" > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+CURRENT_VERSION=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt)
+NEW_VERSION=$(($CURRENT_VERSION+100))
+echo $NEW_VERSION > /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
+sleep 1;done
 rm -vrf /var/www/${DOMAIN}/app/rooms/${UUID}/*
-echo "<html><body><h1><div class="conversation" id="conversation">$USERNAME destroyed this room</div></h1></body></html>" > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
 touch /var/www/${DOMAIN}/app/rooms/${UUID}/destroyed
 {% endif %}
+
 {% if multirooms == False %}
+for countdown in {15..0};do
+echo "<html><body><img src=\"../icons/bomb.png\" alt=\"bomb\"><h1 style=\"background-color:#000000;color:#e62e00\">$USERNAME ordered the destruction of this room total destruction in $countdown seconds</h1><img src=\"../icons/bomb.png\" alt=\"bomb\"></body></html>" > /var/www/${DOMAIN}/app/rooms/conversation.html
+CURRENT_VERSION=$(cat /var/www/${DOMAIN}/app/rooms/version.txt)
+NEW_VERSION=$(($CURRENT_VERSION+100))
+echo $NEW_VERSION > /var/www/${DOMAIN}/app/rooms/version.txt
+sleep 1;done
 rm -vrf /var/www/${DOMAIN}/app/rooms/*
 rm -vrf /var/www/${DOMAIN}/app/rooms/.htpasswd
-echo "<html><body><h1><div class="conversation" id="conversation">$USERNAME destroyed this room</div></h1></body></html>" > /var/www/${DOMAIN}/app/rooms/conversation.html
-sleep 10
 rm -vrf /var/www/${DOMAIN}/app/rooms/conversation.html
 find /var/www/${DOMAIN}/html -type l -exec rm {} \;
 {% endif %}

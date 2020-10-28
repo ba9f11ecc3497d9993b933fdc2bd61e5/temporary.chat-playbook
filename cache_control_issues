@@ -1,0 +1,21 @@
+derpadmin: Math.random() can have reoccurances so might be better to use a timestamp
+(+(new Date()))
+
+
+
+<basicmiracle> although it seems i'm able to order the destruction of a room twice
+<basicmiracle> and the second time around the bomb images don't load anymore
+<basicmiracle> and then on page refresh i get 403
+
+
+<Cork> defcronyke: also your if statement doesn't have a block so the scroll_down() is always called
+
+
+
+<FLHerne> derpadmin: "the script fetch a file containing a single number" then putting Cache-Control headers in your HTML isn't doing you much good, you should set them as HTTP headers when serving the one-number file
+
+
+<Cork> resulting in that over time you could end up with a queue of check_version calls
+<Cork> as the get call could take longer then the timeout allowed
+<Cork> (say it took 900ms a few times)
+<Cork> i would prob run the pong timer from an always callback to the $.get call

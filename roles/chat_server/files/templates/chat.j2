@@ -1,168 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta http-equiv='cache-control' content="no-cache, no-store, must-revalidate, max-age=0" />
-		<meta http-equiv='cache-control' content="post-check=0, pre-check=0, false" />
-		<meta http-equiv='pragma' content='no-cache' />
-		<meta charset="utf-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="shortcut icon" type="image/ico" href="tc.ico" />
-		<link href="css/main.css" rel="stylesheet" />
-		<script type="text/javascript" src="js/jquery.min.js"></script>
-		<title>
-			{{ my_fqdn }}
-		</title>
-	<head/>
-	<body>
-		<iframe name="hiddenFrame" class="hidden"></iframe>
-		<div class="container-fluid">
-			<div class="conversation" id="conversation"></div>
-			<form target="hiddenFrame" onsubmit="this.submit(); this.reset(); return false;" class='send-row'>
-				<input id="post" type="text" autocomplete="off" placeholder="Message">
-				<button onclick="post_message();" type="submit">
-					Send
-				</button>
-			</form>
-		</div>
-		<div class="sidebar-container">
-			<button class="openbtn" onclick="toggleSidebar()">
-				
-			</button>
-			<div id="sidebar" class="sidebar">
-				<form target="hiddenFrame" onsubmit="this.submit(); this.reset(); return false;" class='username-form'>
-					<input id="user_name" type="text" placeholder="Username" aria-label="Username">
-					<button type="submit" onclick="set_user_name();">
-						Save
-					</button>
-				</form>
-				<form enctype="multipart/form-data" method="post" target="hiddenFrame" onsubmit="this.submit(); this.reset(); return false;" class='file-form no-file-chosen'>
-					<label>
-						<input type="file" id="file" oninput='fileChosen(event)'>
-						<span class='button'>
-							Choose file
-						</span>
-						<span class='file-name'></span>
-					</label>
-					<input type="submit" value="Upload file" onclick="upload_file();">
-				</form>
-				<div class='sidebar-actions'>
-					<button type="submit" class='btn-quit' onclick="user_quit();">
-						Quit
-					</button>
-					<button type="submit" class='btn-destroy' onclick="destroy();">
-						Destroy
-					</button>
-					<button type="submit" class='btn-close_menu' onclick="toggleSidebar();">
-						Close menu
-					</button>
-				</div>
-			</div>
-		</div>
+        <head>
+                <meta http-equiv='cache-control' content="no-cache, no-store, must-revalidate, max-age=0" />
+                <meta http-equiv='cache-control' content="post-check=0, pre-check=0, false" />
+                <meta http-equiv='pragma' content='no-cache' />
+                <meta charset="utf-8" />
+                <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <link rel="shortcut icon" type="image/ico" href="tc.ico" />
+                <link href="css/main.css" rel="stylesheet" />
+                <script type="text/javascript" src="js/jquery.min.js"></script>
+                <title>
+                        temporary.chat
+                </title>
+        <head/>
+        <body>
+                <iframe name="hiddenFrame" class="hidden"></iframe>
+                <div class="container-fluid">
+                        <div class="conversation" id="conversation"></div>
+                        <form target="hiddenFrame" onsubmit="this.submit(); this.reset(); return false;" class='send-row'>
+                                <input id="post" type="text" autocomplete="off" placeholder="Message">
+                                <button onclick="post_message();" type="submit">
+                                        Send
+                                </button>
+                        </form>
+                </div>
+                <div class="sidebar-container">
+                        <button class="openbtn" onclick="toggleSidebar()">
 
-		<script>
+                        </button>
+                        <div id="sidebar" class="sidebar">
+                                <form target="hiddenFrame" onsubmit="this.submit(); this.reset(); return false;" class='username-form'>
+                                        <input id="user_name" type="text" placeholder="Username" aria-label="Username">
+                                        <button type="submit" onclick="set_user_name();">
+                                                Save
+                                        </button>
+                                </form>
+                                <form enctype="multipart/form-data" method="post" target="hiddenFrame" onsubmit="this.submit(); this.reset(); return false;" class='file-form no-file-chosen'>
+                                        <label>
+                                                <input type="file" id="file" oninput='fileChosen(event)'>
+                                                <span class='button'>
+                                                        Choose file
+                                                </span>
+                                                <span class='file-name'></span>
+                                        </label>
+                                        <input type="submit" value="Upload file" onclick="upload_file();">
+                                </form>
+                                <div class='sidebar-actions'>
+                                        <button type="submit" class='btn-quit' onclick="user_quit();">
+                                                Quit
+                                        </button>
+                                        <button type="submit" class='btn-destroy' onclick="destroy();">
+                                                Destroy
+                                        </button>
+                                        <button type="submit" class='btn-close_menu' onclick="toggleSidebar();">
+                                                Close menu
+                                        </button>
+                                </div>
+                        </div>
+                </div>
 
-			var local_version = 0;
+                <script>
 
-			const d = document;
+                        var current_url = window.location.href;
 
-			var user_name = document.cookie;
+                        const d = document;
 
-			if (user_name === "") {
-				document.cookie = "Anonymous; SameSite=Strict; Secure";
-			}
+                        var user_name = document.cookie;
 
-			function fileChosen(e) {
-				const f = e.target.files[0];
-
-				if(f) {
-					d.getElementsByClassName('file-form')[0].classList.remove('no-file-chosen')
-					d.getElementsByClassName('file-name')[0].textContent = f.name;
-				} else {
-					d.getElementsByClassName('file-form')[0].classList.add('no-file-chosen');
-					d.getElementsByClassName('file-name')[0].textContent = '';
-				}
-			}
-
-			function set_user_name() {
-				var user_name = document.getElementById('user_name').value;
-				document.cookie = user_name + ";"
-			}
-
-			async function post_message() {
-				const url = 'https://{{ my_fqdn }}/app/post';
-				var message = document.getElementById('post').value;
-				var user_name = document.cookie;
-				let formData = new FormData();
-				formData.append("user_name", user_name);
-				formData.append("message", message);
-				fetch(url, {body:formData,method:"post"});
-				$('#conversation').load('conversation.html');
-				scroll_down();
-			}
-
-			async function user_quit() {
-				const url = 'https://{{ my_fqdn }}/app/quit';
-				var user_name = document.cookie;
-				let formData = new FormData();
-				formData.append("user_name", user_name);
-				let response = await fetch(url, {body:formData,method:"post"});
-
-				if (response.ok == true) {
-					window.location.href = 'https://duckduckgo.com/';
-				}
-			}
-
-			function destroy() {
-				const url = 'https://{{ my_fqdn }}/app/destroy';
-				var user_name = document.cookie;
-				let formData = new FormData();
-				formData.append("user_name", user_name);
-				fetch(url, {body:formData,method:"post"});
-			}
-
-			function upload_file() {
-				const url = 'https://{{ my_fqdn }}/app/upload';
-				var user_name = document.cookie;
-				var fileInput = document.getElementById('file');
-				var file = fileInput.files[0];
-				let formData = new FormData();
-				formData.append("user_name", user_name);
-				formData.append("file", file);
-				fetch(url, {body:formData,method:"post"});
-				$('#conversation').load('conversation.html');
-				scroll_down();
-			}
-
-			function scroll_down() {
-				var conv = "https://{{ my_fqdn }}/conversation.html";
-				var textarea = document.getElementById('conversation');
-				textarea.scrollTop = textarea.scrollHeight;
-			}
-
-                        function check_version() {
-				$.get("version.txt?v=" + (new Date()), function(remote_version, status){
-                                if (remote_version > local_version)
-                                        //alert("DIFFERENT VERSION remote_version : " + remote_version + "|| local_version :" + local_version );
-                                        $('#conversation').load('conversation.html');
-                                        local_version = remote_version
-                                        scroll_down();
-                                });
-                                setTimeout(pong, 750);
+                        if (user_name === "") {
+                                document.cookie = "Anonymous; SameSite=Strict; Secure";
                         }
 
-                        function pong() {
-                                setTimeout(check_version, 375);
+                        function fileChosen(e) {
+                                const f = e.target.files[0];
+
+                                if(f) {
+                                        d.getElementsByClassName('file-form')[0].classList.remove('no-file-chosen')
+                                        d.getElementsByClassName('file-name')[0].textContent = f.name;
+                                } else {
+                                        d.getElementsByClassName('file-form')[0].classList.add('no-file-chosen');
+                                        d.getElementsByClassName('file-name')[0].textContent = '';
+                                }
+                        }
+
+                        function set_user_name() {
+                                var user_name = document.getElementById('user_name').value;
+                                document.cookie = user_name + ";"
+                        }
+
+                        async function post_message() {
+                                const url = 'https://temporary.chat/app/post';
+                                var message = document.getElementById('post').value;
+                                var user_name = document.cookie;
+                                let formData = new FormData();
+                                formData.append("user_name", user_name);
+                                formData.append("message", message);
+                                fetch(url, {body:formData,method:"post"});
+                                $('#conversation').load('conversation.html');
+                                scroll_down();
+                        }
+
+                        async function user_quit() {
+                                const url = 'https://temporary.chat/app/quit';
+                                var user_name = document.cookie;
+                                let formData = new FormData();
+                                formData.append("user_name", user_name);
+                                let response = await fetch(url, {body:formData,method:"post"});
+
+                                if (response.ok == true) {
+                                        window.location.href = 'https://duckduckgo.com/';
+                                }
+                        }
+
+                        function destroy() {
+                                const url = 'https://temporary.chat/app/destroy';
+                                var user_name = document.cookie;
+                                let formData = new FormData();
+                                formData.append("user_name", user_name);
+                                fetch(url, {body:formData,method:"post"});
+                        }
+
+                        function upload_file() {
+                                const url = 'https://temporary.chat/app/upload';
+                                var user_name = document.cookie;
+                                var fileInput = document.getElementById('file');
+                                var file = fileInput.files[0];
+                                let formData = new FormData();
+                                formData.append("user_name", user_name);
+                                formData.append("file", file);
+                                fetch(url, {body:formData,method:"post"});
+                                $('#conversation').load('conversation.html');
+                                scroll_down();
+                        }
+
+                        function scroll_down() {
+                                var textarea = document.getElementById('conversation');
+                                textarea.scrollTop = textarea.scrollHeight;
+                        }
+
+                        async function check_version(arg) {
+                                var local_version = arg;
+                                //alert("start of check_version local_version = " + local_version);
+                                version_url = current_url + "version.txt?v=" + (new Date());
+                                //alert(version_url);
+                                let response = await fetch(version_url);
+                                if (response.ok) {
+                                        let remote_version = await response.text();
+                                        //alert(remote_version);
+                                        if (remote_version > local_version) {
+                                                //alert("DIFFERENT VERSION remote_version : " + remote_version + "|| local_version :" + local_version );
+                                                $('#conversation').load('conversation.html');
+                                                var local_version = remote_version;
+                                                scroll_down();
+                                                pong(local_version);
+                                        }
+                                        else if (remote_version == local_version) {
+                                                //alert("same version, calling pong");
+                                                pong(local_version);
+                                        }
+                                        else if (remote_version < local_version) {
+                                                var local_version = 0;
+                                                pong(local_version);
+                                        }
+                                }
+                                else {
+                                        pong(local_version);
+                                }
+                        }
+
+                        function pong(arg) {
+                                var local_version = arg;
+                                //alert("pong version = " + local_version);
+                                setTimeout(check_version, 750, local_version);
                         }
 
 
+                        check_version(0);
 
-                        pong();
 
-
-			function toggleSidebar() { document.body.classList.toggle('sidebar-open'); }
-		</script>
-	</body>
+                        function toggleSidebar() { document.body.classList.toggle('sidebar-open'); }
+                </script>
+        </body>
 </html>
-
-

@@ -11,6 +11,7 @@ body {
 	margin: 0;
 	height: 100%;
 	overflow: hidden;
+	background: #A9A9A9;
 }
 [type='text'],
 [type='search'] {

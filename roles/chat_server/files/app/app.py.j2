@@ -11,6 +11,9 @@ import string
 #import os to create directories
 import os
 
+#import re to detect url
+import re
+
 #import subproces for room creation
 import subprocess
 
@@ -22,6 +25,38 @@ from passlib.apache import HtpasswdFile
 
 #create an instance of this class
 app = Flask(__name__)
+
+
+def highlight_url(client_message):
+  list_words = client_message.split(" ")
+  new_message = ""
+  for word in list_words:
+    check_http = re.search('http://', word)
+    if check_http is not None:  
+      new_word = '<a href="' + word + '">' + word + '</a> '
+      new_message = new_message + new_word
+      continue
+    check_https = re.search('https://', word)
+    if check_https is not None:  
+      new_word = '<a href="' + word + '">' + word + '</a> '
+      new_message = new_message + new_word
+      continue
+    check_ftp = re.search('ftp://', word)
+    if check_ftp is not None:  
+      new_word = '<a href="' + word + '">' + word + '</a> '
+      new_message = new_message + new_word
+      continue
+    check_ftps = re.search('ftps://', word)
+    if check_ftps is not None:  
+      new_word = '<a href="' + word + '">' + word + '</a> '
+      new_message = new_message + new_word
+      continue
+    else:
+      new_word = word + ' '
+      new_message = new_message + new_word
+  client_message = new_message
+  return client_message
+
 
 def build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message):
   path_to_htmltop = path_to_htmltop
@@ -141,8 +176,17 @@ def post():
 {% endif %}
     user_name = html.escape(user_name)
     client_message = html.escape(client_message)
-    client_message_len = len(client_message)
     formatted_message = ""
+    url_detect = re.search('http://|https://|ftp://|ftps://', client_message)
+    if url_detect is not None:
+      client_message = highlight_url(client_message)
+      formatted_message = formatted_message + '<div class="speech"><p><b>' + user_name + ' : </b>' + client_message + '</p></div>'
+      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
+      write_message(path_to_conversation, temp_conversation)
+      update_version(path_to_version)
+      res = make_response("OK")
+      return res
+    client_message_len = len(client_message)
     if client_message_len > 300:
       formatted_message = '<div class="speech"><p><b>What are you trying to write here ' + user_name + '? a novel? (300 char max)</b></p></div>'
       temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)

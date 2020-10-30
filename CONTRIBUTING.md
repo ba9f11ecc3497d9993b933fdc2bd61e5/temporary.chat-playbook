@@ -15,12 +15,11 @@
 ### the roadmap (oh god!)
 
 ##### UI:
-- FEATURE/detect url and link them
-- FEATURE/preview url 
 - FEATURE/Icons(s) for file upload
 - FEATURE/Preview file before uploading
 - FEATURE/preview pictures shared in the room
 - FEATURE/Ping a user & Browser notifications
+- FEATURE/preview url 
 - FEATURE/add timestamp on messages
 - FEATURE/copy url to the clipboard & invite people on room creation
 ##### APP:

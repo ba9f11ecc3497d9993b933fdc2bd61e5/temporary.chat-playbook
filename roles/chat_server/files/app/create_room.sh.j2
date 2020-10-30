@@ -14,7 +14,7 @@ DOMAIN=$3
 {% if tls_mode == "normal" %}
 
 # generate cert for sub domain
-certbot certonly --webroot -w /var/www/html -m {{ le_mailaddress }} --agree-tos -n -d ${UUID}.${DOMAIN}
+certbot certonly --webroot -w /var/www/${DOMAIN}/html -m {{ le_mailaddress }} --agree-tos -n -d ${UUID}.${DOMAIN}
 
 #create the room fodler
 kdir /var/www/${DOMAIN}/app/rooms/${UUID}

@@ -11,7 +11,7 @@
                 <link href="css/main.css" rel="stylesheet" />
                 <script type="text/javascript" src="js/jquery.min.js"></script>
                 <title>
-                        temporary.chat
+                        {{ my_fqdn }}
                 </title>
         <head/>
         <body>
@@ -61,9 +61,13 @@
                 </div>
 
                 <script>
-
+{% if multirooms == True %}
                         var current_url = window.location.href;
-
+{% endif %}
+{% if multirooms == False %}
+			var complete_url = window.location.href;
+			var current_url = complete_url.replace("chat.html", "");
+{% endif %}
                         const d = document;
 
                         var user_name = document.cookie;
@@ -90,7 +94,7 @@
                         }
 
                         async function post_message() {
-                                const url = 'https://temporary.chat/app/post';
+                                const url = 'https://{{ my_fqdn }}/app/post';
                                 var message = document.getElementById('post').value;
                                 var user_name = document.cookie;
                                 let formData = new FormData();
@@ -102,7 +106,7 @@
                         }
 
                         async function user_quit() {
-                                const url = 'https://temporary.chat/app/quit';
+                                const url = 'https://{{ my_fqdn }}/app/quit';
                                 var user_name = document.cookie;
                                 let formData = new FormData();
                                 formData.append("user_name", user_name);
@@ -114,7 +118,7 @@
                         }
 
                         function destroy() {
-                                const url = 'https://temporary.chat/app/destroy';
+                                const url = 'https://{{ my_fqdn }}/app/destroy';
                                 var user_name = document.cookie;
                                 let formData = new FormData();
                                 formData.append("user_name", user_name);
@@ -122,7 +126,7 @@
                         }
 
                         function upload_file() {
-                                const url = 'https://temporary.chat/app/upload';
+                                const url = 'https://{{ my_fqdn }}/app/upload';
                                 var user_name = document.cookie;
                                 var fileInput = document.getElementById('file');
                                 var file = fileInput.files[0];
@@ -142,7 +146,12 @@
                         async function check_version(arg) {
                                 var local_version = arg;
                                 //alert("start of check_version local_version = " + local_version);
+{% if multirooms == True %}
                                 version_url = current_url + "version.txt?v=" + (new Date());
+{% endif %}
+{% if multirooms == False %}
+				version_url = current_url + "/version.txt?v=" + (new Date());
+{% endif %}
                                 //alert(version_url);
                                 let response = await fetch(version_url);
                                 if (response.ok) {

@@ -12,6 +12,11 @@ CURRENT_VERSION=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt)
 NEW_VERSION=$(($CURRENT_VERSION+100))
 echo $NEW_VERSION > /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
 sleep 1;done
+echo "<html><body><img src=\"../icons/bomb.png\" alt=\"bomb\"><h1 style=\"background-color:#000000;color:#e62e00\">This room was destroyed by $USERNAME on $(date +%F" @ "%T" "%Z)</h1><img src=\"../icons/bomb.png\" alt=\"bomb\"></body></html>" > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+CURRENT_VERSION=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt)
+NEW_VERSION=$(($CURRENT_VERSION+100))
+echo $NEW_VERSION > /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
+sleep 2
 rm -vrf /var/www/${DOMAIN}/app/rooms/${UUID}/*
 touch /var/www/${DOMAIN}/app/rooms/${UUID}/destroyed
 {% endif %}
@@ -23,6 +28,11 @@ CURRENT_VERSION=$(cat /var/www/${DOMAIN}/app/rooms/version.txt)
 NEW_VERSION=$(($CURRENT_VERSION+100))
 echo $NEW_VERSION > /var/www/${DOMAIN}/app/rooms/version.txt
 sleep 1;done
+echo "<html><body><img src=\"../icons/bomb.png\" alt=\"bomb\"><h1 style=\"background-color:#000000;color:#e62e00\">This room was destroyed by $USERNAME on $(date +%F" @ "%T" "%Z)</h1><img src=\"../icons/bomb.png\" alt=\"bomb\"></body></html>" > /var/www/${DOMAIN}/app/rooms/conversation.html
+CURRENT_VERSION=$(cat /var/www/${DOMAIN}/app/rooms/version.txt)
+NEW_VERSION=$(($CURRENT_VERSION+100))
+echo $NEW_VERSION > /var/www/${DOMAIN}/app/rooms/version.txt
+sleep 2
 rm -vrf /var/www/${DOMAIN}/app/rooms/*
 rm -vrf /var/www/${DOMAIN}/app/rooms/.htpasswd
 rm -vrf /var/www/${DOMAIN}/app/rooms/conversation.html

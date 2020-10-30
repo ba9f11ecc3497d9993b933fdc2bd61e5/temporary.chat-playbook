@@ -11,6 +11,9 @@ import string
 #import os to create directories
 import os
 
+#import re to detect url
+import re
+
 #import subproces for room creation
 import subprocess
 
@@ -24,6 +27,79 @@ from passlib.apache import HtpasswdFile
 app = Flask(__name__)
 
 
+def highlight_url(client_message):
+  list_words = client_message.split(" ")
+  new_message = ""
+  for word in list_words:
+    check_http = re.search('http://', word)
+    if check_http is not None:  
+      new_word = '<a href="' + word + '">' + word + '</a> '
+      new_message = new_message + new_word
+      continue
+    check_https = re.search('https://', word)
+    if check_https is not None:  
+      new_word = '<a href="' + word + '">' + word + '</a> '
+      new_message = new_message + new_word
+      continue
+    check_ftp = re.search('ftp://', word)
+    if check_ftp is not None:  
+      new_word = '<a href="' + word + '">' + word + '</a> '
+      new_message = new_message + new_word
+      continue
+    check_ftps = re.search('ftps://', word)
+    if check_ftps is not None:  
+      new_word = '<a href="' + word + '">' + word + '</a> '
+      new_message = new_message + new_word
+      continue
+    else:
+      new_word = word + ' '
+      new_message = new_message + new_word
+  client_message = new_message
+  return client_message
+
+
+def build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message):
+  path_to_htmltop = path_to_htmltop
+  path_to_messages = path_to_messages
+  path_to_htmlbottom = path_to_htmlbottom
+  user_name = user_name
+  formatted_message = formatted_message
+  messages = open(path_to_messages, "a")
+  messages.write(formatted_message)
+  messages.close
+  htmltop = open(path_to_htmltop, "r")
+  messages = open(path_to_messages, "r")
+  htmlbottom = open(path_to_htmlbottom, "r")
+  htmltop_content = htmltop.read()
+  messages_content = messages.read()
+  htmlbottom_content = htmlbottom.read()
+  temp_conversation = ""
+  temp_conversation = temp_conversation + htmltop_content
+  temp_conversation = temp_conversation + messages_content
+  temp_conversation = temp_conversation + htmlbottom_content
+  htmltop.close
+  messages.close
+  htmlbottom.close
+  return temp_conversation
+  
+def write_message(path_to_conversation, temp_conversation):
+  path_to_conversation = path_to_conversation
+  temp_conversation = temp_conversation
+  conversation = open(path_to_conversation, "w+")
+  conversation.write(temp_conversation)
+  conversation.close
+
+def update_version(path_to_version):
+  path_to_version = path_to_version
+  version_file = open(path_to_version, "r")
+  version = version_file.read()
+  version_file.close
+  newversion = int(version) + 1
+  version_file = open(path_to_version, "w")
+  version_file.write(str(newversion))
+  version_file.close
+  
+  
 @app.route("/app/create_private")
 def create_private():
     room_type = "private"
@@ -98,37 +174,48 @@ def post():
     path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
     path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/version.txt'
 {% endif %}
-    client_message = html.escape(client_message)
     user_name = html.escape(user_name)
-    formatted_message = '<div class="speech"><p><b>' + user_name + ' : </b>' + client_message + '</p></div>'
-    messages = open(path_to_messages, "a")
-    messages.write(formatted_message)
-    messages.close
-    htmltop = open(path_to_htmltop, "r")
-    messages = open(path_to_messages, "r")
-    htmlbottom = open(path_to_htmlbottom, "r")
-    htmltop_content = htmltop.read()
-    messages_content = messages.read()
-    htmlbottom_content = htmlbottom.read()
-    temp_conversation = ""
-    temp_conversation = temp_conversation + htmltop_content 
-    temp_conversation = temp_conversation + messages_content
-    temp_conversation = temp_conversation + htmlbottom_content
-    htmltop.close
-    messages.close
-    htmlbottom.close
-    conversation = open(path_to_conversation, "w+")
-    conversation.write(temp_conversation)
-    conversation.close
-    version_file = open(path_to_version, "r")
-    version = version_file.read()
-    version_file.close
-    newversion = int(version) + 1
-    version_file = open(path_to_version, "w")
-    version_file.write(str(newversion))
-    version_file.close
-    res = make_response("OK")
-    return res
+    client_message = html.escape(client_message)
+    formatted_message = ""
+    url_detect = re.search('http://|https://|ftp://|ftps://', client_message)
+    if url_detect is not None:
+      client_message = highlight_url(client_message)
+      formatted_message = formatted_message + '<div class="speech"><p><b>' + user_name + ' : </b>' + client_message + '</p></div>'
+      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
+      write_message(path_to_conversation, temp_conversation)
+      update_version(path_to_version)
+      res = make_response("OK")
+      return res
+    client_message_len = len(client_message)
+    if client_message_len > 300:
+      formatted_message = '<div class="speech"><p><b>What are you trying to write here ' + user_name + '? a novel? (300 char max)</b></p></div>'
+      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
+      write_message(path_to_conversation, temp_conversation)
+      update_version(path_to_version)
+      res = make_response("OK")
+      return res
+    if client_message_len > 30:
+      number_of_messages = client_message_len/30
+      number_of_messages = int(number_of_messages) + 1
+      first_byte = 0
+      last_byte = 29
+      for message_number in range(0, number_of_messages):
+        chunk_client_message = client_message[first_byte:last_byte]
+        formatted_message = formatted_message + '<div class="speech"><p><b>' + user_name + ' : </b>' + chunk_client_message + '</p></div>'
+        first_byte = first_byte + 30
+        last_byte = last_byte + 30
+      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
+      write_message(path_to_conversation, temp_conversation)
+      update_version(path_to_version)
+      res = make_response("OK")
+      return res
+    else:
+      formatted_message = '<div class="speech"><p><b>' + user_name + ' : </b>' + client_message + '</p></div>'
+      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
+      write_message(path_to_conversation, temp_conversation)
+      update_version(path_to_version)
+      res = make_response("OK")
+      return res
 
 @app.route("/app/quit", methods=['GET', 'POST'])
 def quit():
@@ -143,7 +230,7 @@ def quit():
 {% if multirooms == False %}
   path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
 {% endif %}
-  formatted_message = '=> ' + user_name + ' has quit the room' + '\n'
+  formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' has quit the room' + '</b></p></div>'
   print(formatted_message)
   file = open(path_to_conversation, "a")
   file.write(formatted_message)
@@ -199,39 +286,8 @@ def upload():
   print(public_path_to_file)
   file_data.save(path_to_file)
   formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' have uploaded a file : </b>' + '<a href="' + public_path_to_file + '">' + file_data.filename + '</a></p></div>'
-  print(formatted_message)
-  messages = open(path_to_messages, "a")
-  messages.write(formatted_message)
-  messages.close
-  htmltop = open(path_to_htmltop, "r")
-  messages = open(path_to_messages, "r")
-  htmlbottom = open(path_to_htmlbottom, "r")
-  htmltop_content = htmltop.read()
-  messages_content = messages.read()
-  htmlbottom_content = htmlbottom.read()
-  temp_conversation = ""
-  temp_conversation = temp_conversation + htmltop_content 
-  temp_conversation = temp_conversation + messages_content
-  temp_conversation = temp_conversation + htmlbottom_content
-  htmltop.close
-  messages.close
-  htmlbottom.close
-  conversation = open(path_to_conversation, "w+")
-  conversation.write(temp_conversation)
-  conversation.close
-  try:
-    version_file = open(path_to_version, "r")
-    version = version_file.read()
-  except IOError:
-    version_file = open(path_to_version, "w+")
-    version_file.write("1")
-    version_file.close
-    version_file = open(path_to_version, "r")
-    version = version_file.read()
-    version_file.close
-  version_file = open(path_to_version, "w")
-  newversion = int(version) + 1
-  version_file.write(str(newversion))
-  version_file.close
+  temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
+  write_message(path_to_conversation, temp_conversation)
+  update_version(path_to_version)
   res = make_response("OK")
   return res

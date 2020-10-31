@@ -17,14 +17,16 @@
 ##### UI:
 - FEATURE/Icons(s) for file upload
 - FEATURE/Preview file before uploading
-- FEATURE/preview pictures shared in the room
 - FEATURE/Ping a user & Browser notifications
 - FEATURE/preview url 
 - FEATURE/add timestamp on messages
 - FEATURE/copy url to the clipboard & invite people on room creation
 ##### APP:
-- SECURITY/add [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 - SECURITY/add regex to create & destroy rooms in case someone spoof the referer. 
+- SECURITY/add [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+- SECURITY/check X-Frame-Options header https://owasp.org/www-community/attacks/Clickjacking
+- SECURITY/check X-XSS-Protection HTTP header https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+- SECURITY/check X-Content-Type-Options header to "X-Content-Type-Options: nosniff" https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options 
 - BUG-MEDIUM/room destroy dont parse arguments correctly if username have a space in it.
 - BUG-LOW/when in single room mode, destroying & recreating room too fast will cause issues (symlink of symlinks) have to dig further why 
 - FEATURE/make a solution to use dynamic dns + let's encrypt for single room (does this already work? need to test) 

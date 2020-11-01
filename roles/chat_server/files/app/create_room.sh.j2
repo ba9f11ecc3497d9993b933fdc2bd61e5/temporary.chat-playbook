@@ -22,35 +22,18 @@ kdir /var/www/${DOMAIN}/app/rooms/${UUID}
 #create ngnix config for public room
 if [[ "$ROOM_TYPE" == "public" ]];then
 cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
-map $sent_http_content_type $expires {
-  
-    ~image/                   max;
-    ~video/                   max;
-    ~audio/                   max; 
-    application/pdf           max;
-    application/zip           max;
-    application/javascript    max;
-    text/css                  max;
-    text/html                  -1;
-    text/plain                 -1;
-    default                   off;
+server {
+	listen 443 ssl;
+	root /var/www/${DOMAIN}/html/rooms/${UUID};
+	index chat.html;
+	server_name ${UUID}.${DOMAIN};
+	ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	location / {
+		index chat.html;
+	}
 }
-
-expires $expires;
-
-    server {
-    listen 443 ssl;
-    root /var/www/${DOMAIN}/html/rooms/${UUID};
-    index chat.html;
-    server_name ${UUID}.${DOMAIN};
-    ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
-    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-    location /
-        {
-        index chat.html;
-        }
-    }
 EOF
 fi
 
@@ -58,36 +41,19 @@ fi
 if [[ "$ROOM_TYPE" == "private" ]];then
 
 cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
-map $sent_http_content_type $expires {
-  
-    ~image/                   max;
-    ~video/                   max;
-    ~audio/                   max; 
-    application/pdf           max;
-    application/zip           max;
-    application/javascript    max;
-    text/css                  max;
-    text/html                  -1;
-    text/plain                 -1;
-    default                   off;
-}
-
-expires $expires;
-
 server {
-  listen 443 ssl;
-  root /var/www/${DOMAIN}/html/rooms/${UUID};
-  index chat.html;
-  server_name ${UUID}.${DOMAIN};
-  ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
-  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-  location /
-    {
-      index chat.html;
-      auth_basic "Private Chatroom";
-      auth_basic_user_file /var/www/${DOMAIN}/html/rooms/${UUID}/.htpasswd;
-    }
+	listen 443 ssl;
+	root /var/www/${DOMAIN}/html/rooms/${UUID};
+	index chat.html;
+	server_name ${UUID}.${DOMAIN};
+	ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	location / {
+		index chat.html;
+		auth_basic "Private Chatroom";
+		auth_basic_user_file /var/www/${DOMAIN}/html/rooms/${UUID}/.htpasswd;
+	}
 }
 EOF
 fi
@@ -148,34 +114,17 @@ mkdir /var/www/${DOMAIN}/app/rooms/${UUID}
 #create ngnix config for public room
 if [[ "$ROOM_TYPE" == "public" ]];then
 cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
-map $sent_http_content_type $expires {
-  
-    ~image/                   max;
-    ~video/                   max;
-    ~audio/                   max; 
-    application/pdf           max;
-    application/zip           max;
-    application/javascript    max;
-    text/css                  max;
-    text/html                  -1;
-    text/plain                 -1;
-    default                   off;
-}
-
-expires $expires;
-
 server {
-  listen 443 ssl;
-  root /var/www/${DOMAIN}/html/rooms/${UUID};
-  index chat.html;
-  server_name ${UUID}.${DOMAIN};
-  ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
-  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-  location /
-    {
-      index chat.html;
-  }
+	listen 443 ssl;
+	root /var/www/${DOMAIN}/html/rooms/${UUID};
+	index chat.html;
+	server_name ${UUID}.${DOMAIN};
+	ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	location / {
+		index chat.html;
+	}
 }
 EOF
 fi
@@ -185,36 +134,19 @@ if [[ "$ROOM_TYPE" == "private" ]];then
 
 
 cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
-map $sent_http_content_type $expires {
-  
-    ~image/                   max;
-    ~video/                   max;
-    ~audio/                   max; 
-    application/pdf           max;
-    application/zip           max;
-    application/javascript    max;
-    text/css                  max;
-    text/html                  -1;
-    text/plain                 -1;
-    default                   off;
-}
-
-expires $expires;
-
 server {
-  listen 443 ssl;
-  root /var/www/${DOMAIN}/html/rooms/${UUID};
-  index chat.html;
-  server_name ${UUID}.${DOMAIN};
-  ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
-  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-  location /
-    {
-      index chat.html;
-      auth_basic "Private Chatroom";
-      auth_basic_user_file /var/www/${DOMAIN}/html/rooms/${UUID}/.htpasswd;
-    }
+	listen 443 ssl;
+	root /var/www/${DOMAIN}/html/rooms/${UUID};
+	index chat.html;
+	server_name ${UUID}.${DOMAIN};
+	ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	location / {
+		index chat.html;
+		auth_basic "Private Chatroom";
+	auth_basic_user_file /var/www/${DOMAIN}/html/rooms/${UUID}/.htpasswd;
+	}
 }
 EOF
 fi
@@ -270,22 +202,6 @@ systemctl reload nginx
 #create ngnix config for public room
 if [[ "$ROOM_TYPE" == "public" ]];then
 cat <<EOF > /etc/nginx/sites-available/${DOMAIN}
-map $sent_http_content_type $expires {
-  
-    ~image/                   max;
-    ~video/                   max;
-    ~audio/                   max; 
-    application/pdf           max;
-    application/zip           max;
-    application/javascript    max;
-    text/css                  max;
-    text/html                  -1;
-    text/plain                 -1;
-    default                   off;
-}
-
-expires $expires;
-
 server {
         listen 443 ssl;
         root /var/www/${DOMAIN}/html;
@@ -339,22 +255,6 @@ fi
 if [[ "$ROOM_TYPE" == "private" ]];then
 
 cat <<EOF > /etc/nginx/sites-available/${DOMAIN}
-map $sent_http_content_type $expires {
-  
-    ~image/                   max;
-    ~video/                   max;
-    ~audio/                   max; 
-    application/pdf           max;
-    application/zip           max;
-    application/javascript    max;
-    text/css                  max;
-    text/html                  -1;
-    text/plain                 -1;
-    default                   off;
-}
-
-expires $expires;
-
 server {
         listen 443 ssl;
         root /var/www/${DOMAIN}/html;
@@ -468,22 +368,6 @@ systemctl reload nginx
 #create ngnix config for public room
 if [[ "$ROOM_TYPE" == "public" ]];then
 cat <<EOF > /etc/nginx/sites-available/${DOMAIN}
-map $sent_http_content_type $expires {
-
-    ~image/                   max;
-    ~video/                   max;
-    ~audio/                   max;
-    application/pdf           max;
-    application/zip           max;
-    application/javascript    max;
-    text/css                  max;
-    text/html                  -1;
-    text/plain                 -1;
-    default                   off;
-}
-
-expires $expires;
-
 server {
         listen 443 ssl;
         root /var/www/${DOMAIN}/html;
@@ -537,22 +421,6 @@ fi
 if [[ "$ROOM_TYPE" == "private" ]];then
 
 cat <<EOF > /etc/nginx/sites-available/${DOMAIN}
-map $sent_http_content_type $expires {
-  
-    ~image/                   max;
-    ~video/                   max;
-    ~audio/                   max; 
-    application/pdf           max;
-    application/zip           max;
-    application/javascript    max;
-    text/css                  max;
-    text/html                  -1;
-    text/plain                 -1;
-    default                   off;
-}
-
-expires $expires;
-
 server {
         listen 443 ssl;
         root /var/www/${DOMAIN}/html;

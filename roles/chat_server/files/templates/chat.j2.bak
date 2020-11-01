@@ -11,7 +11,7 @@
                 <link href="css/main.css" rel="stylesheet" />
                 <script type="text/javascript" src="js/jquery.min.js"></script>
                 <title>
-			{{ my_fqdn }} 
+                        {{ my_fqdn }}
                 </title>
         <head/>
         <body>
@@ -36,17 +36,15 @@
                                                 Save
                                         </button>
                                 </form>
-                                <form id="upload-form" enctype="multipart/form-data" method="post" target="hiddenFrame" onsubmit="this.submit(); this.reset(); return false;" class='file-form no-file-chosen'>
+                                <form enctype="multipart/form-data" method="post" target="hiddenFrame" onsubmit="this.submit(); this.reset(); return false;" class='file-form no-file-chosen'>
                                         <label>
-                                                <input type="file" id="file" oninput="clear_preview(); fileChosen(event); preview_image(event);">
-                                                <span class='button-add-file'>
+                                                <input type="file" id="file" oninput='fileChosen(event)'>
+                                                <span class='button-upload'>
                                                         share file
                                                 </span>
-                                                <span class='file-preview'>
-                                                        <img src="" id="preview">
-                                                </span>
+                                                <span class='file-name'></span>
                                         </label>
-                                        <input type="submit" class="button-upload" value="Upload" onclick="upload_file(); clear_preview()">
+                                        <input type="submit" value="Upload file" onclick="upload_file();">
                                 </form>
                                 <div class='sidebar-actions'>
                                         <button type="submit" class='btn-quit' onclick="user_quit();">
@@ -64,13 +62,12 @@
 
                 <script>
 {% if multirooms == True %}
-			var current_url = window.location.href;
+                        var current_url = window.location.href;
 {% endif %}
 {% if multirooms == False %}
 			var complete_url = window.location.href;
 			var current_url = complete_url.replace("chat.html", "");
 {% endif %}
-
                         const d = document;
 
                         var user_name = document.cookie;
@@ -79,14 +76,15 @@
                                 document.cookie = "Anonymous; SameSite=Strict; Secure";
                         }
 
-
                         function fileChosen(e) {
                                 const f = e.target.files[0];
 
                                 if(f) {
                                         d.getElementsByClassName('file-form')[0].classList.remove('no-file-chosen')
+                                        d.getElementsByClassName('file-name')[0].textContent = f.name;
                                 } else {
                                         d.getElementsByClassName('file-form')[0].classList.add('no-file-chosen');
+                                        d.getElementsByClassName('file-name')[0].textContent = '';
                                 }
                         }
 
@@ -127,24 +125,6 @@
                                 fetch(url, {body:formData,method:"post"});
                         }
 
-                        function preview_image(event) {
-                                //get file by id
-                                var filesToUpload = document.getElementById('file').files;
-                                //set file 
-                                file = filesToUpload[0];
-                                if (file) {
-                                        var reader = new FileReader();
-                                        reader.onload = function(e) {
-                                                $('#preview').attr('src', e.target.result).height(100);
-                                        }
-                                reader.readAsDataURL(file);
-                                } else {
-                                        alert('select a file to see preview');
-                                        $('#preview').attr('src', '');
-                                }
-                        }
-
-
                         function upload_file() {
                                 const url = 'https://{{ my_fqdn }}/app/upload';
                                 var user_name = document.cookie;
@@ -156,14 +136,6 @@
                                 fetch(url, {body:formData,method:"post"});
                                 $('#conversation').load('conversation.html');
                                 scroll_down();
-                                clear_preview();
-                                d.getElementsByClassName('file-form')[0].classList.add('no-file-chosen');
-                        }
-
-                        function clear_preview() {
-                                document.getElementById('preview').src = '';
-                                var filesToUpload = document.getElementById('file').files;
-                                var file = '';
                         }
 
                         function scroll_down() {
@@ -174,7 +146,7 @@
                         async function check_version(arg) {
                                 var local_version = arg;
 {% if multirooms == True %}
-				version_url = current_url + "version.txt?v=" + (new Date());
+                                version_url = current_url + "version.txt?v=" + (new Date());
 {% endif %}
 {% if multirooms == False %}
 				version_url = current_url + "/version.txt?v=" + (new Date());
@@ -208,8 +180,6 @@
                                 setTimeout(check_version, 750, local_version);
                         }
 
-
-                        clear_preview();
 
                         check_version(0);
 

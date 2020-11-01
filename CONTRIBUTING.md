@@ -5,7 +5,7 @@
   - lower/remove the reliance on  big commercial entities (looking at you facebook/whatsapp google etc) to exchange data by making this service good enough.
   - remove the need to install specific programs/apps to communicate (should work with a browser and http protocol) 
   - offer the possibility for anyone savvy enough to roll out their own instance of this chat server with their own domain or simply an ip
-  - offer the possibility for end to end encryption (managed by the user) (gpg messages via the api)
+  - offer the possibility for end to end encryption (managed by the user) (gpg messages via an api)
   - offer a free service that will remain free and ad free ( temporary.chat )
 
 - possible future business/support offer:
@@ -15,8 +15,8 @@
 ### the roadmap (oh god!)
 
 ##### UI:
-- FEATURE/Icons(s) for file upload
-- FEATURE/Preview file before uploading
+- ISSUE/need to be able to scroll down in the menu in mobile (when menu is open and a file is selected for upload, close menu button innaccessible)
+- FEATURE/detect file type and put pretty icons on preview (mp3 = music note icon, pdf = document icon etc)
 - FEATURE/Ping a user & Browser notifications
 - FEATURE/preview url 
 - FEATURE/add timestamp on messages

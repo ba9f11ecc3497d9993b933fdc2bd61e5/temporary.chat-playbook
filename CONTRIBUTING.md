@@ -15,6 +15,7 @@
 ### the roadmap (oh god!)
 
 ##### UI:
+- ISSUE/cutting messages to 30 chars max so it display ok on mobile was a backend solution that should have been fixed in the frontend instead (adaptative text bubbles + line wrap)
 - ISSUE/need to be able to scroll down in the menu in mobile (when menu is open and a file is selected for upload, close menu button innaccessible)
 - FEATURE/detect file type and put pretty icons on preview (mp3 = music note icon, pdf = document icon etc)
 - FEATURE/Ping a user & Browser notifications

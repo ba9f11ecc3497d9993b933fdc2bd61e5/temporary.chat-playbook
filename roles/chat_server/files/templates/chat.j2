@@ -139,7 +139,6 @@
                                         }
                                 reader.readAsDataURL(file);
                                 } else {
-                                        alert('select a file to see preview');
                                         $('#preview').attr('src', '');
                                 }
                         }
@@ -189,7 +188,6 @@
                                                 pong(local_version);
                                         }
                                         else if (remote_version == local_version) {
-                                                //alert("same version, calling pong");
                                                 pong(local_version);
                                         }
                                         else if (remote_version < local_version) {
@@ -204,7 +202,6 @@
 
                         function pong(arg) {
                                 var local_version = arg;
-                                //alert("pong version = " + local_version);
                                 setTimeout(check_version, 750, local_version);
                         }
 

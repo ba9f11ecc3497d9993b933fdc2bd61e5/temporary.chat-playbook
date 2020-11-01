@@ -199,23 +199,8 @@ def post():
       res = make_response("OK")
       return res
     client_message_len = len(client_message)
-    if client_message_len > 300:
-      formatted_message = '<div class="speech"><p><b>What are you trying to write here ' + user_name + '? a novel? (300 char max)</b></p></div>'
-      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
-      write_message(path_to_conversation, temp_conversation)
-      update_version(path_to_version)
-      res = make_response("OK")
-      return res
-    if client_message_len > 30:
-      number_of_messages = client_message_len/30
-      number_of_messages = int(number_of_messages) + 1
-      first_byte = 0
-      last_byte = 29
-      for message_number in range(0, number_of_messages):
-        chunk_client_message = client_message[first_byte:last_byte]
-        formatted_message = formatted_message + '<div class="speech"><p><b>' + user_name + ' : </b>' + chunk_client_message + '</p></div>'
-        first_byte = first_byte + 30
-        last_byte = last_byte + 30
+    if client_message_len > 1000:
+      formatted_message = '<div class="speech"><p><b>What are you trying to write here ' + user_name + '? a novel? (1000 char max)</b></p></div>'
       temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
       write_message(path_to_conversation, temp_conversation)
       update_version(path_to_version)

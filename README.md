@@ -1,3 +1,5 @@
+[Screenshots](https://imgur.com/a/vhiiy8j)
+
 # deploy_chat.yaml
 ### Overview : 
 an ansible playbook to deploy a chat server on an ubuntu server (see CONTRIBUTING for the vision of the project & the road map).

@@ -1,227 +1,266 @@
 html {
-	height: 100%;
-	line-height: 1.5;
-	tab-size: 4;
-	font-size: 100%;
-	font-family: 'Nunito', sans-serif;
-	color: #321;
-	background: #eee;
+        height: 100%;
+        line-height: 1.5;
+        tab-size: 4;
+        font-size: 100%;
+        font-family: 'Nunito', sans-serif;
+        color: #321;
+        background: #eee;
 }
 body {
-	margin: 0;
-	height: 100%;
-	overflow: hidden;
-	background: #A9A9A9;
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #A9A9A9;
 }
 [type='text'],
 [type='search'] {
-	appearance: none;
-	font-size: 1em;
-	border: none;
-	padding: .5em 1em;
-	border-radius: 2px;
-	outline: none;
-	box-shadow: inset 1px 1px 2px rgba(0,0,0,.3),
-				0 0 0 transparent;
-	transition: box-shadow .2s;
+        appearance: none;
+        font-size: 1em;
+        border: none;
+        padding: .5em 1em;
+        border-radius: 2px;
+        outline: none;
+        box-shadow: inset 1px 1px 2px rgba(0,0,0,.3),
+                                0 0 0 transparent;
+        transition: box-shadow .2s;
 }
 [type='text']:focus,
 [type='search']:focus {
-	box-shadow: inset 0 0 0 transparent,
-				1px 1px 2px rgba(0,0,0,.3);
+        box-shadow: inset 0 0 0 transparent,
+                                1px 1px 2px rgba(0,0,0,.3);
 }
 button,
 [type='button'],
 [type='submit'],
 .button {
-	appearance: none;
-	outline: none;
-	display: inline-flex;
-	justify-content: center;
-	align-items: center;
-	border: none;
-	background: #fff;
-	padding: .75rem 1.5rem;
-	border-radius: 4em;
-	cursor: pointer;
-	font-family: inherit;
-	font-weight: bold;
-	color: #432;
-	font-size: .8em;
-	text-transform: uppercase;
-	transition: color .2s,
-				border .2s,
-				background .2s;
+        appearance: none;
+        outline: none;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border: none;
+        background: #fff;
+        padding: .75rem 1.5rem;
+        border-radius: 4em;
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: bold;
+        color: #432;
+        font-size: .8em;
+        text-transform: uppercase;
+        transition: color .2s,
+                                border .2s,
+                                background .2s;
 }
 button:hover,
 [type='button']:hover,
 [type='submit']:hover,
 .button:hover {
-	color: #777;
+        color: #777;
 }
 .hidden {
-	position: fixed;
-	top: -100%;
-	right: -100%;
-	bottom: auto;
-	left: auto;
-	width: 1px;
-	height: 1px;
+        position: fixed;
+        top: -100%;
+        right: -100%;
+        bottom: auto;
+        left: auto;
+        width: 1px;
+        height: 1px;
 }
+.button-add-file {
+        appearance: none;
+        outline: none;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border: none;
+        width: 100%;
+        height: 70px;
+        background: url('../icons/add_file.png') no-repeat left;
+        padding: 1rem 1.5rem;
+        border-radius: 4em;
+        font-family: inherit;
+        font-weight: bold;
+        color: #fff;
+        font-size: .8em;
+        text-transform: uppercase;
+        transition: color .2s,
+        border .2s,
+        background .2s;
+        cursor: pointer;
+}
+.button-upload {
+        background: url('../icons/upload.png') no-repeat left;
+        width: 100%;
+        height: 70px;
+        cursor: pointer;
+        color: #fff;
+}
+
+
+
 .container-fluid {
-	display: flex;
-	flex-flow: column nowrap;
-	height: 100%;
-	transition: margin .2s;
+        display: flex;
+        flex-flow: column nowrap;
+        height: 100%;
+        transition: margin .2s;
 }
 .conversation {
-	flex: 1 1 auto;
-	padding: 1em;
-	overflow: auto;
+        flex: 1 1 auto;
+        padding: 1em;
+        overflow: auto;
 }
 .send-row {
-	display: flex;
-	flex-flow: row nowrap;
-	box-shadow: 0 -.25em .5em rgba(0,0,0,.1);
+        display: flex;
+        flex-flow: row nowrap;
+        box-shadow: 0 -.25em .5em rgba(0,0,0,.1);
 }
 .send-row input {
-	width: 1em;
-	box-shadow: none;
-	flex: 1 1 auto;
-	border-radius: 0;
-	padding: 1em 1.5em;
+        width: 1em;
+        box-shadow: none;
+        flex: 1 1 auto;
+        border-radius: 0;
+        padding: 1em 1.5em;
 }
 .send-row button {
-	border-left: 1px solid rgba(0,0,0,.1);
-	margin-left: auto;
-	padding: .5em 3em;
-	border-radius: 0;
+        border-left: 1px solid rgba(0,0,0,.1);
+        margin-left: auto;
+        padding: .5em 3em;
+        border-radius: 0;
 }
 .sidebar-container {
-	position: fixed;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: auto;
-	width: 17em;
-	transform: translateX(100%);
-	background: #333;
-	color: #aaa;
-	transition: transform .2s;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: auto;
+        width: 17em;
+        transform: translateX(100%);
+        background: #333;
+        color: #aaa;
+        transition: transform .2s;
 }
 .openbtn {
-	background: url('../icons/menu.png') center;
-	position: absolute;
-	top: 1em;
-	right: 100%;
-	bottom: auto;
-	left: auto;
-	margin-right: 2em;
-	width: 5em;
-	height: 5em;
-	padding: 0;
-	border-radius: 50%;
-	box-shadow: 1px 2px 4px -1px rgba(0,0,0,.1);
-	transition: visibility .2s,
-				opacity .2s,
-				margin .2s;
+        background: url('../icons/menu.png') center;
+        position: absolute;
+        top: 1em;
+        right: 100%;
+        bottom: auto;
+        left: auto;
+        margin-right: 2em;
+        width: 5em;
+        height: 5em;
+        padding: 0;
+        border-radius: 50%;
+        box-shadow: 1px 2px 4px -1px rgba(0,0,0,.1);
+        transition: visibility .2s,
+                                opacity .2s,
+                                margin .2s;
 }
 #sidebar {
-	display: flex;
-	flex-flow: column nowrap;
-	height: 100%;
+        display: flex;
+        flex-flow: column nowrap;
+        height: 100%;
 }
 .username-form {
-	display: flex;
-	align-items: center;
-	padding: 2em 1em;
+        display: flex;
+        align-items: center;
+        padding: 2em 1em;
 }
 .username-form:before {
-	content: '@';
-	position: relative;
-	width: 0;
-	right: -.5em;
-	user-select: none;
-	pointer-events: none;
+        content: '@';
+        position: relative;
+        width: 0;
+        right: -.5em;
+        user-select: none;
+        pointer-events: none;
 }
 .username-form input {
-	flex: 1 1 auto;
-	align-self: stretch;
-	width: 5em;
-	padding-left: 1.75em;
-	border-radius: 0;
-	box-shadow: none;
+        flex: 1 1 auto;
+        align-self: stretch;
+        width: 5em;
+        padding-left: 1.75em;
+        border-radius: 0;
+        box-shadow: none;
 }
 .username-form button {
-	align-self: stretch;
-	border-radius: 0;
-	border-left: 1px solid rgba(0,0,0,.1);
+        align-self: stretch;
+        border-radius: 0;
+        border-left: 1px solid rgba(0,0,0,.1);
 }
 .file-form {
-	padding: 2em 1em;
+        padding: 2em 1em;
 }
 .file-form label {
-	display: block;
-	margin: 0 auto;
-	text-align: center;
+        display: block;
+        margin: 0 auto;
+        text-align: center;
 }
 .file-form input[type='file'] {
-	position: fixed;
-	z-index: -1;
-	width: 1px;
-	height: 1px;
-	opacity: .00001;
+        position: fixed;
+        z-index: -1;
+        width: 1px;
+        height: 1px;
+        opacity: .00001;
 }
 .file-form .file-name {
-	border-bottom: 2px dashed rgba(255,255,255,.2);
-	padding: .2em .7em;
-	margin-top: 1em;
-	display: inline-block;
-	overflow: hidden;
+        border-bottom: 2px dashed rgba(255,255,255,.2);
+        padding: .2em .7em;
+        margin-top: 1em;
+        display: inline-block;
+        overflow: hidden;
+}
+.file-form .file-preview {
+        #border-bottom: 2px dashed rgba(255,255,255,.2);
+        padding: .2em .7em;
+        margin-top: 1em;
+        display: inline-block;
+        overflow: hidden;
 }
 .file-form.no-file-chosen .file-name {
-	display: none;
+        display: none;
 }
 .file-form [type='submit'] {
-	display: block;
-	margin: 1em auto;
-	transition: opacity .2s,
-				visibility .2s;
+        display: block;
+        margin: 1em auto;
+        transition: opacity .2s,
+                                visibility .2s;
 }
 .file-form.no-file-chosen [type='submit'] {
-	visibility: hidden;
-	opacity: 0;
+        visibility: hidden;
+        opacity: 0;
 }
 .sidebar-actions {
-	margin-top: auto;
+        margin-top: auto;
 }
 .sidebar-actions button {
-	display: block;
-	width: 100%;
-	padding: 1.5em 1em;
-	border-radius: 0;
-	border-top: 1px solid rgba(255,255,255,.1);
-	box-shadow: 0 -1px 1px rgba(0,0,0,.2);
-	background: none;
-	color: #fff;
+        display: block;
+        width: 100%;
+        padding: 1.5em 1em;
+        border-radius: 0;
+        border-top: 1px solid rgba(255,255,255,.1);
+        box-shadow: 0 -1px 1px rgba(0,0,0,.2);
+        background: none;
+        color: #fff;
 }
 .sidebar-actions button:hover {
-	background: rgba(255, 255, 255, .05);
+        background: rgba(255, 255, 255, .05);
 }
 .sidebar-actions .btn-quit {
-	background: url('../icons/exit.png') no-repeat left;
+        background: url('../icons/exit.png') no-repeat left;
 }
 .sidebar-actions .btn-quit:hover {
-	color: #777;
-	background: url('../icons/exit.png') no-repeat left;
+        color: #777;
+        background: url('../icons/exit.png') no-repeat left;
 }
 .sidebar-actions .btn-destroy { 
-	color: #e13;
-	background: url('../icons/destroy.png') no-repeat left;
+        color: #e13;
+        background: url('../icons/destroy.png') no-repeat left;
 }
 .sidebar-actions .btn-destroy:hover { 
-	color: #777; 
-	background: url('../icons/destroy.png') no-repeat left;
+        color: #777; 
+        background: url('../icons/destroy.png') no-repeat left;
 }
 .sidebar-actions .btn-close_menu {
         background: url('../icons/close_menu.png') no-repeat left;
@@ -231,17 +270,17 @@ button:hover,
         background: url('../icons/close_menu.png') no-repeat left;
 }
 body.sidebar-open .openbtn {
-	visibility: hidden;
-	opacity: 0;
-	margin-right: 0;
+        visibility: hidden;
+        opacity: 0;
+        margin-right: 0;
 }
 body.sidebar-open .container-fluid { margin-right: 17em; }
 body.sidebar-open .sidebar-container { transform: translateX(0); }
 
 @media screen and (max-width: 40em) {
-	body.sidebar-open .container-fluid { margin-right: 0; }
-	body.sidebar-open .sidebar-container {
-		width: auto;
-		left: 0;
-	}
+        body.sidebar-open .container-fluid { margin-right: 0; }
+        body.sidebar-open .sidebar-container {
+                width: auto;
+                left: 0;
+        }
 }

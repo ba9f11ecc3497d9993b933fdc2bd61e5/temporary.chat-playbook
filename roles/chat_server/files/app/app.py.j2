@@ -23,8 +23,20 @@ import html
 #import passlib apache for .htaccess files
 from passlib.apache import HtpasswdFile
 
+#import pillow to resize images
+import PIL
+from PIL import Image
+
 #create an instance of this class
 app = Flask(__name__)
+
+def create_thumbnail(src_image):
+  basewidth = 300
+  img = Image.open(src_image)
+  wpercent = (basewidth / float(img.size[0]))
+  hsize = int((float(img.size[1]) * float(wpercent)))
+  img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
+  return img
 
 
 def highlight_url(client_message):
@@ -255,6 +267,7 @@ def destroy():
 @app.route("/app/upload", methods=['GET', 'POST'])
 def upload():
   file_data = request.files['file']
+  file_name = file_data.filename
   print(file_data)
   user_name = request.form['user_name']
   user_name = html.escape(user_name)
@@ -267,6 +280,7 @@ def upload():
   path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
   path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/version.txt'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_data.filename
+  path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/'
 {% endif %}
 {% if multirooms == False %}
   path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/html_top'
@@ -275,6 +289,7 @@ def upload():
   path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
   path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/version.txt'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/files/' + file_data.filename
+  path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/files/'
 {% endif %}
 {% if multirooms == True %}
   public_path_to_file = 'https://' + room + '.{{ my_fqdn }}/files/' + file_data.filename
@@ -285,7 +300,16 @@ def upload():
   print(path_to_file)
   print(public_path_to_file)
   file_data.save(path_to_file)
-  formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' have uploaded a file : </b>' + '<a href="' + public_path_to_file + '">' + file_data.filename + '</a></p></div>'
+  image_detect = re.search('.jpg|.jpeg|.JPG|.JPEG|.png|.PNG', file_name)
+  gif_detect = re.search('.gif|.GIF', file_name)
+  if image_detect is not None:
+    thumbnail = create_thumbnail(path_to_file)
+    thumbnail.save(path_to_file_folder + 'thumb.' + file_name)
+    formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' have uploaded a file : </b>' + '<a href="' + public_path_to_file + '">' + file_name + '</a></p></div>' + '<img src="files/thumb.' + file_name + '" alt="' + file_name + '">'
+  elif gif_detect is not None:
+    formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' have uploaded a file : </b>' + '<a href="' + public_path_to_file + '">' + file_name + '</a></p></div>' + '<img src="files/' + file_name + '" alt="' + file_name + '">'
+  else:
+    formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' have uploaded a file : </b>' + '<a href="' + public_path_to_file + '">' + file_data.filename + '</a></p></div>'
   temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
   write_message(path_to_conversation, temp_conversation)
   update_version(path_to_version)

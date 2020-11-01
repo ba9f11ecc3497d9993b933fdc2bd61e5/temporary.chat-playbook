@@ -5,7 +5,7 @@
   - lower/remove the reliance on  big commercial entities (looking at you facebook/whatsapp google etc) to exchange data by making this service good enough.
   - remove the need to install specific programs/apps to communicate (should work with a browser and http protocol) 
   - offer the possibility for anyone savvy enough to roll out their own instance of this chat server with their own domain or simply an ip
-  - offer the possibility for end to end encryption (managed by the user) (gpg messages via the api)
+  - offer the possibility for end to end encryption (managed by the user) (gpg messages via an api)
   - offer a free service that will remain free and ad free ( temporary.chat )
 
 - possible future business/support offer:
@@ -15,16 +15,18 @@
 ### the roadmap (oh god!)
 
 ##### UI:
-- FEATURE/Icons(s) for file upload
-- FEATURE/Preview file before uploading
-- FEATURE/preview pictures shared in the room
+- ISSUE/need to be able to scroll down in the menu in mobile (when menu is open and a file is selected for upload, close menu button innaccessible)
+- FEATURE/detect file type and put pretty icons on preview (mp3 = music note icon, pdf = document icon etc)
 - FEATURE/Ping a user & Browser notifications
 - FEATURE/preview url 
 - FEATURE/add timestamp on messages
 - FEATURE/copy url to the clipboard & invite people on room creation
 ##### APP:
-- SECURITY/add [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 - SECURITY/add regex to create & destroy rooms in case someone spoof the referer. 
+- SECURITY/add [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+- SECURITY/check X-Frame-Options header https://owasp.org/www-community/attacks/Clickjacking
+- SECURITY/check X-XSS-Protection HTTP header https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+- SECURITY/check X-Content-Type-Options header to "X-Content-Type-Options: nosniff" https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options 
 - BUG-MEDIUM/room destroy dont parse arguments correctly if username have a space in it.
 - BUG-LOW/when in single room mode, destroying & recreating room too fast will cause issues (symlink of symlinks) have to dig further why 
 - FEATURE/make a solution to use dynamic dns + let's encrypt for single room (does this already work? need to test) 

@@ -199,8 +199,8 @@ def post():
       res = make_response("OK")
       return res
     client_message_len = len(client_message)
-    if client_message_len > 1000:
-      formatted_message = '<div class="speech"><p><b>What are you trying to write here ' + user_name + '? a novel? (1000 char max)</b></p></div>'
+    if client_message_len > 5000:
+      formatted_message = '<div class="speech"><p><b>What are you trying to write here ' + user_name + '? a novel? (5000 char max)</b></p></div>'
       temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
       write_message(path_to_conversation, temp_conversation)
       update_version(path_to_version)

@@ -95,6 +95,7 @@
                                 document.cookie = user_name + ";"
                         }
 
+
                         async function post_message() {
                                 const url = 'https://{{ my_fqdn }}/app/post';
                                 var message = document.getElementById('post').value;
@@ -102,10 +103,13 @@
                                 let formData = new FormData();
                                 formData.append("user_name", user_name);
                                 formData.append("message", message);
-                                fetch(url, {body:formData,method:"post"});
-                                $('#conversation').load('conversation.html');
-                                scroll_down();
+                                let response = await fetch(url, {body:formData,method:"post"});
+                                if (response.ok == true) {
+                                        $('#conversation').load('conversation.html');
+                                        scroll_down();
+                                }
                         }
+
 
                         async function user_quit() {
                                 const url = 'https://{{ my_fqdn }}/app/quit';
@@ -139,26 +143,27 @@
                                         }
                                 reader.readAsDataURL(file);
                                 } else {
-                                        alert('select a file to see preview');
                                         $('#preview').attr('src', '');
                                 }
                         }
 
-
-                        function upload_file() {
-                                const url = 'https://{{ my_fqdn }}/app/upload';
+                        async function upload_file() {
+				const url = 'https://{{ my_fqdn }}/app/upload';
                                 var user_name = document.cookie;
                                 var fileInput = document.getElementById('file');
                                 var file = fileInput.files[0];
                                 let formData = new FormData();
                                 formData.append("user_name", user_name);
                                 formData.append("file", file);
-                                fetch(url, {body:formData,method:"post"});
-                                $('#conversation').load('conversation.html');
-                                scroll_down();
-                                clear_preview();
-                                d.getElementsByClassName('file-form')[0].classList.add('no-file-chosen');
+                                let response = await fetch(url, {body:formData,method:"post"});
+                                if (response.ok == true) {
+                                        $('#conversation').load('conversation.html');
+                                        scroll_down();
+                                        clear_preview();
+                                        d.getElementsByClassName('file-form')[0].classList.add('no-file-chosen');
+                                }
                         }
+
 
                         function clear_preview() {
                                 document.getElementById('preview').src = '';
@@ -185,11 +190,10 @@
                                         if (remote_version > local_version) {
                                                 $('#conversation').load('conversation.html');
                                                 var local_version = remote_version;
-                                                scroll_down();
+                                                setTimeout(scroll_down, 500);
                                                 pong(local_version);
                                         }
                                         else if (remote_version == local_version) {
-                                                //alert("same version, calling pong");
                                                 pong(local_version);
                                         }
                                         else if (remote_version < local_version) {
@@ -204,7 +208,6 @@
 
                         function pong(arg) {
                                 var local_version = arg;
-                                //alert("pong version = " + local_version);
                                 setTimeout(check_version, 750, local_version);
                         }
 

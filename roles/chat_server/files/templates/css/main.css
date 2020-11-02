@@ -162,6 +162,7 @@ button:hover,
         display: flex;
         flex-flow: column nowrap;
         height: 100%;
+	overflow-y: auto;
 }
 .username-form {
         display: flex;

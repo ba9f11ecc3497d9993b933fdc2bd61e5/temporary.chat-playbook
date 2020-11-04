@@ -1,0 +1,202 @@
+// functions
+
+async function check_version(arg) {
+    var local_version = arg;
+    version_url = current_url + "/version.txt?v=" + (new Date());
+    let response = await fetch(version_url);
+    if (response.ok) {
+        let remote_version = await response.text();
+        if (remote_version > local_version) {
+            $('#conversation').load('conversation.html');
+            var local_version = remote_version;
+            setTimeout(scroll_down, 500);
+            pong(local_version);
+        }
+        else if (remote_version == local_version) {
+            pong(local_version);
+        }
+        else if (remote_version < local_version) {
+            var local_version = 0;
+            pong(local_version);
+        }
+    }
+    else {
+        pong(local_version);
+    }
+}
+
+function pong(arg) {
+    var local_version = arg;
+    setTimeout(check_version, 750, local_version);
+}
+
+function fileChosen() {
+    const fileInput = document.getElementById('file');
+    const f = fileInput.files[0];
+    if(f) {
+        d.getElementsByClassName('file-form')[0].classList.remove('no-file-chosen')
+    }
+    else {
+        d.getElementsByClassName('file-form')[0].classList.add('no-file-chosen');
+    }
+}
+
+function set_user_name() {
+    var user_name = document.getElementById('user_name').value;
+    document.cookie = user_name + ";SameSite=Strict; Secure";
+}
+
+async function post_message() {
+    const url = 'https://{{ my_fqdn }}/app/post';
+    var message = document.getElementById('post').value;
+    document.getElementsByClassName('send-row')[0].reset();
+    var user_name = document.cookie;
+    let formData = new FormData();
+    formData.append("user_name", user_name);
+    formData.append("message", message);
+    let response = await fetch(url, {body:formData,method:"post"});
+    if (response.ok == true) {
+        $('#conversation').load('conversation.html');
+        scroll_down();
+    }
+}
+
+async function user_quit() {
+    const url = 'https://{{ my_fqdn }}/app/quit';
+    var user_name = document.cookie;
+    let formData = new FormData();
+    formData.append("user_name", user_name);
+    let response = await fetch(url, {body:formData,method:"post"});
+    if (response.ok == true) {
+        window.location.href = 'https://duckduckgo.com/';
+    }
+}
+
+function destroy() {
+    const url = 'https://{{ my_fqdn }}/app/destroy';
+    var user_name = document.cookie;
+    let formData = new FormData();
+    formData.append("user_name", user_name);
+    fetch(url, {body:formData,method:"post"});
+}
+
+function preview_image(event) {
+    var filesToUpload = document.getElementById('file').files;
+    file = filesToUpload[0];
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            $('#preview').attr('src', e.target.result).height(100);
+        }
+        reader.readAsDataURL(file);
+    }
+    else {
+        $('#preview').attr('src', '');
+    }
+}
+
+async function upload_file() {
+    const url = 'https://{{ my_fqdn }}/app/upload';
+    var user_name = document.cookie;
+    var fileInput = document.getElementById('file');
+    var file = fileInput.files[0];
+    let formData = new FormData();
+    formData.append("user_name", user_name);
+    formData.append("file", file);
+    let response = await fetch(url, {body:formData,method:"post"});
+    if (response.ok == true) {
+        $('#conversation').load('conversation.html');
+        scroll_down();
+        clear_preview();
+        d.getElementsByClassName('file-form')[0].classList.add('no-file-chosen');
+    }
+}
+
+function clear_preview() {
+    //document.getElementById('preview').src = '';
+    //var filesToUpload = document.getElementById('file').files;
+    var file = '';
+}
+
+function scroll_down() {
+    var textarea = document.getElementById('conversation');
+    textarea.scrollTop = textarea.scrollHeight;
+}
+
+function toggleSidebar() {
+    document.body.classList.toggle('sidebar-open');
+}
+
+
+
+// code & listeners
+
+// set defaults and check version when page is loaded
+
+var complete_url = window.location.href;
+var current_url = complete_url.replace("chat.html", "");
+
+const d = document;
+var user_name = document.cookie;
+if (user_name === "") {
+    document.cookie = "Anonymous; SameSite=Strict; Secure";
+}
+clear_preview();
+check_version(0);
+
+// listen for post
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('button-post')
+    .addEventListener('click', post_message)
+})
+
+// listen for menu open
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('openbtn')[0]
+    .addEventListener('click', toggleSidebar)
+})
+
+// listen for username
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('username-form')[0]
+    .addEventListener('submit', set_user_name)
+})
+
+// listen for file preview
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('file')
+    .addEventListener('input', fileChosen)
+    document.getElementById('file')
+    .addEventListener('input', preview_image)
+})
+
+// listen for upload
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('upload-form')
+    .addEventListener('submit', upload_file)
+})
+
+// listen for quit
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-quit')[0]
+    .addEventListener('click', user_quit)
+})
+
+// listen for destroy
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-destroy')[0]
+    .addEventListener('click', destroy)
+})
+
+// listen for close menu
+
+//document.addEventListener('DOMContentLoaded', function () {
+//    document.getElementsByClassName('btn-close_menu')[1]
+//    addEventListener('click', toggleSidebar)
+//})

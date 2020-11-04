@@ -166,6 +166,18 @@
     mode: 0400
   when: multirooms == True
 
+- name: create custom.js from template in html/js folder 
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template: 
+    src: roles/chat_server/files/html/custom.js.j2
+    dest: "{{ '/var/www/' + my_fqdn + '/html/js/custom.js' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == True
+
 - name: copy single chat room js
   remote_user: ubuntu
   become: yes
@@ -177,6 +189,18 @@
     group: www-data
     mode: 0400
   when: multirooms == False 
+
+- name: create custom.js from template single room
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template: 
+    src: roles/chat_server/files/html/custom.js.j2
+    dest: "{{ '/var/www/' + my_fqdn + '/html/launcher/js/custom.js' }}"
+    owner: www-data
+    group: www-data
+    mode: 0400
+  when: multirooms == False
 
 - name: copy icon (launcher)
   remote_user: ubuntu

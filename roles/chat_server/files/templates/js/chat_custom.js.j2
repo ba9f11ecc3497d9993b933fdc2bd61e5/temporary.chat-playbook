@@ -80,7 +80,7 @@ function destroy() {
     fetch(url, {body:formData,method:"post"});
 }
 
-function preview_image(event) {
+function preview_image() {
     var filesToUpload = document.getElementById('file').files;
     file = filesToUpload[0];
     if (file) {
@@ -96,7 +96,7 @@ function preview_image(event) {
 }
 
 async function upload_file() {
-    const url = 'https://{{ my_fqdn }}/app/upload';
+    const url = 'https://34.224.68.58/app/upload';
     var user_name = document.cookie;
     var fileInput = document.getElementById('file');
     var file = fileInput.files[0];
@@ -109,13 +109,10 @@ async function upload_file() {
         scroll_down();
         clear_preview();
         d.getElementsByClassName('file-form')[0].classList.add('no-file-chosen');
+        document.getElementById('preview').src = '';
+        var filesToUpload = document.getElementById('file').files;
+        var file = '';
     }
-}
-
-function clear_preview() {
-    //document.getElementById('preview').src = '';
-    //var filesToUpload = document.getElementById('file').files;
-    var file = '';
 }
 
 function scroll_down() {
@@ -196,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // listen for close menu
 
-//document.addEventListener('DOMContentLoaded', function () {
-//    document.getElementsByClassName('btn-close_menu')[1]
-//    addEventListener('click', toggleSidebar)
-//})
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-close_menu')[0]
+    .addEventListener('click', toggleSidebar) 
+})

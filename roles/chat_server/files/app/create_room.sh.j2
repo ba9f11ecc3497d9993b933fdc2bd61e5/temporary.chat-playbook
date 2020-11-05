@@ -30,7 +30,7 @@ server {
 	ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-	add_header Content-Security-Policy "default-src 'self'; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "same-origin";
@@ -54,7 +54,7 @@ server {
 	ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-	add_header Content-Security-Policy "default-src 'self'; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "same-origin";
@@ -132,7 +132,7 @@ server {
 	ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-	add_header Content-Security-Policy "default-src 'self'; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "same-origin";
@@ -157,7 +157,7 @@ server {
 	ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-	add_header Content-Security-Policy "default-src 'self'; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "same-origin";
@@ -231,7 +231,7 @@ server {
         ssl_certificate_key /etc/PKI/cert.key;
         add_header Access-Control-Allow-Origin *;
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-	add_header Content-Security-Policy "default-src 'self'; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "same-origin";
@@ -289,7 +289,7 @@ server {
         ssl_certificate_key /etc/PKI/cert.key;
         add_header Access-Control-Allow-Origin *;
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-	add_header Content-Security-Policy "default-src 'self'; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "same-origin";
@@ -407,7 +407,7 @@ server {
         ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
         add_header Access-Control-Allow-Origin *;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-	add_header Content-Security-Policy "default-src 'self'; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "same-origin";
@@ -465,7 +465,7 @@ server {
         ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
         add_header Access-Control-Allow-Origin *;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-	add_header Content-Security-Policy "default-src 'self'; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "same-origin";

@@ -96,7 +96,7 @@ function preview_image() {
 }
 
 async function upload_file() {
-    const url = 'https://34.224.68.58/app/upload';
+    const url = 'https://{{ my_fqdn }}/app/upload';
     var user_name = document.cookie;
     var fileInput = document.getElementById('file');
     var file = fileInput.files[0];
@@ -109,9 +109,6 @@ async function upload_file() {
         scroll_down();
         clear_preview();
         d.getElementsByClassName('file-form')[0].classList.add('no-file-chosen');
-        document.getElementById('preview').src = '';
-        var filesToUpload = document.getElementById('file').files;
-        var file = '';
     }
 }
 
@@ -138,7 +135,7 @@ var user_name = document.cookie;
 if (user_name === "") {
     document.cookie = "Anonymous; SameSite=Strict; Secure";
 }
-clear_preview();
+
 check_version(0);
 
 // listen for post

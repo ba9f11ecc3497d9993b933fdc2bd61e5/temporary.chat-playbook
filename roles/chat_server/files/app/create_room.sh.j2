@@ -5,6 +5,42 @@ ROOM_TYPE=$1
 UUID=$2
 DOMAIN=$3
 
+if [[ "$ROOM_TYPE" != "public" ]] && [[ "$ROOM_TYPE" != "private" ]];then
+  echo "invalid room type"
+  exit 1
+fi
+
+invalid_chars_domain=('~' '`' '#' '$' '&' '*' '(' ')' '\' '|' '[' ']' '{' '}' ';' "'" '<' '>' '/' '?' '!')
+
+DOMAIN_LENGHT=${{"{"}}#DOMAIN{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $DOMAIN_LENGHT ]];do
+  CHAR=${DOMAIN:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_domain[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in domain"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+invalid_chars_uuid=('~' '`' '#' '$' '&' '*' '(' ')' '\' '|' '[' ']' '{' '}' ';' "'" '<' '>' '/' '?' '!' '.')
+
+UUID_LENGHT=${{"{"}}#UUID{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $UUID_LENGHT ]];do
+  CHAR=${UUID:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_uuid[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in uuid"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+
 #######################################
 #####  MULTIROOM TRUE SSL=NORMAL  #####
 #######################################
@@ -30,10 +66,10 @@ server {
 	ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "same-origin";
+	add_header Referrer-Policy "origin";
 	add_header X-Content-Type-Options nosniff;
 	location / {
 		index chat.html;
@@ -54,10 +90,10 @@ server {
 	ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "same-origin";
+	add_header Referrer-Policy "origin";
 	add_header X-Content-Type-Options nosniff;
 	location / {
 		index chat.html;
@@ -132,10 +168,10 @@ server {
 	ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "same-origin";
+	add_header Referrer-Policy "origin";
 	add_header X-Content-Type-Options nosniff;
 	location / {
 		index chat.html;
@@ -157,10 +193,10 @@ server {
 	ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "same-origin";
+	add_header Referrer-Policy "origin";
 	add_header X-Content-Type-Options nosniff;
 	location / {
 		index chat.html;
@@ -234,7 +270,7 @@ server {
 	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "same-origin";
+	add_header Referrer-Policy "origin";
 	add_header X-Content-Type-Options nosniff;
         location / {
             index chat.html;
@@ -292,7 +328,7 @@ server {
 	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "same-origin";
+	add_header Referrer-Policy "origin";
 	add_header X-Content-Type-Options nosniff;
         location / {
         index chat.html;
@@ -410,7 +446,7 @@ server {
 	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "same-origin";
+	add_header Referrer-Policy "origin";
 	add_header X-Content-Type-Options nosniff;
         location / {
             index chat.html;
@@ -468,7 +504,7 @@ server {
 	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "same-origin";
+	add_header Referrer-Policy "origin";
 	add_header X-Content-Type-Options nosniff;
         location / {
         index chat.html;

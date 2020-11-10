@@ -5,6 +5,57 @@ USERNAME=$1
 UUID=$2
 DOMAIN=$3
 
+invalid_chars_user=('~' '`' '#' '$' '&' '*' '(' ')' '\' '|' '[' ']' '{' '}' ';' "'" '<' '>' '/' '?' '!' '.')
+
+USERNAME_LENGHT=${{"{"}}#USERNAME{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $USERNAME_LENGHT ]];do
+  CHAR=${USERNAME:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_user[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in username"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+invalid_chars_domain=('~' '`' '#' '$' '&' '*' '(' ')' '\' '|' '[' ']' '{' '}' ';' "'" '<' '>' '/' '?' '!')
+
+DOMAIN_LENGHT=${{"{"}}#DOMAIN{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $DOMAIN_LENGHT ]];do
+  CHAR=${DOMAIN:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_domain[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in domain"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+
+{% if multirooms == True %}
+
+invalid_chars_uuid=('~' '`' '#' '$' '&' '*' '(' ')' '\' '|' '[' ']' '{' '}' ';' "'" '<' '>' '/' '?' '!' '.')
+
+UUID_LENGHT=${{"{"}}#UUID{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $UUID_LENGHT ]];do
+  CHAR=${UUID:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_uuid[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in uuid"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+{% endif %}
+
+
 {% if multirooms == True %}
 for countdown in {15..0};do
 echo "<html><body><img src=\"../icons/bomb.png\" alt=\"bomb\"><h1 style=\"background-color:#000000;color:#e62e00\">$USERNAME ordered the destruction of this room total destruction in $countdown seconds</h1><img src=\"../icons/bomb.png\" alt=\"bomb\"></body></html>" > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html

@@ -43,7 +43,17 @@ function fileChosen() {
 
 function set_user_name() {
     var user_name = document.getElementById('user_name').value;
-    document.cookie = user_name + ";SameSite=Strict; Secure";
+    if (user_name.match(/^[a-z0-9]+$/i)) {
+        if (user_name.length > 25) {
+            alert("user name must be less than 25 characters");
+        }
+        else {
+            document.cookie = user_name + ";SameSite=Strict; Secure";
+        }
+    }
+    else {
+      alert("user name can only be alphanumeric (a-z) (0-9)");
+    }
 }
 
 async function post_message() {
@@ -110,6 +120,12 @@ async function upload_file() {
         clear_preview();
         d.getElementsByClassName('file-form')[0].classList.add('no-file-chosen');
     }
+}
+
+function clear_preview() {
+    document.getElementById('preview').src = '';
+    var filesToUpload = document.getElementById('file').files;
+    var file = '';
 }
 
 function scroll_down() {

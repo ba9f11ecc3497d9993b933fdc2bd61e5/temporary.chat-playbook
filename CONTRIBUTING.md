@@ -2,7 +2,7 @@
 
 - free/open source part:
   - offer a service easy to use, that requires no inscription/login (execpt the automatically generated password protected rooms) and works in a browser.
-  - lower/remove the reliance on  big commercial entities (looking at you facebook/whatsapp google etc) to exchange data by making this service good enough.
+  - lower/remove the reliance on  big commercial entities (looking at you facebook/whatsapp google etc) to exchange data (text messages & various document (voice messages?)) by making this service good enough.
   - remove the need to install specific programs/apps to communicate (should work with a browser and http protocol) 
   - offer the possibility for anyone savvy enough to roll out their own instance of this chat server with their own domain or simply an ip
   - offer the possibility for end to end encryption (managed by the user) (gpg messages via an api)
@@ -15,25 +15,24 @@
 ### the roadmap (oh god!)
 
 ##### UI:
-- FEATURE/detect file type and put pretty icons on preview (mp3 = music note icon, pdf = document icon etc)
 - FEATURE/Ping a user & Browser notifications
+- FEATURE/detect file type and put pretty icons on preview (mp3 = music note icon, pdf = document icon etc)
 - FEATURE/preview url 
 - FEATURE/add timestamp on messages
 - FEATURE/copy url to the clipboard & invite people on room creation
 - IMPROVEMENTS/and also, using skeuomorphic iconography these days is a pretty difficult thing to do right. I would absolutely wholeheartedly recommend switching all your icons/images to use a single cohesive "iconfont", such as FontAwesome
 - 
 ##### APP:
-- SECURITY/add regex to create & destroy rooms in case someone spoof the referer. 
-- SECURITY/add [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
-- SECURITY/check X-Frame-Options header https://owasp.org/www-community/attacks/Clickjacking
-- SECURITY/check X-XSS-Protection HTTP header https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
-- SECURITY/check X-Content-Type-Options header to "X-Content-Type-Options: nosniff" https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options 
-- BUG-MEDIUM/room destroy dont parse arguments correctly if username have a space in it.
-- BUG-LOW/when in single room mode, destroying & recreating room too fast will cause issues (symlink of symlinks) have to dig further why 
+- SECURITY/find a way to prevent javascript or html upload (rename the files?)
+- SECURITY/add new-ish header Permissions-Policy https://www.w3.org/TR/permissions-policy-1/
 - FEATURE/make a solution to use dynamic dns + let's encrypt for single room (does this already work? need to test) 
 - FEATURE/create api for expert users that want to manage their encryption
 - FEATURE/support other OS (centos, openbsd to start with)
-##### FAR BACKEND:
+- SPECIFIC/implement uploading images from temporary.chat to https://projectarachnid.ca/en/ api when domain is temporary.chat and think of a disclaimer
+- CODE_IMPROVEMENTS/parse invalid chars in create_room.sh & destroy_room.sh with "read -r -d "" -n 1 and $REPLY" instead
+- CODE_IMPROVEMENTS/dont use shell=True in app.py (will have to catch the result of cmd = ['/some/prog', first_arg, second_arg]; subprocess.run(..)
+##### FAR BACKEND & DEPLOYMENT:
+- make a how to deploy to virtualbox or kvm
 - system updates
 - hostname
 

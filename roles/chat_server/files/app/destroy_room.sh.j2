@@ -69,7 +69,9 @@ while [[ $CHAR_NUM -lt $UUID_LENGTH ]];do
   ((CHAR_NUM++))
 done
 
-if [[ $(egrep '^[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}-[0-9a-f]{12}$' <<< $UUID) -ne 0 ]];then
+if egrep '^[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}-[0-9a-f]{12}$' <<< $UUID;then
+  echo "valid uuid"
+else
   echo "invalid uuid"
   exit 1
 fi

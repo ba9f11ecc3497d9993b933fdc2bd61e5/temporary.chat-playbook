@@ -22,3 +22,4 @@ tox==3.19.0
 uWSGI==2.0.19.1
 virtualenv==20.0.31
 Werkzeug==1.0.1
+Pillow==8.0.1

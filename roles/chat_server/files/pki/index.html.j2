@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Certificate helper page</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Certificate helper page</h1>
+<p>this page is here to help you get rid of the big warning sent by your browser when you use your own certification authority (PKI)</p>
+<h3>system ip address : {{ my_fqdn }}</h3>
+<h3>fingerprint of the certificate that will be presented to you :</h3>
+<p>{{ cert_fingerprint.stdout }}<p>
+<p>install the certificate below in your browser to trust certificates signed by this certification authority.</p>
+<a href="ca.cert.crt">For Windows : ca.cert.crt</a><br>
+<a href="ca.pem">For other os: ca.pem</a><br>
+<p>you can now navigate to <a href="https://{{ my_fqdn }}/launcher">https://{{ my_fqdn }}/launcher</a></p>
+<h3>Instructions per browser :</h3>
+<h4>Firefox :</h4>
+<p><a href="https://wiki.mozilla.org/PSM:Changing_Trust_Settings#Trusting_an_Additional_Root_Certificate">Trusting_an_Additional_Root_Certificate</a></p>
+<h4>Chrome :</h4>
+<p><b>Windows :</b> Right-click the file and select Install Certificate > Local machine > browse > Trusted Root Certification Authorities > OK > Next > Finish</p>
+<p><b>Other OS :</b> chrome://settings/certificates > Authorities > Import > Trust this certificate to identify websites > OK</p>
+<h4>Safari :</h4>
+<p><b>OSX :</b> Double-click the certificate > system keychain >  Keychain Access > Cloud Services Root CA > File > Get Info > Trust > Secure Sockets Layer (SSL) : Always Trust.</p>
+<p><b>Windows :</b> Right-click the file and select Install Certificate > Local machine > browse > Trusted Root Certification Authorities > OK > Next > Finish</p>
+</body>
+</html>

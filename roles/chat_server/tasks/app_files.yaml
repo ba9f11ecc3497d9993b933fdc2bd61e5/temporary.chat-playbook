@@ -1,0 +1,124 @@
+---
+
+- name: create /var/www/[my_fqdn]/app
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/app' }}"
+    state: directory
+    owner: app
+    group: app
+    mode: 0755
+
+- name: create app.ini
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/app/app.ini.j2
+    dest: "{{ '/var/www/' + my_fqdn + '/app/app.ini' }}"
+    owner: app
+    group: app
+    mode: 0400
+
+- name: create app.py
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/app/app.py.j2
+    dest: "{{ '/var/www/' + my_fqdn + '/app/app.py' }}"
+    owner: app
+    group: app
+    mode: 0400
+
+- name: copy create_room.sh
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/app/create_room.sh.j2
+    dest: "{{ '/var/www/' + my_fqdn + '/app/create_room.sh' }}"
+    owner: app 
+    group: app
+    mode: 0770
+
+- name: copy destroy_room.sh
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/app/destroy_room.sh.j2
+    dest: "{{ '/var/www/' + my_fqdn + '/app/destroy_room.sh' }}"
+    owner: app 
+    group: app
+    mode: 0770
+
+
+- name: create /var/www/[my_fqdn]/app/rooms
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/app/rooms' }}"
+    state: directory
+    owner: app
+    group: www-data
+    mode: 0770
+
+- name: Create a symbolic link /var/www/[my_fqdn]/html/rooms -> /var/www/[my_fqdn]/app/rooms
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    src: "{{ '/var/www/' + my_fqdn + '/app/rooms' }}"
+    dest: "{{ '/var/www/' + my_fqdn + '/html/rooms' }}"
+    owner: app
+    group: www-data
+    state: link
+  when: multirooms == True
+
+- name: Create /var/www/[my_fqdn]/app/passwds
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/app/passwds' }}"
+    state: directory
+    owner: app
+    group: app
+    mode: 0755
+
+- name: Create /var/log/uwsgi
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /var/log/uwsgi
+    state: directory
+    owner: app 
+    group: app
+    mode: 0775
+
+- name: Create /var/log/uwsgi/app.log
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /var/log/uwsgi/app.log
+    state: touch
+    owner: app 
+    group: app
+    mode: 0664
+
+- name: Create a app socket in /var/www/[my_fqdn]/app/app.sock
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/app/app.sock' }}"
+    state: touch
+    owner: app
+    group: www-data
+    mode: 4664

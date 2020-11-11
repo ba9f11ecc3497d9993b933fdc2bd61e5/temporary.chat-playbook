@@ -1,14 +1,40 @@
+{% if tls_mode != "pki" %}
+server {
+	listen 80;
+	server_name {{ my_fqdn }};
+	return 301 https://{{ my_fqdn }}$request_uri;
+}
+{% endif %}
+
 server {
         listen 443 ssl;
         root /var/www/{{ my_fqdn }}/html;
         index index.html;
         server_name {{ my_fqdn }};
-	ssl_certificate /etc/letsencrypt/live/{{ my_fqdn }}/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/{{ my_fqdn }}/privkey.pem;
+{% if tls_mode == "pki" %}
+        ssl_certificate /etc/PKI/cert.pem;
+        ssl_certificate_key /etc/PKI/cert.key;
+{% else %}
+        ssl_certificate /etc/letsencrypt/live/{{ my_fqdn }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ my_fqdn }}/privkey.pem;
+{% endif %}
 	add_header Access-Control-Allow-Origin *;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "same-origin";
+	add_header X-Content-Type-Options nosniff;
+{% if multirooms == True %}
         location / {
                 try_files $uri $uri/ =404;
         }
+{% endif %}
+{% if multirooms == False %}
+        location /launcher {
+                index launcher.html;
+        }
+{% endif %}
 	location /app/create {
 		include uwsgi_params;
 		add_header Access-Control-Allow-Origin *;

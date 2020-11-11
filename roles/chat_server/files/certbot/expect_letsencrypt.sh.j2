@@ -1,0 +1,22 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+spawn certbot certonly --manual --preferred-challenges dns -m {{ le_mailaddress }} --agree-tos -d {{ my_fqdn }} -d *.{{ my_fqdn }}
+match_max 100000
+sleep 5
+expect "(Y)es/(N)o: "
+sleep 2 
+send -- "Y\r"
+sleep 2 
+expect "(Y)es/(N)o: "
+sleep 2 
+send -- "Y\r"
+sleep 2 
+expect "Press Enter to Continue"
+sleep 190 
+send -- "\r"
+expect "Press Enter to Continue"
+sleep 160
+send -- "\r"
+expect eof
+

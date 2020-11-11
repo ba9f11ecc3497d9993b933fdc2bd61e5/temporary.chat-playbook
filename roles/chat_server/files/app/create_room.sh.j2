@@ -1,0 +1,630 @@
+#!/bin/bash
+
+# vars passed by app.py
+ROOM_TYPE=$1
+UUID=$2
+DOMAIN=$3
+
+
+invalid_chars_domain=('~' '`' '#' '$' '&' '*' '(' ')' '\' '|' '[' ']' '{' '}' ';' "'" '<' '>' '/' '?' '!' ' ')
+invalid_chars_general=('~' '`' '#' '$' '&' '*' '(' ')' '\' '|' '[' ']' '{' '}' ';' "'" '<' '>' '/' '?' '!' '.' ' ')
+
+ROOM_TYPE_LENGTH=${{"{"}}#ROOM_TYPE{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $ROOM_TYPE_LENGTH ]];do
+  CHAR=${ROOM_TYPE:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_general[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in room type"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+DOMAIN_LENGTH=${{"{"}}#DOMAIN{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $DOMAIN_LENGTH ]];do
+  CHAR=${DOMAIN:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_domain[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in domain"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+UUID_LENGTH=${{"{"}}#UUID{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $UUID_LENGTH ]];do
+  CHAR=${UUID:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_general[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in uuid"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+if [[ "$ROOM_TYPE" != "public" ]] && [[ "$ROOM_TYPE" != "private" ]];then
+  echo "invalid room type"
+  exit 1
+fi
+
+if egrep '^[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}-[0-9a-f]{12}$' <<< $UUID;then
+  echo "uuid valid"
+else
+  echo "uuid invalid"
+  exit 1
+fi
+
+if egrep '^([^.]{1,250}\.)?([^.]{1,250}\.)?[^.]{1,250}\.[^.]{1,250}$' <<< $DOMAIN;then
+  echo "domain valid"
+else
+  echo "invalid domain"
+  exit 1
+fi
+
+if [[ $DOMAIN_LENGTH -gt 250 ]];then 
+  echo "invalid domain"
+  exit 1
+fi
+
+
+#######################################
+#####  MULTIROOM TRUE SSL=NORMAL  #####
+#######################################
+
+
+{% if multirooms == True %}
+{% if tls_mode == "normal" %}
+
+# generate cert for sub domain
+certbot certonly --webroot -w /var/www/${DOMAIN}/html -m {{ le_mailaddress }} --agree-tos -n -d ${UUID}.${DOMAIN}
+
+#create the room fodler
+kdir /var/www/${DOMAIN}/app/rooms/${UUID}
+
+#create ngnix config for public room
+if [[ "$ROOM_TYPE" == "public" ]];then
+cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
+server {
+	listen 443 ssl;
+	root /var/www/${DOMAIN}/html/rooms/${UUID};
+	index chat.html;
+	server_name ${UUID}.${DOMAIN};
+	ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
+	location / {
+		index chat.html;
+	}
+}
+EOF
+fi
+
+#create ngnix config for public room
+if [[ "$ROOM_TYPE" == "private" ]];then
+
+cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
+server {
+	listen 443 ssl;
+	root /var/www/${DOMAIN}/html/rooms/${UUID};
+	index chat.html;
+	server_name ${UUID}.${DOMAIN};
+	ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
+	location / {
+		index chat.html;
+		auth_basic "Private Chatroom";
+		auth_basic_user_file /var/www/${DOMAIN}/html/rooms/${UUID}/.htpasswd;
+	}
+}
+EOF
+fi
+
+
+
+#copy templates to room
+mkdir -p /var/www/${DOMAIN}/app/rooms/${UUID}/files
+cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/${UUID}/
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/html_top
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/messages
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/html_bottom
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
+chown -R app:www-data /var/www/${DOMAIN}/app/rooms/${UUID}
+chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
+chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/js/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/css/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/icons/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/chat.html
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
+chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/tc.ico
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html | wc -l)
+HTML_BODY=$(($CONV_LENGTH-2))
+sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room ${UUID} on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html > /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
+cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+rm /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
+echo 2 > /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
+
+#if room private, copy the password file
+if [[ "$ROOM_TYPE" == "private" ]];then
+mv /var/www/${DOMAIN}/app/passwds/${UUID}.htpasswd /var/www/${DOMAIN}/app/rooms/${UUID}/.htpasswd
+fi
+
+
+#symlink nginx sites-available to sites-enabled & restart nginx
+ln -s /etc/nginx/sites-available/${UUID}.${DOMAIN} /etc/nginx/sites-enabled/${UUID}.${DOMAIN}
+systemctl reload nginx
+
+
+{% endif %}
+{% endif %}
+
+
+#########################################
+#####  MULTIROOM TRUE SSL=WILDCARD  #####
+#########################################
+
+
+{% if multirooms == True %}
+{% if tls_mode == "wildcard" %}
+
+
+#create the room fodler
+mkdir /var/www/${DOMAIN}/app/rooms/${UUID}
+
+#create ngnix config for public room
+if [[ "$ROOM_TYPE" == "public" ]];then
+cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
+server {
+	listen 443 ssl;
+	root /var/www/${DOMAIN}/html/rooms/${UUID};
+	index chat.html;
+	server_name ${UUID}.${DOMAIN};
+	ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
+	location / {
+		index chat.html;
+	}
+}
+EOF
+fi
+
+#create ngnix config for public room
+if [[ "$ROOM_TYPE" == "private" ]];then
+
+
+cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
+server {
+	listen 443 ssl;
+	root /var/www/${DOMAIN}/html/rooms/${UUID};
+	index chat.html;
+	server_name ${UUID}.${DOMAIN};
+	ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
+	location / {
+		index chat.html;
+		auth_basic "Private Chatroom";
+	auth_basic_user_file /var/www/${DOMAIN}/html/rooms/${UUID}/.htpasswd;
+	}
+}
+EOF
+fi
+
+
+
+#copy templates to room
+mkdir -p /var/www/${DOMAIN}/app/rooms/${UUID}/files
+cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/${UUID}/
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/html_top
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/messages
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/html_bottom
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
+chown -R app:www-data /var/www/${DOMAIN}/app/rooms/${UUID}
+chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
+chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/js/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/css/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/icons/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/chat.html
+chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/tc.ico
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html | wc -l)
+HTML_BODY=$(($CONV_LENGTH-2))
+sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room ${UUID} on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html > /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
+cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
+rm cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
+echo 2 > /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
+
+#if room private, copy the password file
+if [[ "$ROOM_TYPE" == "private" ]];then
+mv /var/www/${DOMAIN}/app/passwds/${UUID}.htpasswd /var/www/${DOMAIN}/app/rooms/${UUID}/.htpasswd
+fi
+
+
+#symlink nginx sites-available to sites-enabled & restart nginx
+ln -s /etc/nginx/sites-available/${UUID}.${DOMAIN} /etc/nginx/sites-enabled/${UUID}.${DOMAIN}
+systemctl reload nginx
+
+
+{% endif %}
+{% endif %}
+
+
+################################
+#####  MULTIROOM FALSE PKI #####
+################################
+
+
+{% if multirooms == False %}
+{% if tls_mode == "pki" %}
+
+#create ngnix config for public room
+if [[ "$ROOM_TYPE" == "public" ]];then
+cat <<EOF > /etc/nginx/sites-available/${DOMAIN}
+server {
+        listen 443 ssl;
+        root /var/www/${DOMAIN}/html;
+        index index.html;
+        server_name ${DOMAIN};
+        ssl_certificate /etc/PKI/cert.pem;
+        ssl_certificate_key /etc/PKI/cert.key;
+        add_header Access-Control-Allow-Origin *;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
+        location / {
+            index chat.html;
+        }
+        location /launcher {
+                index launcher.html;
+        }
+        location /app/create {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/post {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/quit {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/destroy {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/upload {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        
+}
+EOF
+fi
+
+#create ngnix config for private room
+if [[ "$ROOM_TYPE" == "private" ]];then
+
+cat <<EOF > /etc/nginx/sites-available/${DOMAIN}
+server {
+        listen 443 ssl;
+        root /var/www/${DOMAIN}/html;
+        index index.html;
+        server_name ${DOMAIN};
+        ssl_certificate /etc/PKI/cert.pem;
+        ssl_certificate_key /etc/PKI/cert.key;
+        add_header Access-Control-Allow-Origin *;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
+        location / {
+        index chat.html;
+        auth_basic "Private Chatroom";
+        auth_basic_user_file /var/www/${DOMAIN}/html/.htpasswd;
+        }
+        location /launcher {
+                index launcher.html;
+        }
+        location /app/create {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/post {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/quit {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/destroy {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/upload {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        
+}
+EOF
+fi
+
+
+
+#copy templates to room
+cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/
+mkdir /var/www/${DOMAIN}/app/rooms/files
+chmod 0640 /var/www/${DOMAIN}/app/rooms/conversation.html
+chmod 0640 /var/www/${DOMAIN}/app/rooms/html_top
+chmod 0640 /var/www/${DOMAIN}/app/rooms/messages
+chmod 0640 /var/www/${DOMAIN}/app/rooms/html_bottom
+chown -R app:www-data /var/www/${DOMAIN}/app/rooms/
+chmod 0750 /var/www/${DOMAIN}/app/rooms/files
+chmod 0440 /var/www/${DOMAIN}/app/rooms/js/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/css/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/icons/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/chat.html
+chmod 0440 /var/www/${DOMAIN}/app/rooms/tc.ico
+chmod 0640 /var/www/${DOMAIN}/app/rooms/conversation.html
+chmod 0640 /var/www/${DOMAIN}/app/rooms/version.txt
+ln -s /var/www/${DOMAIN}/app/rooms/css /var/www/${DOMAIN}/html/css
+ln -s /var/www/${DOMAIN}/app/rooms/icons /var/www/${DOMAIN}/html/icons
+ln -s /var/www/${DOMAIN}/app/rooms/js /var/www/${DOMAIN}/html/js
+ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/files
+ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
+ln -s /var/www/${DOMAIN}/app/rooms/version.txt /var/www/${DOMAIN}/html/version.txt
+ln -s /var/www/${DOMAIN}/app/rooms/conversation.html /var/www/${DOMAIN}/html/conversation.html
+ln -s /var/www/${DOMAIN}/app/rooms/html_top /var/www/${DOMAIN}/html/html_top
+ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
+ln -s /var/www/${DOMAIN}/app/rooms/html_bottom /var/www/${DOMAIN}/html/html_bottom
+CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/conversation.html | wc -l)
+HTML_BODY=$(($CONV_LENGTH-2))
+sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/conversation.html > /var/www/${DOMAIN}/app/rooms/temp.html
+cat /var/www/${DOMAIN}/app/rooms/temp.html > /var/www/${DOMAIN}/app/rooms/conversation.html
+rm /var/www/${DOMAIN}/app/rooms/temp.html
+echo 2 > /var/www/${DOMAIN}/app/rooms/version.txt
+
+
+#if room private, copy the password file
+if [[ "$ROOM_TYPE" == "private" ]];then
+mv /var/www/${DOMAIN}/app/passwds/htpasswd /var/www/${DOMAIN}/app/rooms/.htpasswd
+ln -s /var/www/${DOMAIN}/app/rooms/.htpasswd /var/www/${DOMAIN}/html/.htpasswd
+fi
+
+
+#symlink nginx sites-available to sites-enabled & restart nginx
+ln -s /etc/nginx/sites-available/${DOMAIN} /etc/nginx/sites-enabled/${DOMAIN}
+systemctl reload nginx
+
+{% endif %}
+{% endif %}
+
+
+###################################
+#####  MULTIROOM FALSE NORMAL #####
+###################################
+
+
+{% if multirooms == False %}
+{% if tls_mode == "normal" %}
+
+#create ngnix config for public room
+if [[ "$ROOM_TYPE" == "public" ]];then
+cat <<EOF > /etc/nginx/sites-available/${DOMAIN}
+server {
+        listen 443 ssl;
+        root /var/www/${DOMAIN}/html;
+        index index.html;
+        server_name ${DOMAIN};
+        ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+        add_header Access-Control-Allow-Origin *;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
+        location / {
+            index chat.html;
+        }
+        location /launcher {
+                index launcher.html;
+        }
+        location /app/create {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/post {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/quit {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/destroy {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/upload {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        
+}
+EOF
+fi
+
+#create ngnix config for private room
+if [[ "$ROOM_TYPE" == "private" ]];then
+
+cat <<EOF > /etc/nginx/sites-available/${DOMAIN}
+server {
+        listen 443 ssl;
+        root /var/www/${DOMAIN}/html;
+        index index.html;
+        server_name ${DOMAIN};
+        ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+        add_header Access-Control-Allow-Origin *;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
+        location / {
+        index chat.html;
+        auth_basic "Private Chatroom";
+        auth_basic_user_file /var/www/${DOMAIN}/html/.htpasswd;
+        }
+        location /launcher {
+                index launcher.html;
+        }
+        location /app/create {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/post {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/quit {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/destroy {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/upload {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        
+}
+EOF
+fi
+
+
+
+#copy templates to room
+cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/
+mkdir /var/www/${DOMAIN}/app/rooms/files
+chown -R app:www-data /var/www/${DOMAIN}/app/rooms/
+chmod 0750 /var/www/${DOMAIN}/app/rooms/files
+chmod 0440 /var/www/${DOMAIN}/app/rooms/js/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/css/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/icons/*
+chmod 0440 /var/www/${DOMAIN}/app/rooms/chat.html
+chmod 0440 /var/www/${DOMAIN}/app/rooms/tc.ico
+chmod 0640 /var/www/${DOMAIN}/app/rooms/conversation.html
+chmod 0640 /var/www/${DOMAIN}/app/rooms/html_top
+chmod 0640 /var/www/${DOMAIN}/app/rooms/messages
+chmod 0640 /var/www/${DOMAIN}/app/rooms/html_bottom
+chmod 0640 /var/www/${DOMAIN}/app/rooms/version.txt
+ln -s /var/www/${DOMAIN}/app/rooms/css /var/www/${DOMAIN}/html/css
+ln -s /var/www/${DOMAIN}/app/rooms/icons /var/www/${DOMAIN}/html/icons
+ln -s /var/www/${DOMAIN}/app/rooms/js /var/www/${DOMAIN}/html/js
+ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/files
+ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
+ln -s /var/www/${DOMAIN}/app/rooms/version.txt /var/www/${DOMAIN}/html/version.txt
+ln -s /var/www/${DOMAIN}/app/rooms/conversation.html /var/www/${DOMAIN}/html/conversation.html
+ln -s /var/www/${DOMAIN}/app/rooms/html_top /var/www/${DOMAIN}/html/html_top
+ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
+ln -s /var/www/${DOMAIN}/app/rooms/html_bottom /var/www/${DOMAIN}/html/html_bottom
+CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/conversation.html | wc -l)
+HTML_BODY=$(($CONV_LENGTH-2))
+sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/conversation.html > /var/www/${DOMAIN}/app/rooms/temp.html
+cat /var/www/${DOMAIN}/app/rooms/temp.html > /var/www/${DOMAIN}/app/rooms/conversation.html
+rm /var/www/${DOMAIN}/app/rooms/temp.html
+echo 2 > /var/www/${DOMAIN}/app/rooms/version.txt
+
+
+#if room private, copy the password file
+if [[ "$ROOM_TYPE" == "private" ]];then
+mv /var/www/${DOMAIN}/app/passwds/htpasswd /var/www/${DOMAIN}/app/rooms/.htpasswd
+ln -s /var/www/${DOMAIN}/app/rooms/.htpasswd /var/www/${DOMAIN}/html/.htpasswd
+fi
+
+
+#symlink nginx sites-available to sites-enabled & restart nginx
+ln -s /etc/nginx/sites-available/${DOMAIN} /etc/nginx/sites-enabled/${DOMAIN}
+systemctl reload nginx
+
+{% endif %}
+{% endif %}

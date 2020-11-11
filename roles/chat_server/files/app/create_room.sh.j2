@@ -85,7 +85,7 @@ fi
 certbot certonly --webroot -w /var/www/${DOMAIN}/html -m {{ le_mailaddress }} --agree-tos -n -d ${UUID}.${DOMAIN}
 
 #create the room fodler
-kdir /var/www/${DOMAIN}/app/rooms/${UUID}
+mkdir /var/www/${DOMAIN}/app/rooms/${UUID}
 
 #create ngnix config for public room
 if [[ "$ROOM_TYPE" == "public" ]];then
@@ -261,7 +261,7 @@ CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html | wc -l
 HTML_BODY=$(($CONV_LENGTH-2))
 sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room ${UUID} on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html > /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
 cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
-rm cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
+rm /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
 echo 2 > /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
 
 #if room private, copy the password file

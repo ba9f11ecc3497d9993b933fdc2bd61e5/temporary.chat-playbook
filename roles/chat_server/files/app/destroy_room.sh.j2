@@ -5,6 +5,79 @@ USERNAME=$1
 UUID=$2
 DOMAIN=$3
 
+
+invalid_chars_domain=('~' '`' '#' '$' '&' '*' '(' ')' '\' '|' '[' ']' '{' '}' ';' "'" '<' '>' '/' '?' '!')
+invalid_chars_general=('~' '`' '#' '$' '&' '*' '(' ')' '\' '|' '[' ']' '{' '}' ';' "'" '<' '>' '/' '?' '!' '.')
+
+USERNAME_LENGTH=${{"{"}}#USERNAME{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $USERNAME_LENGTH ]];do
+  CHAR=${USERNAME:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_general[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in username"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+DOMAIN_LENGTH=${{"{"}}#DOMAIN{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $DOMAIN_LENGTH ]];do
+  CHAR=${DOMAIN:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_domain[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in domain"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+if egrep '^([^.]{1,250}\.)?([^.]{1,250}\.)?[^.]{1,250}\.[^.]{1,250}$' <<< $DOMAIN;then
+  echo "domain valid"
+else
+  echo "invalid domain"
+  exit 1
+fi
+
+if [[ $DOMAIN_LENGTH -gt 250 ]];then
+  echo "invalid domain"
+  exit 1
+fi
+
+if [[ $USERNAME_LENGTH -gt 100 ]];then
+  echo "invalid username"
+  exit 1
+fi  
+
+
+{% if multirooms == True %}
+
+
+UUID_LENGTH=${{"{"}}#UUID{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $UUID_LENGTH ]];do
+  CHAR=${UUID:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_general[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in uuid"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+if [[ $(egrep '^[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}-[0-9a-f]{12}$' <<< $UUID) -ne 0 ]];then
+  echo "invalid uuid"
+  exit 1
+fi
+
+
+{% endif %}
+
+
 {% if multirooms == True %}
 for countdown in {15..0};do
 echo "<html><body><img src=\"../icons/bomb.png\" alt=\"bomb\"><h1 style=\"background-color:#000000;color:#e62e00\">$USERNAME ordered the destruction of this room total destruction in $countdown seconds</h1><img src=\"../icons/bomb.png\" alt=\"bomb\"></body></html>" > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html

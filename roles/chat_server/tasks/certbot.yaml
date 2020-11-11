@@ -71,7 +71,7 @@
 - debug: 
     msg: 
     - "Add the first TXT record in your dns server zone file"
-    - "{{ le_response.stdout }}"
+    - "{{ le_response.stdout_lines }}"
   when: (have_fqdn == True) and
         (tls_mode == "wildcard")
 
@@ -91,7 +91,7 @@
 - debug:
     msg: 
     - "google dns reply:"
-    - "{{ google_dns_answer.stdout }}"
+    - "{{ google_dns_answer.stdout_lines }}"
   when: (have_fqdn == True) and
         (tls_mode == "wildcard")
 
@@ -110,7 +110,7 @@
 - debug:
     msg: 
     - "google dns reply:"
-    - "{{ google_dns_answer.stdout }}"
+    - "{{ google_dns_answer.stdout_lines }}"
   when: (have_fqdn == True) and
         (tls_mode == "wildcard")
 
@@ -141,7 +141,7 @@
 - debug:
     msg: 
     - "google dns reply:"
-    - "{{ google_dns_answer.stdout }}"
+    - "{{ google_dns_answer.stdout_lines }}"
   when: (have_fqdn == True) and
         (tls_mode == "wildcard")
 
@@ -158,7 +158,7 @@
 - debug: 
     msg: 
     - "Add the second TXT record in your dns server zone file (do not remove the first one"
-    - "{{ le_response.stdout }}"
+    - "{{ le_response.stdout_lines }}"
   when: (have_fqdn == True) and
         (tls_mode == "wildcard")
 
@@ -177,7 +177,7 @@
 - debug:
     msg: 
     - "google dns reply:"
-    - "{{ google_dns_answer.stdout }}"
+    - "{{ google_dns_answer.stdout_lines }}"
   when: (have_fqdn == True) and
         (tls_mode == "wildcard")
 
@@ -196,7 +196,7 @@
 - debug:
     msg: 
     - "google dns reply:"
-    - "{{ google_dns_answer.stdout }}"
+    - "{{ google_dns_answer.stdout_lines }}"
   when: (have_fqdn == True) and
         (tls_mode == "wildcard")
 
@@ -215,6 +215,6 @@
 - debug:
     msg: 
     - "google dns reply:"
-    - "{{ google_dns_answer.stdout }}"
+    - "{{ google_dns_answer.stdout_lines }}"
   when: (have_fqdn == True) and
         (tls_mode == "wildcard")

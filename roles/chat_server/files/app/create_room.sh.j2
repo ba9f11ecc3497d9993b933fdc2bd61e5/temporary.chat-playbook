@@ -5,6 +5,74 @@ ROOM_TYPE=$1
 UUID=$2
 DOMAIN=$3
 
+
+invalid_chars_domain=('~' '`' '#' '$' '&' '*' '(' ')' '\' '|' '[' ']' '{' '}' ';' "'" '<' '>' '/' '?' '!' ' ')
+invalid_chars_general=('~' '`' '#' '$' '&' '*' '(' ')' '\' '|' '[' ']' '{' '}' ';' "'" '<' '>' '/' '?' '!' '.' ' ')
+
+ROOM_TYPE_LENGTH=${{"{"}}#ROOM_TYPE{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $ROOM_TYPE_LENGTH ]];do
+  CHAR=${ROOM_TYPE:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_general[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in room type"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+DOMAIN_LENGTH=${{"{"}}#DOMAIN{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $DOMAIN_LENGTH ]];do
+  CHAR=${DOMAIN:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_domain[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in domain"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+UUID_LENGTH=${{"{"}}#UUID{{"}"}}
+CHAR_NUM=0
+while [[ $CHAR_NUM -lt $UUID_LENGTH ]];do
+  CHAR=${UUID:$CHAR_NUM:1}
+  for I_CHAR in "${invalid_chars_general[@]}";do
+    if [[ "$CHAR" == "$I_CHAR" ]];then
+      echo "invalid char $I_CHAR detected in uuid"
+      exit 1
+    fi
+  done
+  ((CHAR_NUM++))
+done
+
+if [[ "$ROOM_TYPE" != "public" ]] && [[ "$ROOM_TYPE" != "private" ]];then
+  echo "invalid room type"
+  exit 1
+fi
+
+if egrep '^[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}-[0-9a-f]{12}$' <<< $UUID;then
+  echo "uuid valid"
+else
+  echo "uuid invalid"
+  exit 1
+fi
+
+if egrep '^([^.]{1,250}\.)?([^.]{1,250}\.)?[^.]{1,250}\.[^.]{1,250}$' <<< $DOMAIN;then
+  echo "domain valid"
+else
+  echo "invalid domain"
+  exit 1
+fi
+
+if [[ $DOMAIN_LENGTH -gt 250 ]];then 
+  echo "invalid domain"
+  exit 1
+fi
+
+
 #######################################
 #####  MULTIROOM TRUE SSL=NORMAL  #####
 #######################################
@@ -30,6 +98,11 @@ server {
 	ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
 	location / {
 		index chat.html;
 	}
@@ -49,6 +122,11 @@ server {
 	ssl_certificate /etc/letsencrypt/live/${UUID}.${DOMAIN}/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
 	location / {
 		index chat.html;
 		auth_basic "Private Chatroom";
@@ -77,8 +155,8 @@ chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/chat.html
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/tc.ico
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
-CONV_LENGHT=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html | wc -l)
-HTML_BODY=$(($CONV_LENGHT-2))
+CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html | wc -l)
+HTML_BODY=$(($CONV_LENGTH-2))
 sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room ${UUID} on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html > /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
 cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
 rm /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
@@ -122,6 +200,11 @@ server {
 	ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
 	location / {
 		index chat.html;
 	}
@@ -142,6 +225,11 @@ server {
 	ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
 	location / {
 		index chat.html;
 		auth_basic "Private Chatroom";
@@ -169,8 +257,8 @@ chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/icons/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/chat.html
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/tc.ico
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
-CONV_LENGHT=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html | wc -l)
-HTML_BODY=$(($CONV_LENGHT-2))
+CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html | wc -l)
+HTML_BODY=$(($CONV_LENGTH-2))
 sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room ${UUID} on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html > /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
 cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
 rm cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
@@ -211,6 +299,11 @@ server {
         ssl_certificate_key /etc/PKI/cert.key;
         add_header Access-Control-Allow-Origin *;
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
         location / {
             index chat.html;
         }
@@ -264,6 +357,11 @@ server {
         ssl_certificate_key /etc/PKI/cert.key;
         add_header Access-Control-Allow-Origin *;
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
         location / {
         index chat.html;
         auth_basic "Private Chatroom";
@@ -334,8 +432,8 @@ ln -s /var/www/${DOMAIN}/app/rooms/conversation.html /var/www/${DOMAIN}/html/con
 ln -s /var/www/${DOMAIN}/app/rooms/html_top /var/www/${DOMAIN}/html/html_top
 ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
 ln -s /var/www/${DOMAIN}/app/rooms/html_bottom /var/www/${DOMAIN}/html/html_bottom
-CONV_LENGHT=$(cat /var/www/${DOMAIN}/app/rooms/conversation.html | wc -l)
-HTML_BODY=$(($CONV_LENGHT-2))
+CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/conversation.html | wc -l)
+HTML_BODY=$(($CONV_LENGTH-2))
 sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/conversation.html > /var/www/${DOMAIN}/app/rooms/temp.html
 cat /var/www/${DOMAIN}/app/rooms/temp.html > /var/www/${DOMAIN}/app/rooms/conversation.html
 rm /var/www/${DOMAIN}/app/rooms/temp.html
@@ -377,6 +475,11 @@ server {
         ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
         add_header Access-Control-Allow-Origin *;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
         location / {
             index chat.html;
         }
@@ -430,6 +533,11 @@ server {
         ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
         add_header Access-Control-Allow-Origin *;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Frame-Options "SAMEORIGIN";
+	add_header Referrer-Policy "origin";
+	add_header X-Content-Type-Options nosniff;
         location / {
         index chat.html;
         auth_basic "Private Chatroom";
@@ -499,8 +607,8 @@ ln -s /var/www/${DOMAIN}/app/rooms/conversation.html /var/www/${DOMAIN}/html/con
 ln -s /var/www/${DOMAIN}/app/rooms/html_top /var/www/${DOMAIN}/html/html_top
 ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
 ln -s /var/www/${DOMAIN}/app/rooms/html_bottom /var/www/${DOMAIN}/html/html_bottom
-CONV_LENGHT=$(cat /var/www/${DOMAIN}/app/rooms/conversation.html | wc -l)
-HTML_BODY=$(($CONV_LENGHT-2))
+CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/conversation.html | wc -l)
+HTML_BODY=$(($CONV_LENGTH-2))
 sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/conversation.html > /var/www/${DOMAIN}/app/rooms/temp.html
 cat /var/www/${DOMAIN}/app/rooms/temp.html > /var/www/${DOMAIN}/app/rooms/conversation.html
 rm /var/www/${DOMAIN}/app/rooms/temp.html

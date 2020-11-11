@@ -67,6 +67,17 @@
     group: www-data
     mode: 0400
 
+- name : create chat_custom.js from template 
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/templates/js/chat_custom.js.j2
+    dest: /home/app/templates/js/chat_custom.js
+    owner: www-data
+    group: www-data
+    mode: 0440
+
 - name : copy icons
   remote_user: ubuntu
   become: yes

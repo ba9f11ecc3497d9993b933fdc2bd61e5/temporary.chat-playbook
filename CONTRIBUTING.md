@@ -16,11 +16,12 @@
 
 ##### UI:
 - FEATURE/Ping a user & Browser notifications
-- FEATURE/detect file type and put pretty icons on preview (mp3 = music note icon, pdf = document icon etc)
+- FEATURE/Create CLI interface /nick [username] /ping [username] /upload (will open your file browser of choice)
+- FEATURE/detect common file types and put pretty icons on preview (mp3 = music note icon, pdf = document icon etc)
 - FEATURE/preview url 
-- FEATURE/add timestamp on messages
+- FEATURE/add timestamp on messags
 - FEATURE/copy url to the clipboard & invite people on room creation
-- IMPROVEMENTS/and also, using skeuomorphic iconography these days is a pretty difficult thing to do right. I would absolutely wholeheartedly recommend switching all your icons/images to use a single cohesive "iconfont", such as FontAwesome
+- UX_IMPROVEMENTS/and also, using skeuomorphic iconography these days is a pretty difficult thing to do right. I would absolutely wholeheartedly recommend switching all your icons/images to use a single cohesive "iconfont", such as FontAwesome
 - 
 ##### APP:
 - SECURITY/find a way to prevent javascript or html upload (rename the files?)
@@ -32,7 +33,7 @@
 - CODE_IMPROVEMENTS/parse invalid chars in create_room.sh & destroy_room.sh with "read -r -d "" -n 1 and $REPLY" instead
 - CODE_IMPROVEMENTS/dont use shell=True in app.py (will have to catch the result of cmd = ['/some/prog', first_arg, second_arg]; subprocess.run(..)
 ##### FAR BACKEND & DEPLOYMENT:
-- make a how to deploy to virtualbox or kvm
+- make a "how to" guide on how to deploy on virtualbox or kvm
 - system updates
 - hostname
 

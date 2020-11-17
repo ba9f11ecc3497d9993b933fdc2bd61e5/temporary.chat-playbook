@@ -256,7 +256,7 @@ button:hover,
         background: url('../icons/exit.png') no-repeat left;
 }
 .sidebar-actions .btn-notif {
-        color: #777;
+        color: #e13;
         background: url('../icons/notifications.png') no-repeat left;
 }
 .sidebar-actions .btn-notif:hover {

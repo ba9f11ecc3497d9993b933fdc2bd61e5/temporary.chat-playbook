@@ -15,7 +15,6 @@
 ### the roadmap (oh god!)
 
 ##### UI:
-- FEATURE/Ping a user & Browser notifications
 - FEATURE/detect common file types and put pretty icons on preview (mp3 = music note icon, pdf = document icon etc)
 - FEATURE/preview url 
 - FEATURE/add timestamp on messags

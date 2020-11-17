@@ -1,0 +1,39 @@
+# boot ubuntu vm
+
+# go get ip : 
+sudo arp -a | grep "\[ether\] on br0" | grep -v ".net"
+
+# port forward
+
+
+#add sudo no password:
+
+visudo
+
+# create ssh key and put pub key in authorized_keys
+
+ssh-keygen
+cat /home/ubuntu/.ssh/id_rsa.pub > ~/.ssh/authorized_keys
+
+#create ssh config:
+
+host chat.example.com
+hostname chat.example.com 
+user ubuntu
+TCPKeepAlive yes
+ServerAliveInterval 50
+IdentityFile /home/ubuntu/.ssh/id_rsa
+
+# edit host file
+vi /etc/hosts
+
+10.10.10.13 chat.example.com
+
+
+# install ansible
+sudo apt-get install ansible
+
+# git clone the project
+git clone https://github.com/ba9f11ecc3497d9993b933fdc2bd61e5/temporary.chat-playbook.git
+
+# deploy

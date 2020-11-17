@@ -255,6 +255,14 @@ button:hover,
         color: #777;
         background: url('../icons/exit.png') no-repeat left;
 }
+.sidebar-actions .btn-notif {
+        color: #777;
+        background: url('../icons/notifications.png') no-repeat left;
+}
+.sidebar-actions .btn-notif:hover {
+        color: #777;
+        background: url('../icons/notifications.png') no-repeat left;
+}
 .sidebar-actions .btn-destroy { 
         color: #e13;
         background: url('../icons/destroy.png') no-repeat left;

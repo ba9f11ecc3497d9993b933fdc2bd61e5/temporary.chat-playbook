@@ -1,9 +1,12 @@
 #import the Flask class, request, and response
 from flask import Flask
 from flask import request 
-from flask import make_response 
+from flask import make_response
 
-#import module uuid to create user & rooms
+#import json to modify update file
+import json
+
+#import module uuid & random to create user & rooms
 import uuid
 import random
 import string
@@ -101,16 +104,21 @@ def write_message(path_to_conversation, temp_conversation):
   conversation.write(temp_conversation)
   conversation.close
 
-def update_version(path_to_version):
-  path_to_version = path_to_version
-  version_file = open(path_to_version, "r")
-  version = version_file.read()
-  version_file.close
-  newversion = int(version) + 1
-  version_file = open(path_to_version, "w")
-  version_file.write(str(newversion))
-  version_file.close
-  
+def rewrite_update_file(path_to_update, ping=False, ping_src_user=None, ping_dst_user=None, ping_message=None):
+  path_to_update = path_to_update
+  update_file = open(path_to_update, "r")
+  update_content = json.load(update_file)
+  update_file.close
+  current_version = update_content.get('version')
+  new_version = current_version + 1
+  update_content['version'] = new_version
+  update_content['ping'] = ping
+  update_content['ping_src_user'] = ping_src_user
+  update_content['ping_dst_user'] = ping_dst_user
+  update_content['ping_message'] = ping_message
+  update_file = open(path_to_update, "w")
+  json.dump(update_content, update_file)
+  update_file.close 
   
 @app.route("/app/create_private")
 def create_private():
@@ -177,14 +185,14 @@ def post():
     path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages'
     path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_bottom'
     path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
-    path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/version.txt'
+    path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
 {% endif %}
 {% if multirooms == False %}
     path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/html_top'
     path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/messages'
     path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/html_bottom'
     path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
-    path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/version.txt'
+    path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
 {% endif %}
     user_name = html.escape(user_name)
     client_message = html.escape(client_message)
@@ -195,7 +203,22 @@ def post():
       formatted_message = formatted_message + '<div class="speech"><p><b>' + user_name + ' : </b>' + client_message + '</p></div>'
       temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
       write_message(path_to_conversation, temp_conversation)
-      update_version(path_to_version)
+      rewrite_update_file(path_to_update)
+      res = make_response("OK")
+      return res
+    ping_detect = re.search('^ping\s', client_message)
+    if ping_detect is not None:
+      formatted_message = '<div class="speech"><p><b>' + user_name + ' : </b>' + client_message + '</p></div>'
+      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
+      write_message(path_to_conversation, temp_conversation)
+      client_message_words = client_message.split()
+      target_user = client_message_words[1]
+      rewrite_update_file(path_to_update, True, user_name, target_user, client_message)
+      res = make_response("OK")
+      return res
+    ping_detect = re.search('^ping_ack', client_message)
+    if ping_detect is not None:
+      rewrite_update_file(path_to_update)
       res = make_response("OK")
       return res
     client_message_len = len(client_message)
@@ -203,14 +226,14 @@ def post():
       formatted_message = '<div class="speech"><p><b>What are you trying to write here ' + user_name + '? a novel? (5000 char max)</b></p></div>'
       temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
       write_message(path_to_conversation, temp_conversation)
-      update_version(path_to_version)
+      rewrite_update_file(path_to_update)
       res = make_response("OK")
       return res
     else:
       formatted_message = '<div class="speech"><p><b>' + user_name + ' : </b>' + client_message + '</p></div>'
       temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
       write_message(path_to_conversation, temp_conversation)
-      update_version(path_to_version)
+      rewrite_update_file(path_to_update)
       res = make_response("OK")
       return res
 
@@ -263,7 +286,7 @@ def upload():
   path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages'
   path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_bottom'
   path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
-  path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/version.txt'
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_data.filename
   path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/'
 {% endif %}
@@ -272,7 +295,7 @@ def upload():
   path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/messages'
   path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/html_bottom'
   path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
-  path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/version.txt'
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/files/' + file_data.filename
   path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/files/'
 {% endif %}
@@ -297,6 +320,6 @@ def upload():
     formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' have uploaded a file : </b>' + '<a href="' + public_path_to_file + '">' + file_data.filename + '</a></p></div>'
   temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
   write_message(path_to_conversation, temp_conversation)
-  update_version(path_to_version)
+  rewrite_update_file(path_to_update)
   res = make_response("OK")
   return res

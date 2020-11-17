@@ -88,38 +88,9 @@ an ansible playbook to deploy an ec2 instance in aws and update route 53
 ##### usage example :
 `ansible-playbook -e "aws_region=us-east-1 aws_vpc=vpc-23ebcf46 aws_subnet=subnet-1d6b1a6a aws_ami=ami-0dba2cb6798deb6d8 aws_instance_type=t2.nano aws_sg=sg-008a34845ce896322 aws_ssh_key=luciano aws_tag=temporary.chat local_ssh_key_path=/home/luciano/.ssh/id_rsa aws_route53_zoneid=Z04750303W271V39JV6OR env=staging" deploy_aws.yaml`
 
-#destroy_aws.yaml
+# destroy_aws.yaml
 ##### description :
 an ansible playbook to destroy an ec2 instance based on name tag. 
 - I do not plan on maintaining this playbook for everyone to use it, this is not the goal of the project. If know your way around AWS, I tried to make as easy as possible to use it. My goal is not to focus on the aws deployment but rather, keep my time for the chat server, the features and to make it usable for as many people as possible... that being said, feel free to use this playbook if you want.
 ##### usage example :
 `ansible-playbook -e "aws_region=us-east-1 aws_tag=temporary.chat" destroy_aws.yaml`
-
-
-# the (ambitious) goals
-
-- decentralize communications (less facebook chats!)
-- offer a free service that will remain free and ad free ( temporary.chat )
-- offer a paying service with more options/storage/features ( permanent.chat )
-- offer the possibility to anyone to roll out their own instance of "temporary.chat" for free (with a different domain or simply an ip?)
-- create an api expert mode with end to end encryption managed by the user
-
-# the roadmap (oh god!)
-
-##### UI:
- - FEATURE/refreshing div constantly is resource expensive, try to think of a better way
-   - https://www.shanelynn.ie/asynchronous-updates-to-a-webpage-with-flask-and-socket-io/ (need to read this after I get some sleep)
- - Icons to buttons (especially menu button) 
- - Each row in the conversation should be wrapped in an element (not using br) and styled
- - Preview file before uploading
-##### APP:
-- FEATURE/create a self signed certificate when the server is only accessible via ip (+ put the the CA cert in the html page port 80)
-- create a real let's encrypt module if domain have a fqdn || a self signed certificate when the server is only accessible via ip (+ put the fingerprint the CA in the html page port 80?)
-- create api for expert users that want to manage their encryption
-- make the random chatrooms optional? (only one room (for people who may want it))
-- add database backend for text (not sure if this fits the model) 
-- support other OS (centos, openbsd to start with)
-- make a hackish solution to use dynamic dns + let's encrypt? 
-- preview urls shared in the room
-- fix javascript upload on firefox mobile
-- notifications on android/iphone? is it even possible for website? 

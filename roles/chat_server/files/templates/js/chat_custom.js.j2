@@ -1,11 +1,29 @@
 // functions
 
-async function check_version(arg) {
+async function check_updates(arg) {
     var local_version = arg;
-    version_url = current_url + "/version.txt?v=" + (new Date());
-    let response = await fetch(version_url);
+    update_url = current_url + "/updates.json?v=" + (new Date());
+    let response = await fetch(update_url);
     if (response.ok) {
-        let remote_version = await response.text();
+        let update_file = await response.json();
+        remote_version = update_file.version;
+        ping = update_file.ping;
+        ping_src_user = update_file.ping_src_user;
+        ping_dst_user = update_file.ping_dst_user;
+        ping_message = update_file.ping_message;
+        if ( ping === true ) {
+             if ( ping_dst_user === user_name ) {
+                 Notification.requestPermission(function(result) {
+                     if (result === 'granted') {
+                         // normal notifs
+                         var title = ping_src_user;
+                         var body = ping_message;
+                         const notification = new Notification(title, {body: body});
+                     };
+                 });
+                 ping_ack()
+             }
+        }         
         if (remote_version > local_version) {
             $('#conversation').load('conversation.html');
             var local_version = remote_version;
@@ -27,7 +45,7 @@ async function check_version(arg) {
 
 function pong(arg) {
     var local_version = arg;
-    setTimeout(check_version, 750, local_version);
+    setTimeout(check_updates, 750, local_version);
 }
 
 function fileChosen() {
@@ -137,11 +155,38 @@ function toggleSidebar() {
     document.body.classList.toggle('sidebar-open');
 }
 
+function enable_notif() {
+    if (typeof Notification !== "undefined") {
+        permission = Notification.permission;
+        if (permission !== "granted") {
+            // normal notifs
+            Notification.requestPermission().then(function(permission) {
+                location.reload();
+                return false; 
+            });
+        }
+    }
+    else {
+        alert("your browser does not support notifications")
+    }
+}
 
+async function ping_ack() {
+    const url = 'https://{{ my_fqdn }}/app/post';
+    var message = "ping_ack";
+    var user_name = document.cookie;
+    let formData = new FormData();
+    formData.append("user_name", user_name);
+    formData.append("message", message);
+    let response = await fetch(url, {body:formData,method:"post"});
+    if (response.ok == true) {
+        return false;
+    }
+}
 
 // code & listeners
 
-// set defaults and check version when page is loaded
+// set defaults
 
 var complete_url = window.location.href;
 var current_url = complete_url.replace("chat.html", "");
@@ -152,7 +197,13 @@ if (user_name === "") {
     document.cookie = "Anonymous; SameSite=Strict; Secure";
 }
 
-check_version(0);
+
+
+// start the check server loop
+
+check_updates(0);
+
+
 
 // listen for post
 
@@ -188,6 +239,13 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('upload-form')
     .addEventListener('submit', upload_file)
+})
+
+// listen for notifs
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-notif')[0]
+    .addEventListener('click', enable_notif)
 })
 
 // listen for quit

@@ -85,7 +85,7 @@ fi
 certbot certonly --webroot -w /var/www/${DOMAIN}/html -m {{ le_mailaddress }} --agree-tos -n -d ${UUID}.${DOMAIN}
 
 #create the room fodler
-kdir /var/www/${DOMAIN}/app/rooms/${UUID}
+mkdir /var/www/${DOMAIN}/app/rooms/${UUID}
 
 #create ngnix config for public room
 if [[ "$ROOM_TYPE" == "public" ]];then
@@ -145,14 +145,14 @@ chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/html_top
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/messages
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/html_bottom
-chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/${UUID}
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/css/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/icons/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/chat.html
-chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/tc.ico
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
 CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html | wc -l)
@@ -160,7 +160,7 @@ HTML_BODY=$(($CONV_LENGTH-2))
 sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room ${UUID} on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html > /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
 cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
 rm /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
-echo 2 > /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
+echo '{"version":2}' > /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 
 #if room private, copy the password file
 if [[ "$ROOM_TYPE" == "private" ]];then
@@ -248,7 +248,7 @@ chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/html_top
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/messages
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/html_bottom
-chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
+chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/${UUID}
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/js/*
@@ -261,8 +261,8 @@ CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html | wc -l
 HTML_BODY=$(($CONV_LENGTH-2))
 sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room ${UUID} on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html > /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
 cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
-rm cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
-echo 2 > /var/www/${DOMAIN}/app/rooms/${UUID}/version.txt
+rm /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
+echo '{"version":2}' > /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 
 #if room private, copy the password file
 if [[ "$ROOM_TYPE" == "private" ]];then
@@ -421,13 +421,13 @@ chmod 0440 /var/www/${DOMAIN}/app/rooms/icons/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/chat.html
 chmod 0440 /var/www/${DOMAIN}/app/rooms/tc.ico
 chmod 0640 /var/www/${DOMAIN}/app/rooms/conversation.html
-chmod 0640 /var/www/${DOMAIN}/app/rooms/version.txt
+chmod 0640 /var/www/${DOMAIN}/app/rooms/updates.json
 ln -s /var/www/${DOMAIN}/app/rooms/css /var/www/${DOMAIN}/html/css
 ln -s /var/www/${DOMAIN}/app/rooms/icons /var/www/${DOMAIN}/html/icons
 ln -s /var/www/${DOMAIN}/app/rooms/js /var/www/${DOMAIN}/html/js
 ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/files
 ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
-ln -s /var/www/${DOMAIN}/app/rooms/version.txt /var/www/${DOMAIN}/html/version.txt
+ln -s /var/www/${DOMAIN}/app/rooms/updates.json /var/www/${DOMAIN}/html/updates.json
 ln -s /var/www/${DOMAIN}/app/rooms/conversation.html /var/www/${DOMAIN}/html/conversation.html
 ln -s /var/www/${DOMAIN}/app/rooms/html_top /var/www/${DOMAIN}/html/html_top
 ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
@@ -437,7 +437,7 @@ HTML_BODY=$(($CONV_LENGTH-2))
 sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/conversation.html > /var/www/${DOMAIN}/app/rooms/temp.html
 cat /var/www/${DOMAIN}/app/rooms/temp.html > /var/www/${DOMAIN}/app/rooms/conversation.html
 rm /var/www/${DOMAIN}/app/rooms/temp.html
-echo 2 > /var/www/${DOMAIN}/app/rooms/version.txt
+echo '{"version":2}' > /var/www/${DOMAIN}/app/rooms/updates.json
 
 
 #if room private, copy the password file
@@ -596,13 +596,13 @@ chmod 0640 /var/www/${DOMAIN}/app/rooms/conversation.html
 chmod 0640 /var/www/${DOMAIN}/app/rooms/html_top
 chmod 0640 /var/www/${DOMAIN}/app/rooms/messages
 chmod 0640 /var/www/${DOMAIN}/app/rooms/html_bottom
-chmod 0640 /var/www/${DOMAIN}/app/rooms/version.txt
+chmod 0640 /var/www/${DOMAIN}/app/rooms/updates.json
 ln -s /var/www/${DOMAIN}/app/rooms/css /var/www/${DOMAIN}/html/css
 ln -s /var/www/${DOMAIN}/app/rooms/icons /var/www/${DOMAIN}/html/icons
 ln -s /var/www/${DOMAIN}/app/rooms/js /var/www/${DOMAIN}/html/js
 ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/files
 ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
-ln -s /var/www/${DOMAIN}/app/rooms/version.txt /var/www/${DOMAIN}/html/version.txt
+ln -s /var/www/${DOMAIN}/app/rooms/updates.json /var/www/${DOMAIN}/html/updates.json
 ln -s /var/www/${DOMAIN}/app/rooms/conversation.html /var/www/${DOMAIN}/html/conversation.html
 ln -s /var/www/${DOMAIN}/app/rooms/html_top /var/www/${DOMAIN}/html/html_top
 ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
@@ -612,7 +612,7 @@ HTML_BODY=$(($CONV_LENGTH-2))
 sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/conversation.html > /var/www/${DOMAIN}/app/rooms/temp.html
 cat /var/www/${DOMAIN}/app/rooms/temp.html > /var/www/${DOMAIN}/app/rooms/conversation.html
 rm /var/www/${DOMAIN}/app/rooms/temp.html
-echo 2 > /var/www/${DOMAIN}/app/rooms/version.txt
+echo '{"version":2}' > /var/www/${DOMAIN}/app/rooms/updates.json
 
 
 #if room private, copy the password file

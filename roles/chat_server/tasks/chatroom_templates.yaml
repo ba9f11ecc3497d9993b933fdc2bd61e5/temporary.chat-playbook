@@ -22,12 +22,12 @@
     group: www-data
     mode: 0400
 
-- name : add version.txt
+- name : add updates.json 
   remote_user: ubuntu
   become: yes
   become_method: sudo
   copy:
-    src: roles/chat_server/files/templates/version.txt
+    src: roles/chat_server/files/templates/updates.json
     dest: /home/app/templates/
     owner: www-data
     group: www-data

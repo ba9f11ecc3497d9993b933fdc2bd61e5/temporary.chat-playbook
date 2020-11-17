@@ -251,6 +251,10 @@ button:hover,
 .sidebar-actions .btn-quit {
         background: url('../icons/exit.png') no-repeat left;
 }
+.sidebar-actions .btn-notif:hover {
+        color: #777;
+        background: url('../icons/notifications.png') no-repeat left;
+}
 .sidebar-actions .btn-quit:hover {
         color: #777;
         background: url('../icons/exit.png') no-repeat left;

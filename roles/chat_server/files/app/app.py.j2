@@ -2,6 +2,7 @@
 from flask import Flask
 from flask import request 
 from flask import make_response
+from flask import jsonify
 
 #import json to modify update file
 import json
@@ -30,6 +31,9 @@ from passlib.apache import HtpasswdFile
 import PIL
 from PIL import Image
 
+#import base64 for images
+import base64
+
 #create an instance of this class
 app = Flask(__name__)
 
@@ -41,85 +45,36 @@ def create_thumbnail(src_image):
   img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
   return img
 
-
-def highlight_url(client_message):
-  list_words = client_message.split(" ")
-  new_message = ""
-  for word in list_words:
-    check_http = re.search('http://', word)
-    if check_http is not None:  
-      new_word = '<a href="' + word + '">' + word + '</a> '
-      new_message = new_message + new_word
-      continue
-    check_https = re.search('https://', word)
-    if check_https is not None:  
-      new_word = '<a href="' + word + '">' + word + '</a> '
-      new_message = new_message + new_word
-      continue
-    check_ftp = re.search('ftp://', word)
-    if check_ftp is not None:  
-      new_word = '<a href="' + word + '">' + word + '</a> '
-      new_message = new_message + new_word
-      continue
-    check_ftps = re.search('ftps://', word)
-    if check_ftps is not None:  
-      new_word = '<a href="' + word + '">' + word + '</a> '
-      new_message = new_message + new_word
-      continue
-    else:
-      new_word = word + ' '
-      new_message = new_message + new_word
-  client_message = new_message
-  return client_message
-
-
-def build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message):
-  path_to_htmltop = path_to_htmltop
-  path_to_messages = path_to_messages
-  path_to_htmlbottom = path_to_htmlbottom
-  user_name = user_name
-  formatted_message = formatted_message
-  messages = open(path_to_messages, "a")
-  messages.write(formatted_message)
-  messages.close
-  htmltop = open(path_to_htmltop, "r")
-  messages = open(path_to_messages, "r")
-  htmlbottom = open(path_to_htmlbottom, "r")
-  htmltop_content = htmltop.read()
-  messages_content = messages.read()
-  htmlbottom_content = htmlbottom.read()
-  temp_conversation = ""
-  temp_conversation = temp_conversation + htmltop_content
-  temp_conversation = temp_conversation + messages_content
-  temp_conversation = temp_conversation + htmlbottom_content
-  htmltop.close
-  messages.close
-  htmlbottom.close
-  return temp_conversation
-  
-def write_message(path_to_conversation, temp_conversation):
-  path_to_conversation = path_to_conversation
-  temp_conversation = temp_conversation
-  conversation = open(path_to_conversation, "w+")
-  conversation.write(temp_conversation)
-  conversation.close
-
-def rewrite_update_file(path_to_update, ping=False, ping_src_user=None, ping_dst_user=None, ping_message=None):
-  path_to_update = path_to_update
+def update_file_and_create_message(src_user, path_to_update, messages_dir, client_message, ping=False, dst_user=None, file_type=None, file_url=None, file_or_thumbnail=None):
   update_file = open(path_to_update, "r")
   update_content = json.load(update_file)
   update_file.close
   current_version = update_content.get('version')
   new_version = current_version + 1
+  path_to_message = messages_dir + str(new_version) + ".json"
+  message = {}
+  message['src_user'] = src_user
+  message['message'] = client_message
+  if file_type is not None:
+    message['file_type'] = file_type
+  if file_url is not None:
+    message['file_url'] = file_url
+  if file_or_thumbnail is not None:
+    message['file_or_thumbnail'] = file_or_thumbnail
+  message_file = open(path_to_message, "w")
+  json.dump(message, message_file)
+  message_file.close
   update_content['version'] = new_version
   update_content['ping'] = ping
-  update_content['ping_src_user'] = ping_src_user
-  update_content['ping_dst_user'] = ping_dst_user
-  update_content['ping_message'] = ping_message
+  update_content['src_user'] = src_user
+  if dst_user is not None:
+    update_content['ping_dst_user'] = dst_user
+  print(update_content)
   update_file = open(path_to_update, "w")
   json.dump(update_content, update_file)
-  update_file.close 
-  
+  update_file.close
+ 
+ 
 @app.route("/app/create_private")
 def create_private():
     room_type = "private"
@@ -144,14 +99,21 @@ def create_private():
 {% if multirooms == True %}
     url = "https://" + the_uuid + ".{{ my_fqdn }}"
     server_name = the_uuid + ".{{ my_fqdn }}"
-    return "<h6>User : " + user + "</h6><br>" + "<h6>Password : " + passwd + "</h6><br>" + "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
+    room_response_dict = {}
+    room_response_dict['User'] = user
+    room_response_dict['Password'] = passwd
+    room_response_dict['URL'] = url
+    return jsonify(room_response_dict)
 {% endif %}
 {% if multirooms == False %}
     url = "https://{{ my_fqdn }}" + '/chat.html'
     server_name = "{{ my_fqdn }}"
-    return "<h6>User : " + user + "</h6><br>" + "<h6>Password : " + passwd + "</h6><br>" + "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
+    room_response_dict = {}
+    room_response_dict['User'] = user
+    room_response_dict['Password'] = passwd
+    room_response_dict['URL'] = url
+    return jsonify(room_response_dict)
 {% endif %}
-
 
 @app.route("/app/create_public")
 def create_public():
@@ -162,14 +124,16 @@ def create_public():
     shell_result = subprocess.call([command], shell=True)
 {% if multirooms == True %}
     url = 'https://' + the_uuid + '.' + the_domain
-    return "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
+    room_response_dict = {}
+    room_response_dict['URL'] = url
+    return jsonify(room_response_dict)
 {% endif %}
 {% if multirooms == False %}
     url = 'https://' + the_domain + '/chat.html'
-    return "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
+    room_response_dict = {}
+    room_response_dict['URL'] = url
+    return jsonify(room_response_dict)
 {% endif %}
-
-
 
 @app.route("/app/post", methods=['GET', 'POST'])
 def post():
@@ -181,59 +145,34 @@ def post():
     print(client_ip + ':' + client_message)
     room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
-    path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_top'
-    path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages'
-    path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_bottom'
-    path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
     path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+    messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
 {% endif %}
 {% if multirooms == False %}
-    path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/html_top'
-    path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/messages'
-    path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/html_bottom'
-    path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
     path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+    messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
 {% endif %}
     user_name = html.escape(user_name)
     client_message = html.escape(client_message)
-    formatted_message = ""
-    url_detect = re.search('http://|https://|ftp://|ftps://', client_message)
-    if url_detect is not None:
-      client_message = highlight_url(client_message)
-      formatted_message = formatted_message + '<div class="speech"><p><b>' + user_name + ' : </b>' + client_message + '</p></div>'
-      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
-      write_message(path_to_conversation, temp_conversation)
-      rewrite_update_file(path_to_update)
-      res = make_response("OK")
-      return res
     ping_detect = re.search('^ping\s', client_message)
     if ping_detect is not None:
-      formatted_message = '<div class="speech"><p><b>' + user_name + ' : </b>' + client_message + '</p></div>'
-      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
-      write_message(path_to_conversation, temp_conversation)
       client_message_words = client_message.split()
       target_user = client_message_words[1]
-      rewrite_update_file(path_to_update, True, user_name, target_user, client_message)
+      update_file_and_create_message(user_name, path_to_update, messages_dir, client_message, True, target_user)
       res = make_response("OK")
       return res
-    ping_detect = re.search('^ping_ack', client_message)
-    if ping_detect is not None:
-      rewrite_update_file(path_to_update)
+    pingack_detect = re.search('^ping_ack', client_message)
+    if pingack_detect is not None:
+      update_file_and_create_message('!', path_to_update, messages_dir, user_name + " device acked your ping", False)
       res = make_response("OK")
       return res
     client_message_len = len(client_message)
-    if client_message_len > 5000:
-      formatted_message = '<div class="speech"><p><b>What are you trying to write here ' + user_name + '? a novel? (5000 char max)</b></p></div>'
-      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
-      write_message(path_to_conversation, temp_conversation)
-      rewrite_update_file(path_to_update)
+    if client_message_len > 1000:
+      update_file_and_create_message('!', path_to_update, messages_dir, " what are you trying to write here " + user_name + " a novel??? 1000 characters maximum.", False)
       res = make_response("OK")
       return res
     else:
-      formatted_message = '<div class="speech"><p><b>' + user_name + ' : </b>' + client_message + '</p></div>'
-      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
-      write_message(path_to_conversation, temp_conversation)
-      rewrite_update_file(path_to_update)
+      update_file_and_create_message(user_name, path_to_update, messages_dir, client_message)
       res = make_response("OK")
       return res
 
@@ -245,16 +184,14 @@ def quit():
   referer = request.referrer
   room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
-  path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
 {% endif %}
 {% if multirooms == False %}
-  path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
 {% endif %}
-  formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' has quit the room' + '</b></p></div>'
-  print(formatted_message)
-  file = open(path_to_conversation, "a")
-  file.write(formatted_message)
-  file.close
+  update_file_and_create_message('!', path_to_update, messages_dir, user_name + " has quit", False)
   res = make_response("OK")
   return res
 
@@ -283,19 +220,19 @@ def upload():
   room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
   path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_top'
-  path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages'
   path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_bottom'
   path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_data.filename
   path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/'
 {% endif %}
 {% if multirooms == False %}
   path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/html_top'
-  path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/messages'
   path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/html_bottom'
   path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/files/' + file_data.filename
   path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/files/'
 {% endif %}
@@ -312,14 +249,17 @@ def upload():
   gif_detect = re.search('.gif|.GIF', file_name)
   if image_detect is not None:
     thumbnail = create_thumbnail(path_to_file)
-    thumbnail.save(path_to_file_folder + 'thumb.' + file_name)
-    formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' have uploaded a file : </b>' + '<a href="' + public_path_to_file + '">' + file_name + '</a></p><img src="files/thumb.' + file_name + '" alt="' + file_name + '"></div>'
+    thumbnail_file = thumbnail.save(path_to_file_folder + "thumb." + file_name)
+    thumbnail_file_path = path_to_file_folder + "thumb." + file_name
+    thumbnail_open = open(thumbnail_file_path, "rb")
+    b64_thumbnail_bytes = base64.b64encode(thumbnail_open.read())
+    b64_thumbnail_string = b64_thumbnail_bytes.decode('utf-8')
+    thumbnail_open.close
+    update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'image', public_path_to_file, b64_thumbnail_string)
   elif gif_detect is not None:
-    formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' have uploaded a file : </b>' + '<a href="' + public_path_to_file + '">' + file_name + '</a></p><img src="files/' + file_name + '" alt="' + file_name + '"></div>'
+    update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'gif', public_path_to_file, file_name)
   else:
-    formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' have uploaded a file : </b>' + '<a href="' + public_path_to_file + '">' + file_data.filename + '</a></p></div>'
-  temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
-  write_message(path_to_conversation, temp_conversation)
-  rewrite_update_file(path_to_update)
+    update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'other', public_path_to_file)
   res = make_response("OK")
   return res
+

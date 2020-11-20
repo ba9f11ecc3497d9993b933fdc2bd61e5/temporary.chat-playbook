@@ -1,5 +1,44 @@
 // functions
 
+async function print_messages(local_version, remote_version) {
+    var div_conversation = document.getElementById('conversation');
+    while (local_version < remote_version) {
+        local_version++;
+        message_url = current_url + "/messages/" + local_version + ".json"
+        let response = await fetch(message_url);
+        if (response.ok) {
+            let message_file = await response.json();
+            if ((message_file.file_type == "image") || (message_file.file_type == 'gif')) {
+                var user = message_file.src_user;
+                var message = user + "Uploaded a file : ";
+                var file_url = message_file.file_url;
+                var file_thumbnail = message_file.file_or_thumbnail;
+                var speech_div = document.createElement('div');
+                speech_div.classList.add('speech');
+                var url = document.createElement('a');
+                url.appendChild(document.createTextNode(file_url + '<br>'));
+                url.title = file_url;
+                url.href = file_url;
+                var img = document.createElement('img');
+                img.src = 'data:image/jpeg;base64,' + file_thumbnail;
+                speech_div.appendChild(document.createTextNode(message));
+                speech_div.appendChild(url);
+                speech_div.appendChild(img);
+                div_conversation.appendChild(speech_div);
+            }
+            else {
+                var user = message_file.src_user;
+                var message = message_file.message;
+                var speech_div = document.createElement('div');
+                speech_div.classList.add('speech');
+                speech_div.appendChild(document.createTextNode(user + " : " + message));
+                div_conversation.appendChild(speech_div);
+            }
+        }
+    }
+}
+
+
 async function check_updates(arg) {
     var local_version = arg;
     update_url = current_url + "/updates.json?v=" + (new Date());
@@ -15,7 +54,6 @@ async function check_updates(arg) {
              if ( ping_dst_user === user_name ) {
                  Notification.requestPermission(function(result) {
                      if (result === 'granted') {
-                         // normal notifs
                          var title = ping_src_user;
                          var body = ping_message;
                          const notification = new Notification(title, {body: body});
@@ -25,7 +63,7 @@ async function check_updates(arg) {
              }
         }         
         if (remote_version > local_version) {
-            $('#conversation').load('conversation.html');
+            print_messages(local_version, remote_version);
             var local_version = remote_version;
             setTimeout(scroll_down, 500);
             pong(local_version);
@@ -84,7 +122,6 @@ async function post_message() {
     formData.append("message", message);
     let response = await fetch(url, {body:formData,method:"post"});
     if (response.ok == true) {
-        $('#conversation').load('conversation.html');
         scroll_down();
     }
 }
@@ -113,13 +150,18 @@ function preview_image() {
     file = filesToUpload[0];
     if (file) {
         var reader = new FileReader();
-        reader.onload = function(e) {
-            $('#preview').attr('src', e.target.result).height(100);
+        reader.onload = function(event) {
+            var img = document.createElement('img');
+            img.src = event.target.result;
+            img.height = 100;
+            var preview = document.getElementById('preview');
+            preview.appendChild(img);
         }
         reader.readAsDataURL(file);
     }
     else {
-        $('#preview').attr('src', '');
+        var preview = document.getElementById('preview');
+        preview.removeChild(preview.childNodes[0]);
     }
 }
 
@@ -133,7 +175,6 @@ async function upload_file() {
     formData.append("file", file);
     let response = await fetch(url, {body:formData,method:"post"});
     if (response.ok == true) {
-        $('#conversation').load('conversation.html');
         scroll_down();
         clear_preview();
         d.getElementsByClassName('file-form')[0].classList.add('no-file-chosen');

@@ -13,8 +13,8 @@ async function create_room() {
 	if (response.ok) {
 	    let response_json = await response.json();
 	    var room_info_div = document.getElementById('room_info');
-            while(room_info_div.firstChild) {
-                room_info_div.firstChild(room_info_div.lastChild);
+            while(room_info_div.hasChildNodes()) {
+                room_info_div.removeChild(room_info_div.lastChild);
             }
 	    var show_info_user = document.createElement('p');
 	    var show_info_password = document.createElement('p');
@@ -36,8 +36,8 @@ async function create_room() {
 	if (response.ok) {
             let response_json = await response.json();
 	    var room_info_div = document.getElementById('room_info');
-            while(room_info_div.firstChild) {
-                room_info_div.firstChild(room_info_div.lastChild);
+            while(room_info_div.hasChildNodes()) {
+                room_info_div.removeChild(room_info_div.lastChild);
             }
 	    var show_info_url = document.createElement('a');
 	    show_info_url.appendChild(document.createTextNode(response_json.URL));

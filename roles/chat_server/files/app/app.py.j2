@@ -61,14 +61,14 @@ def update_file_and_create_message(src_user, path_to_update, messages_dir, clien
     message['file_url'] = file_url
   if file_or_thumbnail is not None:
     message['file_or_thumbnail'] = file_or_thumbnail
+  if ping is not None:
+    message['ping'] = ping
+  if dst_user is not None:
+    message['dst_user'] = dst_user
   message_file = open(path_to_message, "w")
   json.dump(message, message_file)
   message_file.close
   update_content['version'] = new_version
-  update_content['ping'] = ping
-  update_content['src_user'] = src_user
-  if dst_user is not None:
-    update_content['ping_dst_user'] = dst_user
   print(update_content)
   update_file = open(path_to_update, "w")
   json.dump(update_content, update_file)
@@ -154,21 +154,25 @@ def post():
 {% endif %}
     user_name = html.escape(user_name)
     client_message = html.escape(client_message)
-    ping_detect = re.search('^ping\s', client_message)
+    ping_detect = re.search('^/ping\s', client_message)
     if ping_detect is not None:
       client_message_words = client_message.split()
       target_user = client_message_words[1]
+      client_message = " ".join(client_message_words[2:])
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message, True, target_user)
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping => ' + target_user, True)  
       res = make_response("OK")
       return res
-    pingack_detect = re.search('^ping_ack', client_message)
+    pingack_detect = re.search('^/ping_ack', client_message)
     if pingack_detect is not None:
-      update_file_and_create_message('!', path_to_update, messages_dir, user_name + " device acked your ping", False)
+      client_message_words = client_message.split()
+      src_user = client_message_words[1]
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping ack => ' + src_user, False)
       res = make_response("OK")
       return res
     client_message_len = len(client_message)
     if client_message_len > 1000:
-      update_file_and_create_message('!', path_to_update, messages_dir, " what are you trying to write here " + user_name + " a novel??? 1000 characters maximum.", False)
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, " what are you trying to write here " + user_name + " a novel??? 1000 characters maximum.", False)
       res = make_response("OK")
       return res
     else:
@@ -191,7 +195,7 @@ def quit():
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
 {% endif %}
-  update_file_and_create_message('!', path_to_update, messages_dir, user_name + " has quit", False)
+  update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + " has quit", False)
   res = make_response("OK")
   return res
 
@@ -257,7 +261,11 @@ def upload():
     thumbnail_open.close
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'image', public_path_to_file, b64_thumbnail_string)
   elif gif_detect is not None:
-    update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'gif', public_path_to_file, file_name)
+    gif_open = open(path_to_file, "rb")
+    b64_gif_bytes = base64.b64encode(gif_open.read())
+    b64_gif_string = b64_gif_bytes.decode('utf-8')
+    gif_open.close
+    update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'gif', public_path_to_file, b64_gif_string)
   else:
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'other', public_path_to_file)
   res = make_response("OK")

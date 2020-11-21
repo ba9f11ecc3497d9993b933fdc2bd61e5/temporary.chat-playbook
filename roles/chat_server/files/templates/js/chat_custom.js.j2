@@ -8,36 +8,101 @@ async function print_messages(local_version, remote_version) {
         let response = await fetch(message_url);
         if (response.ok) {
             let message_file = await response.json();
-            if ((message_file.file_type == "image") || (message_file.file_type == 'gif')) {
-                var user = message_file.src_user;
-                var message = user + "Uploaded a file : ";
-                var file_url = message_file.file_url;
-                var file_thumbnail = message_file.file_or_thumbnail;
-                var speech_div = document.createElement('div');
-                speech_div.classList.add('speech');
-                var url = document.createElement('a');
-                url.appendChild(document.createTextNode(file_url + '<br>'));
-                url.title = file_url;
-                url.href = file_url;
-                var img = document.createElement('img');
-                img.src = 'data:image/jpeg;base64,' + file_thumbnail;
-                speech_div.appendChild(document.createTextNode(message));
-                speech_div.appendChild(url);
-                speech_div.appendChild(img);
-                div_conversation.appendChild(speech_div);
+            if(message_file.hasOwnProperty('file_url')) {
+                if ((message_file.file_type == "image") || (message_file.file_type == 'gif')) {
+                    var src_user = message_file.src_user;
+                    var message = src_user + " Uploaded a file : ";
+                    var file_url = message_file.file_url;
+                    var file_thumbnail = message_file.file_or_thumbnail;
+                    var speech_div = document.createElement('div');
+                    var image_div = document.createElement('div');
+                    speech_div.classList.add('speech');
+                    image_div.classList.add('speech');
+                    var url = document.createElement('a');
+                    url.appendChild(document.createTextNode(file_url));
+                    url.title = file_url;
+                    url.href = file_url;
+                    var img = document.createElement('img');
+                    image_ext =  file_url.split('.').pop()
+                    if (image_ext == "jpg" || image_ext == "jpeg" || image_ext == "JPG" || image_ext == "JPEG") {
+                        img.src = 'data:image/jpeg;base64,' + file_thumbnail;
+                    }
+                    if (image_ext == "png" || image_ext == "PNG") {
+                        img.src = 'data:image/png;base64,' + file_thumbnail;
+                    }
+                    if (image_ext == "gif" || image_ext == "GIF") {
+                        img.src = 'data:image/gif;base64,' + file_thumbnail;
+                    }
+                    image_div.appendChild(img);
+                    speech_div.appendChild(document.createTextNode(message));
+                    speech_div.appendChild(url);
+                    div_conversation.appendChild(speech_div);
+                    div_conversation.appendChild(image_div);
+                }
+                else {
+                    var src_user = message_file.src_user;
+                    var message = src_user + " Uploaded a file : "; 
+                    var file_url = message_file.file_url;
+                    var speech_div = document.createElement('div');
+                    var url = document.createElement('a');
+                    url.appendChild(document.createTextNode(file_url));
+                    url.title = file_url;
+                    url.href = file_url;
+                    speech_div.classList.add('speech');
+                    speech_div.appendChild(document.createTextNode(user + " : " + message));
+                    speech_div.appendChild(url);
+                    div_conversation.appendChild(speech_div);
+                }
+            }
+            if (message_file.ping == true) {
+                var src_user = message_file.src_user;
+                var dst_user = message_file.dst_user;
+                var message = message_file.message;
+                if ( dst_user === user_name ) {
+                    Notification.requestPermission(function(result) {
+                    if (result === 'granted') {
+                        var title = src_user;
+                        var body = message;
+                        const notification = new Notification(title, {body: body});
+                        ping_ack(src_user)
+                        }
+                    })
+                }
+                var src_user = message_file.src_user;
+                var dst_user = message_file.dst_user;
+                var message = message_file.message;
+                if (src_user == "room_bot V1.0") {
+                    var bot_div = document.createElement('div');
+                    bot_div.classList.add('speech-bot');
+                    bot_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    div_conversation.appendChild(bot_div);
+                }
+                else {
+                    var speech_div = document.createElement('div');
+                    speech_div.classList.add('speech-imp');
+                    speech_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    div_conversation.appendChild(speech_div);
+                }
             }
             else {
-                var user = message_file.src_user;
+                var src_user = message_file.src_user;
                 var message = message_file.message;
-                var speech_div = document.createElement('div');
-                speech_div.classList.add('speech');
-                speech_div.appendChild(document.createTextNode(user + " : " + message));
-                div_conversation.appendChild(speech_div);
+                if (src_user == "room_bot V1.0") {
+                    var bot_div = document.createElement('div');
+                    bot_div.classList.add('speech-bot');
+                    bot_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    div_conversation.appendChild(bot_div);
+                }
+                else {    
+                    var speech_div = document.createElement('div');
+                    speech_div.classList.add('speech');
+                    speech_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    div_conversation.appendChild(speech_div);
+                }
             }
         }
     }
 }
-
 
 async function check_updates(arg) {
     var local_version = arg;
@@ -50,18 +115,6 @@ async function check_updates(arg) {
         ping_src_user = update_file.ping_src_user;
         ping_dst_user = update_file.ping_dst_user;
         ping_message = update_file.ping_message;
-        if ( ping === true ) {
-             if ( ping_dst_user === user_name ) {
-                 Notification.requestPermission(function(result) {
-                     if (result === 'granted') {
-                         var title = ping_src_user;
-                         var body = ping_message;
-                         const notification = new Notification(title, {body: body});
-                     };
-                 });
-                 ping_ack()
-             }
-        }         
         if (remote_version > local_version) {
             print_messages(local_version, remote_version);
             var local_version = remote_version;
@@ -182,10 +235,12 @@ async function upload_file() {
 }
 
 function clear_preview() {
-    document.getElementById('preview').src = '';
-    var filesToUpload = document.getElementById('file').files;
-    var file = '';
+    var preview_section = document.getElementById('preview');
+    while(preview_section.hasChildNodes()) {
+        preview_section.removeChild(preview_section.lastChild);
+    }
 }
+
 
 function scroll_down() {
     var textarea = document.getElementById('conversation');
@@ -212,9 +267,9 @@ function enable_notif() {
     }
 }
 
-async function ping_ack() {
+async function ping_ack(src_user) {
     const url = 'https://{{ my_fqdn }}/app/post';
-    var message = "ping_ack";
+    var message = "/ping_ack " + src_user;
     var user_name = document.cookie;
     let formData = new FormData();
     formData.append("user_name", user_name);

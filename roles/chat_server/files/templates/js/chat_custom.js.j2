@@ -63,7 +63,7 @@ async function print_messages(local_version, remote_version) {
                     url.title = file_url;
                     url.href = file_url;
                     speech_div.classList.add('speech');
-                    speech_div.appendChild(document.createTextNode(user + " : " + message));
+                    speech_div.appendChild(document.createTextNode(message));
                     speech_div.appendChild(url);
                     div_conversation.appendChild(speech_div);
                 }

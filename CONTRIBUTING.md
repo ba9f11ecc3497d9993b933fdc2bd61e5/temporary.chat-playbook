@@ -25,7 +25,6 @@
 ##### APP:
 - SECURITY/find a way to prevent javascript or html upload (rename the files?)
 - SECURITY/add new-ish header Permissions-Policy https://www.w3.org/TR/permissions-policy-1/
-- FEATURE/make a "help" command line for the below commands
 - FEATURE/Create CLI interface /nick [username] /ping [username] /upload (will open your file browser of choice)
 - FEATURE/template room_bot version
 - FEATURE/Create Named rooms (remove the uuid check and restrict the create rooms api endpoints.) New subdomain will be encrypted, neat (room familly.example.com, room friends.exmple.com) 

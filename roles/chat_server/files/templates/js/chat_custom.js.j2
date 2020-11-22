@@ -9,7 +9,21 @@ async function print_messages(local_version, remote_version) {
         if (response.ok) {
             let message_file = await response.json();
             if(message_file.hasOwnProperty('file_url')) {
-                if ((message_file.file_type == "image") || (message_file.file_type == 'gif')) {
+                if ((message_file.file_url == "bomb") && (message_file.src_user == "room_bot V1.0")) {
+                    var src_user = message_file.src_user;
+                    var message = message_file.message;
+                    var img = document.createElement('img');
+                    img.src = 'data:image/png;base64,' + message_file.file_or_thumbnail;
+                    var bot_div = document.createElement('div');
+                    var bomb_div = document.createElement('div');
+                    bot_div.classList.add('speech-bot');
+                    bomb_div.classList.add('speech-bot');
+                    bot_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    bomb_div.appendChild(img);
+                    div_conversation.appendChild(bot_div);
+                    div_conversation.appendChild(bomb_div);
+                }
+                else if ((message_file.src_user != "room_bot V1.0") && (message_file.file_type == "image") || (message_file.file_type == "gif")) {
                     var src_user = message_file.src_user;
                     var message = src_user + " Uploaded a file : ";
                     var file_url = message_file.file_url;
@@ -39,7 +53,7 @@ async function print_messages(local_version, remote_version) {
                     div_conversation.appendChild(speech_div);
                     div_conversation.appendChild(image_div);
                 }
-                else {
+                else if ((message_file.src_user != "room_bot V1.0") && (message_file.file_type != "image") && (message_file.file_type != "gif")) {
                     var src_user = message_file.src_user;
                     var message = src_user + " Uploaded a file : "; 
                     var file_url = message_file.file_url;
@@ -54,7 +68,7 @@ async function print_messages(local_version, remote_version) {
                     div_conversation.appendChild(speech_div);
                 }
             }
-            if (message_file.ping == true) {
+            else if (message_file.ping == true) {
                 var src_user = message_file.src_user;
                 var dst_user = message_file.dst_user;
                 var message = message_file.message;
@@ -84,7 +98,7 @@ async function print_messages(local_version, remote_version) {
                     div_conversation.appendChild(speech_div);
                 }
             }
-            else {
+            else if (!message_file.hasOwnProperty('file_url')) {
                 var src_user = message_file.src_user;
                 var message = message_file.message;
                 if (src_user == "room_bot V1.0") {

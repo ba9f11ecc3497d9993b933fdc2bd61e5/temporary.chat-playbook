@@ -146,17 +146,11 @@ chown -R app:www-data /var/www/${DOMAIN}/app/rooms/${UUID}
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/css/*
-chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/icons/*
+chmod 0444 /var/www/${DOMAIN}/app/rooms/${UUID}/icons/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/chat.html
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/messages
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/tc.ico
-chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
-CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html | wc -l)
-HTML_BODY=$(($CONV_LENGTH-2))
-sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room ${UUID} on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html > /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
-cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
-rm /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
 echo '{"version":2}' > /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 
 #if room private, copy the password file
@@ -245,17 +239,12 @@ chown -R app:www-data /var/www/${DOMAIN}/app/rooms/${UUID}
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/css/*
-chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/icons/*
+chmod 0444 /var/www/${DOMAIN}/app/rooms/${UUID}/icons/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/chat.html
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/messages
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/tc.ico
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
-CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html | wc -l)
-HTML_BODY=$(($CONV_LENGTH-2))
-sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room ${UUID} on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html > /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
-cat /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html > /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
-rm /var/www/${DOMAIN}/app/rooms/${UUID}/temp.html
 echo '{"version":2}' > /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 
 #if room private, copy the password file
@@ -407,7 +396,7 @@ chown -R app:www-data /var/www/${DOMAIN}/app/rooms/
 chmod 0750 /var/www/${DOMAIN}/app/rooms/files
 chmod 0440 /var/www/${DOMAIN}/app/rooms/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/css/*
-chmod 0440 /var/www/${DOMAIN}/app/rooms/icons/*
+chmod 0444 /var/www/${DOMAIN}/app/rooms/icons/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/chat.html
 chmod 0640 /var/www/${DOMAIN}/app/rooms/updates.json
 chmod 0750 /var/www/${DOMAIN}/app/rooms/messages
@@ -419,11 +408,6 @@ ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/files
 ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
 ln -s /var/www/${DOMAIN}/app/rooms/updates.json /var/www/${DOMAIN}/html/updates.json
 ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
-CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/conversation.html | wc -l)
-HTML_BODY=$(($CONV_LENGTH-2))
-sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/conversation.html > /var/www/${DOMAIN}/app/rooms/temp.html
-cat /var/www/${DOMAIN}/app/rooms/temp.html > /var/www/${DOMAIN}/app/rooms/conversation.html
-rm /var/www/${DOMAIN}/app/rooms/temp.html
 echo '{"version":2}' > /var/www/${DOMAIN}/app/rooms/updates.json
 
 
@@ -576,7 +560,7 @@ chown -R app:www-data /var/www/${DOMAIN}/app/rooms/
 chmod 0750 /var/www/${DOMAIN}/app/rooms/files
 chmod 0440 /var/www/${DOMAIN}/app/rooms/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/css/*
-chmod 0440 /var/www/${DOMAIN}/app/rooms/icons/*
+chmod 0444 /var/www/${DOMAIN}/app/rooms/icons/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/chat.html
 chmod 0440 /var/www/${DOMAIN}/app/rooms/tc.ico
 chmod 0750 /var/www/${DOMAIN}/app/rooms/messages
@@ -588,11 +572,6 @@ ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/files
 ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
 ln -s /var/www/${DOMAIN}/app/rooms/updates.json /var/www/${DOMAIN}/html/updates.json
 ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
-CONV_LENGTH=$(cat /var/www/${DOMAIN}/app/rooms/conversation.html | wc -l)
-HTML_BODY=$(($CONV_LENGTH-2))
-sed "${HTML_BODY}i<div class=\"speech\" <b>welcome to room on ${DOMAIN}</b></div>" /var/www/${DOMAIN}/app/rooms/conversation.html > /var/www/${DOMAIN}/app/rooms/temp.html
-cat /var/www/${DOMAIN}/app/rooms/temp.html > /var/www/${DOMAIN}/app/rooms/conversation.html
-rm /var/www/${DOMAIN}/app/rooms/temp.html
 echo '{"version":2}' > /var/www/${DOMAIN}/app/rooms/updates.json
 
 

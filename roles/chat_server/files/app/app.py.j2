@@ -21,8 +21,9 @@ import re
 #import subproces for room creation
 import subprocess
 
-#import html to sanitize user input
-import html
+#import time and datetime for room destruction
+import time
+import datetime
 
 #import passlib apache for .htaccess files
 from passlib.apache import HtpasswdFile
@@ -141,9 +142,9 @@ def post():
     client_message = request.form['message']
     user_name = request.form['user_name']
     client_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    referer = request.referrer
+    referrer = request.referrer
     print(client_ip + ':' + client_message)
-    room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+    room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
     path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
     messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
@@ -152,8 +153,6 @@ def post():
     path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
     messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
 {% endif %}
-    user_name = html.escape(user_name)
-    client_message = html.escape(client_message)
     ping_detect = re.search('^/ping\s', client_message)
     if ping_detect is not None:
       client_message_words = client_message.split()
@@ -184,9 +183,8 @@ def post():
 def quit():
   print(request.form)
   user_name = request.form['user_name']
-  user_name = html.escape(user_name)
-  referer = request.referrer
-  room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  referrer = request.referrer
+  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
@@ -205,12 +203,33 @@ def destroy():
   print(request.form)
   the_domain = "{{ my_fqdn }}"
   user_name = request.form['user_name']
-  user_name = html.escape(user_name)
-  referer = request.referrer
-  the_uuid = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  referrer = request.referrer
+  the_uuid = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+{% if multirooms == True %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
+  path_to_bomb = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/icons/bomb.png'
+{% endif %}
+{% if multirooms == False %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
+  path_to_bomb = "/var/www/{{ my_fqdn }}/app/rooms/icons/bomb.png"
+{% endif %}
+  bomb_open = open(path_to_bomb, "rb")
+  b64_bomb_bytes = base64.b64encode(bomb_open.read())
+  b64_bomb_string = b64_bomb_bytes.decode('utf-8')
+  bomb_open.close
+  countdown_seconds = 15
+  while countdown_seconds > 0:
+    update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + " have dropped the bomb, this room will auto-destroy in " + str(countdown_seconds) + " seconds.", False, "bomb", 'image', "bomb", b64_bomb_string)
+    time.sleep(1)
+    countdown_seconds -= 1
+  update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, "This room was destroyed by " + user_name + " on " + datetime.datetime.utcnow().strftime("%a %b %d %Y @ %H:%M:%S UTC"), False, "bomb", 'image', "bomb", b64_bomb_string)
+  time.sleep(2)
   command = 'sudo /var/www/' + the_domain + '/app/destroy_room.sh ' + user_name + ' ' + the_uuid + ' ' +  the_domain
   shell_result = subprocess.call([command], shell=True)
-  return "<h6>OK BOSS</h6>" 
+  res = make_response("OK BOSS")
+  return res
 
 
 @app.route("/app/upload", methods=['GET', 'POST'])
@@ -219,22 +238,15 @@ def upload():
   file_name = file_data.filename
   print(file_data)
   user_name = request.form['user_name']
-  user_name = html.escape(user_name)
-  referer = request.referrer
-  room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  referrer = request.referrer
+  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
-  path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_top'
-  path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_bottom'
-  path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_data.filename
   path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/'
 {% endif %}
 {% if multirooms == False %}
-  path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/html_top'
-  path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/html_bottom'
-  path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/files/' + file_data.filename
@@ -246,8 +258,6 @@ def upload():
 {% if multirooms == False %}
   public_path_to_file = 'https://' + '{{ my_fqdn }}' + '/files/' + file_data.filename
 {% endif %}
-  print(path_to_file)
-  print(public_path_to_file)
   file_data.save(path_to_file)
   image_detect = re.search('.jpg|.jpeg|.JPG|.JPEG|.png|.PNG', file_name)
   gif_detect = re.search('.gif|.GIF', file_name)

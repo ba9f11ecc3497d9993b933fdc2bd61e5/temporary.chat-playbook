@@ -1,0 +1,7 @@
+<GreenJello> derpadmin, the server should either return JSON, like a list of image src strings or whatever other structure you need (but not a 1:1 mapping with html attributes), or it could return HTML if you receive HTML as input from a user, and then you use an HTML parser and generate DOM nodes from the HTML with only specific elements and attributes allowed
+<derpadmin> I am unblocked
+* mod has quit (Ping timeout: 264 seconds)
+<derpadmin> I am fine with it returning json
+<derpadmin> see you in 2 weeks lol
+<derpadmin> refactor :)
+<GreenJello> lol sounds good

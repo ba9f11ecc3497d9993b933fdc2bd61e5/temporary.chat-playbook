@@ -118,6 +118,18 @@
     mode: 0500
   when: multirooms == False 
 
+- name: create /var/www/[my_fqdn]/html/launcher/js
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/html/launcher/js' }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0500
+  when: multirooms == False 
+
 - name: copy css for the spinner (multirooms mode)
   remote_user: ubuntu
   become: yes
@@ -142,30 +154,6 @@
     mode: 0400
   when: multirooms == False
 
-- name: copy jquery html root
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  copy: 
-    src: roles/chat_server/files/html/jquery.min.js
-    dest: "{{ '/var/www/' + my_fqdn + '/html/jquery.min.js' }}"
-    owner: www-data
-    group: www-data
-    mode: 0400
-  when: multirooms == False
-
-- name: copy jquery html root in js folder
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  copy: 
-    src: roles/chat_server/files/html/jquery.min.js
-    dest: "{{ '/var/www/' + my_fqdn + '/html/js/jquery.min.js' }}"
-    owner: www-data
-    group: www-data
-    mode: 0400
-  when: multirooms == True
-
 - name: create custom.js from template in html/js folder 
   remote_user: ubuntu
   become: yes
@@ -178,29 +166,17 @@
     mode: 0400
   when: multirooms == True
 
-- name: copy single chat room js
+- name: copy single chat room js (launcher folder)
   remote_user: ubuntu
   become: yes
   become_method: sudo
-  copy:
-    src: roles/chat_server/files/templates/js
-    dest: "{{ '/var/www/' + my_fqdn + '/html/launcher' }}"
-    owner: www-data
-    group: www-data
-    mode: 0400
-  when: multirooms == False 
-
-- name: create custom.js from template single room
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  template: 
+  template:
     src: roles/chat_server/files/html/custom.js.j2
     dest: "{{ '/var/www/' + my_fqdn + '/html/launcher/js/custom.js' }}"
     owner: www-data
     group: www-data
     mode: 0400
-  when: multirooms == False
+  when: multirooms == False 
 
 - name: copy icon (launcher)
   remote_user: ubuntu

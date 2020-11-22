@@ -11,6 +11,28 @@
     group: www-data
     mode: 0400
 
+- name: create js subfolder in template dir
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /home/app/templates/js
+    state: directory
+    owner: app
+    group: www-data
+    mode: 0550
+
+- name: create messages subfolder in template dir
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: /home/app/templates/messages
+    state: directory
+    owner: app
+    group: www-data
+    mode: 0750
+
 - name : add template chat
   remote_user: ubuntu
   become: yes
@@ -55,18 +77,6 @@
     group: www-data
     mode: 0400
 
-
-- name : copy js 
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  copy:
-    src: roles/chat_server/files/templates/js
-    dest: /home/app/templates/
-    owner: www-data
-    group: www-data
-    mode: 0400
-
 - name : create chat_custom.js from template 
   remote_user: ubuntu
   become: yes
@@ -89,46 +99,3 @@
     group: www-data
     mode: 0400
 
-- name : copy conversation.html
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  copy:
-    src: roles/chat_server/files/templates/conversation.html
-    dest: /home/app/templates/
-    owner: www-data
-    group: www-data
-    mode: 0400
-
-- name : copy html_top
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  copy:
-    src: roles/chat_server/files/templates/html_top
-    dest: /home/app/templates/
-    owner: www-data
-    group: www-data
-    mode: 0400
-
-- name : copy messages
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  copy:
-    src: roles/chat_server/files/templates/messages
-    dest: /home/app/templates/
-    owner: www-data
-    group: www-data
-    mode: 0400
-
-- name : copy html_bottom
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
-  copy:
-    src: roles/chat_server/files/templates/html_bottom
-    dest: /home/app/templates/
-    owner: www-data
-    group: www-data
-    mode: 0400

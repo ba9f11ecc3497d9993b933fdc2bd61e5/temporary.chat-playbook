@@ -204,6 +204,7 @@ def destroy():
   the_domain = "{{ my_fqdn }}"
   user_name = request.form['user_name']
   referrer = request.referrer
+  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
   the_uuid = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'

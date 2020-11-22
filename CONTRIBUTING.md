@@ -15,7 +15,6 @@
 ### the roadmap (oh god!)
 
 ##### UI:
-- FEATURE/re-write url highlight feature in javascript :(
 - FEATURE/preview url 
 - FEATURE/add timestamp on messags
 - FEATURE/copy url to clipboard & invite people on room creation

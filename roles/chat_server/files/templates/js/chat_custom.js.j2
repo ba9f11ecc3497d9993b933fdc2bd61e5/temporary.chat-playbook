@@ -107,10 +107,26 @@ async function print_messages(local_version, remote_version) {
                     bot_div.appendChild(document.createTextNode(src_user + " : " + message));
                     div_conversation.appendChild(bot_div);
                 }
-                else {    
+                else {
+                    var words = message.split(" ");
                     var speech_div = document.createElement('div');
                     speech_div.classList.add('speech');
-                    speech_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    speech_div.appendChild(document.createTextNode(src_user + " : "));
+                    var url_pattern = new RegExp("https://|http://|ftp://|ftps://");
+                    for (var i = 0; i < words.length; i += 1) {
+                        var check_url = url_pattern.test(words[i]);
+                        if (check_url == true) {
+                            var url = document.createElement('a');
+                            url.appendChild(document.createTextNode(words[i]));
+                            url.title = words[i];
+                            url.href = words[i];
+                            speech_div.appendChild(url);
+                            speech_div.appendChild(document.createTextNode(" "));
+                        }
+                        else {
+                            speech_div.appendChild(document.createTextNode(words[i] + " "));
+                        }
+                    }
                     div_conversation.appendChild(speech_div);
                 }
             }
@@ -297,6 +313,17 @@ async function ping_ack(src_user) {
     if (response.ok == true) {
         return false;
     }
+}
+
+function toHyperlink(message)
+{
+    var pattern1 = /(\b(https?|ftp|ftps|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    var str1 = str.replace(pattern1, "<a href='$1'>$1</a>");
+    
+    var pattern2 =/(^|[^\/])(www\.[\S]+(\b|$))/gim;
+    var str2 = str1.replace(pattern2, '$1<a target="_blank" href="http://$2">$2</a>');
+    
+    document.getElementById("result").innerHTML = str2;
 }
 
 function help() {

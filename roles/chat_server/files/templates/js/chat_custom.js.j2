@@ -183,13 +183,18 @@ async function post_message() {
     const url = 'https://{{ my_fqdn }}/app/post';
     var message = document.getElementById('post').value;
     document.getElementsByClassName('send-row')[0].reset();
-    var user_name = document.cookie;
-    let formData = new FormData();
-    formData.append("user_name", user_name);
-    formData.append("message", message);
-    let response = await fetch(url, {body:formData,method:"post"});
-    if (response.ok == true) {
-        scroll_down();
+    if (message == "/help") {
+        help()
+    }
+    else {
+        var user_name = document.cookie;
+        let formData = new FormData();
+        formData.append("user_name", user_name);
+        formData.append("message", message);
+        let response = await fetch(url, {body:formData,method:"post"});
+        if (response.ok == true) {
+            scroll_down();
+        }
     }
 }
 
@@ -292,6 +297,30 @@ async function ping_ack(src_user) {
     if (response.ok == true) {
         return false;
     }
+}
+
+function help() {
+    var div_conversation = document.getElementById('conversation');
+    var br = document.createElement("br");
+    var help_div = document.createElement('div');
+    help_div.classList.add('speech-bot');
+    help_div.appendChild(document.createTextNode("###        Help Menu         ###\n"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/help           : open this menu"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/ping           : notify specific user for this message"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/notifications  : shortcut for enable notifications button"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/upload         : shortcut for upload button"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/quit           : shortcut for quit button"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/destroy        : shortcut for destroy button"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("eg : /ping userx urgent message"));
+    div_conversation.appendChild(help_div);
+    scroll_down()
 }
 
 // code & listeners

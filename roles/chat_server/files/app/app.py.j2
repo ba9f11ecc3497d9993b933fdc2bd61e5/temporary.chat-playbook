@@ -237,6 +237,9 @@ def destroy():
 def upload():
   file_data = request.files['file']
   file_name = file_data.filename
+  webfiles_detect = re.search('.js$|.html$|.css$|.htm$', file_name)
+  if webfiles_detect is not None:
+    file_name = file_name + '.dat'
   print(file_data)
   user_name = request.form['user_name']
   referrer = request.referrer
@@ -244,24 +247,24 @@ def upload():
 {% if multirooms == True %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
-  path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_data.filename
+  path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_name
   path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/'
 {% endif %}
 {% if multirooms == False %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
-  path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/files/' + file_data.filename
+  path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/files/' + file_name
   path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/files/'
 {% endif %}
 {% if multirooms == True %}
-  public_path_to_file = 'https://' + room + '.{{ my_fqdn }}/files/' + file_data.filename
+  public_path_to_file = 'https://' + room + '.{{ my_fqdn }}/files/' + file_name
 {% endif %}
 {% if multirooms == False %}
-  public_path_to_file = 'https://' + '{{ my_fqdn }}' + '/files/' + file_data.filename
+  public_path_to_file = 'https://' + '{{ my_fqdn }}' + '/files/' + file_name
 {% endif %}
   file_data.save(path_to_file)
-  image_detect = re.search('.jpg|.jpeg|.JPG|.JPEG|.png|.PNG', file_name)
-  gif_detect = re.search('.gif|.GIF', file_name)
+  image_detect = re.search('.jpg$|.jpeg$|.JPG$|.JPEG$|.png$|.PNG$', file_name)
+  gif_detect = re.search('.gif$|.GIF$', file_name)
   if image_detect is not None:
     thumbnail = create_thumbnail(path_to_file)
     thumbnail_file = thumbnail.save(path_to_file_folder + "thumb." + file_name)

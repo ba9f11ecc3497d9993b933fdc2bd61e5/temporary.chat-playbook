@@ -181,13 +181,14 @@ function fileChosen() {
 }
 
 function set_user_name() {
-    var user_name = document.getElementById('user_name').value;
-    if (user_name.match(/^[a-z0-9]+$/i)) {
-        if (user_name.length > 25) {
+    var new_user_name = document.getElementById('user_name').value;
+    if (new_user_name.match(/^[a-z0-9]+$/i)) {
+        if (new_user_name.length > 25) {
             alert("user name must be less than 25 characters");
         }
         else {
-            document.cookie = user_name + ";SameSite=Strict; Secure";
+            localStorage.removeItem(user_name);
+            localStorage.username = new_user_name;
         }
     }
     else {
@@ -203,7 +204,7 @@ async function post_message() {
         help()
     }
     else {
-        var user_name = document.cookie;
+        var user_name = localStorage.username;
         let formData = new FormData();
         formData.append("user_name", user_name);
         formData.append("message", message);
@@ -216,7 +217,7 @@ async function post_message() {
 
 async function user_quit() {
     const url = 'https://{{ my_fqdn }}/app/quit';
-    var user_name = document.cookie;
+    var user_name = localStorage.username;
     let formData = new FormData();
     formData.append("user_name", user_name);
     let response = await fetch(url, {body:formData,method:"post"});
@@ -227,7 +228,7 @@ async function user_quit() {
 
 function destroy() {
     const url = 'https://{{ my_fqdn }}/app/destroy';
-    var user_name = document.cookie;
+    var user_name = localStorage.username;
     let formData = new FormData();
     formData.append("user_name", user_name);
     fetch(url, {body:formData,method:"post"});
@@ -255,7 +256,7 @@ function preview_image() {
 
 async function upload_file() {
     const url = 'https://{{ my_fqdn }}/app/upload';
-    var user_name = document.cookie;
+    var user_name = localStorage.username;
     var fileInput = document.getElementById('file');
     var file = fileInput.files[0];
     let formData = new FormData();
@@ -305,7 +306,7 @@ function enable_notif() {
 async function ping_ack(src_user) {
     const url = 'https://{{ my_fqdn }}/app/post';
     var message = "/ping_ack " + src_user;
-    var user_name = document.cookie;
+    var user_name = localStorage.username;
     let formData = new FormData();
     formData.append("user_name", user_name);
     formData.append("message", message);
@@ -313,17 +314,6 @@ async function ping_ack(src_user) {
     if (response.ok == true) {
         return false;
     }
-}
-
-function toHyperlink(message)
-{
-    var pattern1 = /(\b(https?|ftp|ftps|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-    var str1 = str.replace(pattern1, "<a href='$1'>$1</a>");
-    
-    var pattern2 =/(^|[^\/])(www\.[\S]+(\b|$))/gim;
-    var str2 = str1.replace(pattern2, '$1<a target="_blank" href="http://$2">$2</a>');
-    
-    document.getElementById("result").innerHTML = str2;
 }
 
 function help() {
@@ -356,13 +346,11 @@ function help() {
 
 var complete_url = window.location.href;
 var current_url = complete_url.replace("chat.html", "");
-
 const d = document;
-var user_name = document.cookie;
-if (user_name === "") {
-    document.cookie = "Anonymous; SameSite=Strict; Secure";
-}
 
+if (localStorage.getItem("username") === null) {
+    localStorage.username = 'Anonymous';
+} 
 
 
 // start the check server loop

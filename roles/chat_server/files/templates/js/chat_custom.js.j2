@@ -181,13 +181,14 @@ function fileChosen() {
 }
 
 function set_user_name() {
-    var user_name = document.getElementById('user_name').value;
-    if (user_name.match(/^[a-z0-9]+$/i)) {
-        if (user_name.length > 25) {
+    var new_user_name = document.getElementById('user_name').value;
+    if (new_user_name.match(/^[a-z0-9]+$/i)) {
+        if (new_user_name.length > 25) {
             alert("user name must be less than 25 characters");
         }
         else {
-            document.cookie = user_name + ";SameSite=Strict; Secure";
+            localStorage.removeItem(user_name);
+            localStorage.username = new_user_name;
         }
     }
     else {
@@ -203,7 +204,7 @@ async function post_message() {
         help()
     }
     else {
-        var user_name = document.cookie;
+        var user_name = localStorage.username;
         let formData = new FormData();
         formData.append("user_name", user_name);
         formData.append("message", message);
@@ -216,7 +217,7 @@ async function post_message() {
 
 async function user_quit() {
     const url = 'https://{{ my_fqdn }}/app/quit';
-    var user_name = document.cookie;
+    var user_name = localStorage.username;
     let formData = new FormData();
     formData.append("user_name", user_name);
     let response = await fetch(url, {body:formData,method:"post"});
@@ -227,7 +228,7 @@ async function user_quit() {
 
 function destroy() {
     const url = 'https://{{ my_fqdn }}/app/destroy';
-    var user_name = document.cookie;
+    var user_name = localStorage.username;
     let formData = new FormData();
     formData.append("user_name", user_name);
     fetch(url, {body:formData,method:"post"});
@@ -235,12 +236,31 @@ function destroy() {
 
 function preview_image() {
     var filesToUpload = document.getElementById('file').files;
+    var file_name = document.getElementById('file').value;
     file = filesToUpload[0];
     if (file) {
         var reader = new FileReader();
         reader.onload = function(event) {
             var img = document.createElement('img');
-            img.src = event.target.result;
+            var file_ext = file_name.split('.').pop();
+            if ((file_ext == "jpg") || (file_ext == "JPG") || (file_ext == "jpeg") || (file_ext == "JPEG") || (file_ext == "png") || (file_ext == "PNG") || (file_ext == "gif") || (file_ext == "GIF")) {
+                img.src = event.target.result;
+            }
+            if ((file_ext == "mp3") || (file_ext == "MP3") || (file_ext == "ogg") || (file_ext == "OGG") || (file_ext == "wav") || (file_ext == "WAV") || (file_ext == "aac") || (file_ext == "AAC") || (file_ext == "flac") || (file_ext == "FLAC")) {
+                img.src = 'icons/audio.png'
+            }
+            if ((file_ext == "pdf") || (file_ext == "PDF")) {
+                img.src = 'icons/pdf.png'
+            }
+            if ((file_ext == "zip") || (file_ext == "ZIP")) {
+                img.src = 'icons/zip.png'
+            }
+            if ((file_ext == "mp4") || (file_ext == "MP4") || (file_ext == "avi") || (file_ext == "AVI") || (file_ext == "mkv") || (file_ext == "MKV")) {
+                img.src = 'icons/video.png'
+            }
+            else {
+                img.src = 'icons/document.png'
+            }
             img.height = 100;
             var preview = document.getElementById('preview');
             preview.appendChild(img);
@@ -255,7 +275,7 @@ function preview_image() {
 
 async function upload_file() {
     const url = 'https://{{ my_fqdn }}/app/upload';
-    var user_name = document.cookie;
+    var user_name = localStorage.username;
     var fileInput = document.getElementById('file');
     var file = fileInput.files[0];
     let formData = new FormData();
@@ -305,7 +325,7 @@ function enable_notif() {
 async function ping_ack(src_user) {
     const url = 'https://{{ my_fqdn }}/app/post';
     var message = "/ping_ack " + src_user;
-    var user_name = document.cookie;
+    var user_name = localStorage.username;
     let formData = new FormData();
     formData.append("user_name", user_name);
     formData.append("message", message);
@@ -313,17 +333,6 @@ async function ping_ack(src_user) {
     if (response.ok == true) {
         return false;
     }
-}
-
-function toHyperlink(message)
-{
-    var pattern1 = /(\b(https?|ftp|ftps|http):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-    var str1 = str.replace(pattern1, "<a href='$1'>$1</a>");
-    
-    var pattern2 =/(^|[^\/])(www\.[\S]+(\b|$))/gim;
-    var str2 = str1.replace(pattern2, '$1<a target="_blank" href="http://$2">$2</a>');
-    
-    document.getElementById("result").innerHTML = str2;
 }
 
 function help() {
@@ -356,13 +365,11 @@ function help() {
 
 var complete_url = window.location.href;
 var current_url = complete_url.replace("chat.html", "");
-
 const d = document;
-var user_name = document.cookie;
-if (user_name === "") {
-    document.cookie = "Anonymous; SameSite=Strict; Secure";
-}
 
+if (localStorage.getItem("username") === null) {
+    localStorage.username = 'Anonymous';
+} 
 
 
 // start the check server loop

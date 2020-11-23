@@ -18,11 +18,9 @@
 - FEATURE/preview url 
 - FEATURE/add timestamp on messags
 - FEATURE/copy url to clipboard & invite people on room creation
-- UX_IMPROVEMENTS/detect common file types and put pretty icons on preview (mp3 = music note icon, pdf = document icon, zip = zip icon)
 - UX_IMPROVEMENTS/and also, using skeuomorphic iconography these days is a pretty difficult thing to do right. I would absolutely wholeheartedly recommend switching all your icons/images to use a single cohesive "iconfont", such as FontAwesome
 - 
 ##### APP:
-- SECURITY/find a way to prevent javascript or html upload (rename the files?)
 - SECURITY/add new-ish header Permissions-Policy https://www.w3.org/TR/permissions-policy-1/
 - FEATURE/Create CLI interface /nick [username] /ping [username] /upload (will open your file browser of choice)
 - FEATURE/template room_bot version

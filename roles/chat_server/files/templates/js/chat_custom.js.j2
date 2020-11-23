@@ -236,12 +236,31 @@ function destroy() {
 
 function preview_image() {
     var filesToUpload = document.getElementById('file').files;
+    var file_name = document.getElementById('file').value;
     file = filesToUpload[0];
     if (file) {
         var reader = new FileReader();
         reader.onload = function(event) {
             var img = document.createElement('img');
-            img.src = event.target.result;
+            var file_ext = file_name.split('.').pop();
+            if ((file_ext == "jpg") || (file_ext == "JPG") || (file_ext == "jpeg") || (file_ext == "JPEG") || (file_ext == "png") || (file_ext == "PNG") || (file_ext == "gif") || (file_ext == "GIF")) {
+                img.src = event.target.result;
+            }
+            if ((file_ext == "mp3") || (file_ext == "MP3") || (file_ext == "ogg") || (file_ext == "OGG") || (file_ext == "wav") || (file_ext == "WAV") || (file_ext == "aac") || (file_ext == "AAC") || (file_ext == "flac") || (file_ext == "FLAC")) {
+                img.src = 'icons/audio.png'
+            }
+            if ((file_ext == "pdf") || (file_ext == "PDF")) {
+                img.src = 'icons/pdf.png'
+            }
+            if ((file_ext == "zip") || (file_ext == "ZIP")) {
+                img.src = 'icons/zip.png'
+            }
+            if ((file_ext == "mp4") || (file_ext == "MP4") || (file_ext == "avi") || (file_ext == "AVI") || (file_ext == "mkv") || (file_ext == "MKV")) {
+                img.src = 'icons/video.png'
+            }
+            else {
+                img.src = 'icons/document.png'
+            }
             img.height = 100;
             var preview = document.getElementById('preview');
             preview.appendChild(img);

@@ -18,7 +18,6 @@
 - FEATURE/preview url 
 - FEATURE/add timestamp on messags
 - FEATURE/copy url to clipboard & invite people on room creation
-- UX_IMPROVEMENTS/detect common file types and put pretty icons on preview (mp3 = music note icon, pdf = document icon, zip = zip icon)
 - UX_IMPROVEMENTS/and also, using skeuomorphic iconography these days is a pretty difficult thing to do right. I would absolutely wholeheartedly recommend switching all your icons/images to use a single cohesive "iconfont", such as FontAwesome
 - 
 ##### APP:

@@ -10,4 +10,5 @@
     user: root
     minute: "0"
     hour: "*"
-    job: "cleanup-destroyed-rooms.sh"
+    job: "/root/cleanup-destroyed-rooms.sh"
+  when: multirooms == True 

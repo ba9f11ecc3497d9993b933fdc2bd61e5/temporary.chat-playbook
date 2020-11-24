@@ -207,11 +207,13 @@ def destroy():
   room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
   the_uuid = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
+  path_to_chat = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/chat.html'
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
   path_to_bomb = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/icons/bomb.png'
 {% endif %}
 {% if multirooms == False %}
+  path_to_chat = '/var/www/{{ my_fqdn }}/app/rooms/chat.html'
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
   path_to_bomb = "/var/www/{{ my_fqdn }}/app/rooms/icons/bomb.png"
@@ -229,6 +231,9 @@ def destroy():
   time.sleep(2)
   command = 'sudo /var/www/' + the_domain + '/app/destroy_room.sh ' + user_name + ' ' + the_uuid + ' ' +  the_domain
   shell_result = subprocess.call([command], shell=True)
+  chat_html = open(path_to_chat, "w")
+  chat_html.write("<html><body><h1>This room was destroyed by " + user_name + " on " + datetime.datetime.utcnow().strftime("%a %b %d %Y @ %H:%M:%S UTC") + "</h1></body></html>")
+  chat_html.close
   res = make_response("OK BOSS")
   return res
 
@@ -237,6 +242,22 @@ def destroy():
 def upload():
   file_data = request.files['file']
   file_name = file_data.filename
+  file_name_length = len(file_name)
+  if (file_name_length == 0) or (file_name_length > 100):
+    res = make_response("Invalid file length")
+    return res
+  dot_detect = re.search('\.', file_name)
+  if dot_detect is None:
+    clean_file_name = re.sub(r'\W+', '', file_name)
+    file_name = clean_file_name
+  if dot_detect is not None:
+    unclean_file_name_parts = file_name.split(".")
+    unclean_extention = unclean_file_name_parts[-1:]
+    unclean_file_name_sections = unclean_file_name_parts[:-1]
+    clean_extension = re.sub(r'\W+', '', str(unclean_extention))
+    unclean_file_name = '.'.join(unclean_file_name_sections)
+    clean_file_name = re.sub(r'\W+', '', str(unclean_file_name))
+    file_name = clean_file_name + '.' + clean_extension
   webfiles_detect = re.search('.js$|.html$|.css$|.htm$', file_name)
   if webfiles_detect is not None:
     file_name = file_name + '.dat'

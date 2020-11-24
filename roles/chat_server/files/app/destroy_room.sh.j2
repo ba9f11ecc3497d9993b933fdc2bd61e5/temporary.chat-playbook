@@ -93,5 +93,6 @@ rm -vrf /var/www/${DOMAIN}/app/rooms/*
 rm -vrf /var/www/${DOMAIN}/app/rooms/.htpasswd
 rm -vrf /var/www/${DOMAIN}/app/rooms/conversation.html
 find /var/www/${DOMAIN}/html -type l -exec rm {} \;
+ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
 
 {% endif %}

@@ -99,7 +99,7 @@ server {
 	ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
-        add_header Permissions-Policy "fullscreen=(), geolocation=(), camera=(), payment=(), accelerometer(), ambient-light-sensor(), autoplay(), battery(), cross-origin-isolated(), display-capture(), document-domain(), encrypted-media(), execution-while-not-rendered(), execution-while-out-of-viewport(), gyroscope(), magnetometer(), microphone(), midi(), navigation-override(), picture-in-picture(), publickey-credentials-get(), screen-wake-lock(), sync-xhr(), usb(), web-share(), xr-spatial-tracking()";
+        add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "origin";
@@ -124,7 +124,7 @@ server {
 	ssl_certificate_key /etc/letsencrypt/live/${UUID}.${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
-        add_header Permissions-Policy "fullscreen=(), geolocation=(), camera=(), payment=(), accelerometer(), ambient-light-sensor(), autoplay(), battery(), cross-origin-isolated(), display-capture(), document-domain(), encrypted-media(), execution-while-not-rendered(), execution-while-out-of-viewport(), gyroscope(), magnetometer(), microphone(), midi(), navigation-override(), picture-in-picture(), publickey-credentials-get(), screen-wake-lock(), sync-xhr(), usb(), web-share(), xr-spatial-tracking()";
+        add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "origin";
@@ -194,7 +194,7 @@ server {
 	ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
-        add_header Permissions-Policy "fullscreen=(), geolocation=(), camera=(), payment=(), accelerometer(), ambient-light-sensor(), autoplay(), battery(), cross-origin-isolated(), display-capture(), document-domain(), encrypted-media(), execution-while-not-rendered(), execution-while-out-of-viewport(), gyroscope(), magnetometer(), microphone(), midi(), navigation-override(), picture-in-picture(), publickey-credentials-get(), screen-wake-lock(), sync-xhr(), usb(), web-share(), xr-spatial-tracking()";
+        add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "origin";
@@ -220,7 +220,7 @@ server {
 	ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 	add_header Content-Security-Policy "default-src 'self' https://${DOMAIN} data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
-        add_header Permissions-Policy "fullscreen=(), geolocation=(), camera=(), payment=(), accelerometer(), ambient-light-sensor(), autoplay(), battery(), cross-origin-isolated(), display-capture(), document-domain(), encrypted-media(), execution-while-not-rendered(), execution-while-out-of-viewport(), gyroscope(), magnetometer(), microphone(), midi(), navigation-override(), picture-in-picture(), publickey-credentials-get(), screen-wake-lock(), sync-xhr(), usb(), web-share(), xr-spatial-tracking()";
+        add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "origin";
@@ -287,7 +287,7 @@ server {
         add_header Access-Control-Allow-Origin *;
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
-        add_header Permissions-Policy "fullscreen=(), geolocation=(), camera=(), payment=(), accelerometer(), ambient-light-sensor(), autoplay(), battery(), cross-origin-isolated(), display-capture(), document-domain(), encrypted-media(), execution-while-not-rendered(), execution-while-out-of-viewport(), gyroscope(), magnetometer(), microphone(), midi(), navigation-override(), picture-in-picture(), publickey-credentials-get(), screen-wake-lock(), sync-xhr(), usb(), web-share(), xr-spatial-tracking()";
+        add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "origin";
@@ -346,7 +346,7 @@ server {
         add_header Access-Control-Allow-Origin *;
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
-        add_header Permissions-Policy "fullscreen=(), geolocation=(), camera=(), payment=(), accelerometer(), ambient-light-sensor(), autoplay(), battery(), cross-origin-isolated(), display-capture(), document-domain(), encrypted-media(), execution-while-not-rendered(), execution-while-out-of-viewport(), gyroscope(), magnetometer(), microphone(), midi(), navigation-override(), picture-in-picture(), publickey-credentials-get(), screen-wake-lock(), sync-xhr(), usb(), web-share(), xr-spatial-tracking()";
+        add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "origin";
@@ -453,7 +453,7 @@ server {
         add_header Access-Control-Allow-Origin *;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
-        add_header Permissions-Policy "fullscreen=(), geolocation=(), camera=(), payment=(), accelerometer(), ambient-light-sensor(), autoplay(), battery(), cross-origin-isolated(), display-capture(), document-domain(), encrypted-media(), execution-while-not-rendered(), execution-while-out-of-viewport(), gyroscope(), magnetometer(), microphone(), midi(), navigation-override(), picture-in-picture(), publickey-credentials-get(), screen-wake-lock(), sync-xhr(), usb(), web-share(), xr-spatial-tracking()";
+        add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "origin";
@@ -512,7 +512,7 @@ server {
         add_header Access-Control-Allow-Origin *;
 	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 	add_header Content-Security-Policy "default-src 'self' data:; script-src 'self'; require-trusted-types-for 'script'; object-src 'none'; base-uri 'none';";
-        add_header Permissions-Policy "fullscreen=(), geolocation=(), camera=(), payment=(), accelerometer(), ambient-light-sensor(), autoplay(), battery(), cross-origin-isolated(), display-capture(), document-domain(), encrypted-media(), execution-while-not-rendered(), execution-while-out-of-viewport(), gyroscope(), magnetometer(), microphone(), midi(), navigation-override(), picture-in-picture(), publickey-credentials-get(), screen-wake-lock(), sync-xhr(), usb(), web-share(), xr-spatial-tracking()";
+        add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "origin";

@@ -242,6 +242,22 @@ def destroy():
 def upload():
   file_data = request.files['file']
   file_name = file_data.filename
+  file_name_length = len(file_name)
+  if (file_name_length == 0) or (file_name_length > 100):
+    res = make_response("Invalid file length")
+    return res
+  dot_detect = re.search('\.', file_name)
+  if dot_detect is None:
+    clean_file_name = re.sub(r'\W+', '', file_name)
+    file_name = clean_file_name
+  if dot_detect is not None:
+    unclean_file_name_parts = file_name.split(".")
+    unclean_extention = unclean_file_name_parts[-1:]
+    unclean_file_name_sections = unclean_file_name_parts[:-1]
+    clean_extension = re.sub(r'\W+', '', str(unclean_extention))
+    unclean_file_name = '.'.join(unclean_file_name_sections)
+    clean_file_name = re.sub(r'\W+', '', str(unclean_file_name))
+    file_name = clean_file_name + '.' + clean_extension
   webfiles_detect = re.search('.js$|.html$|.css$|.htm$', file_name)
   if webfiles_detect is not None:
     file_name = file_name + '.dat'

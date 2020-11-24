@@ -2,6 +2,7 @@
 
 async function print_messages(local_version, remote_version) {
     var div_conversation = document.getElementById('conversation');
+    var user_name = localStorage.username;
     while (local_version < remote_version) {
         local_version++;
         message_url = current_url + "/messages/" + local_version + ".json"

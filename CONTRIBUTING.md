@@ -22,14 +22,13 @@
 - 
 ##### APP:
 - SECURITY/add new-ish header Permissions-Policy https://www.w3.org/TR/permissions-policy-1/
-- SECURITY/ re-read https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload#prevention-methods-solutions-to-be-more-secure and make sure nothing is left behind
 - FEATURE/Create CLI interface /nick [username] /ping [username] /upload (will open your file browser of choice)
-- FEATURE/template room_bot version
 - FEATURE/Create Named rooms (remove the uuid check and restrict the create rooms api endpoints.) New subdomain will be encrypted, neat (room familly.example.com, room friends.exmple.com) 
 - FEATURE/make a solution to use dynamic dns + let's encrypt for single room (does this already work? need to test) 
 - FEATURE/create api for expert users that want to manage their encryption
 - FEATURE/support other OS (centos, openbsd to start with; check nixos)
 - SPECIFIC/implement uploading images from temporary.chat to https://projectarachnid.ca/en/ api when domain is temporary.chat and think of a disclaimer
+- CODE_IMPROVEMENTS/template room_bot version
 - CODE_IMPROVEMENTS/parse invalid chars in create_room.sh & destroy_room.sh with "read -r -d "" -n 1 and $REPLY" instead
 - CODE_IMPROVEMENTS/dont use shell=True in app.py (will have to catch the result of cmd = ['/some/prog', first_arg, second_arg]; subprocess.run(..)
 - CODE_IMPROVEMENTS/template ngnix.conf custom values

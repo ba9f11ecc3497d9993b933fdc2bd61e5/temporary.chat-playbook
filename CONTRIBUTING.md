@@ -21,7 +21,6 @@
 - UX_IMPROVEMENTS/and also, using skeuomorphic iconography these days is a pretty difficult thing to do right. I would absolutely wholeheartedly recommend switching all your icons/images to use a single cohesive "iconfont", such as FontAwesome
 - 
 ##### APP:
-- SECURITY/add new-ish header Permissions-Policy https://www.w3.org/TR/permissions-policy-1/
 - FEATURE/Create CLI interface /nick [username] /ping [username] /upload (will open your file browser of choice)
 - FEATURE/Create Named rooms (remove the uuid check and restrict the create rooms api endpoints.) New subdomain will be encrypted, neat (room familly.example.com, room friends.exmple.com) 
 - FEATURE/make a solution to use dynamic dns + let's encrypt for single room (does this already work? need to test) 

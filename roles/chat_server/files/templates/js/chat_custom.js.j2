@@ -10,6 +10,9 @@ async function print_messages(local_version, remote_version) {
             let message_file = await response.json();
             if(message_file.hasOwnProperty('file_url')) {
                 if ((message_file.file_url == "bomb") && (message_file.src_user == "room_bot V1.0")) {
+                    while(div_conversation.hasChildNodes()) {
+                         div_conversation.removeChild(div_conversation.lastChild);
+                    }
                     var src_user = message_file.src_user;
                     var message = message_file.message;
                     var img = document.createElement('img');
@@ -243,20 +246,20 @@ function preview_image() {
         reader.onload = function(event) {
             var img = document.createElement('img');
             img.src = 'icons/document.png'
-            var file_ext = file_name.split('.').pop();
-            if ((file_ext == "jpg") || (file_ext == "JPG") || (file_ext == "jpeg") || (file_ext == "JPEG") || (file_ext == "png") || (file_ext == "PNG") || (file_ext == "gif") || (file_ext == "GIF")) {
+            var file_ext = file_name.split('.').pop().toLowerCase();
+            if ((file_ext == "jpg") || (file_ext == "jpeg") || (file_ext == "png") || (file_ext == "gif")) {
                 img.src = event.target.result;
             }
-            if ((file_ext == "mp3") || (file_ext == "MP3") || (file_ext == "ogg") || (file_ext == "OGG") || (file_ext == "wav") || (file_ext == "WAV") || (file_ext == "aac") || (file_ext == "AAC") || (file_ext == "flac") || (file_ext == "FLAC")) {
+            if ((file_ext == "mp3") || (file_ext == "ogg") || (file_ext == "wav") || (file_ext == "aac") || (file_ext == "flac")) {
                 img.src = 'icons/audio.png'
             }
-            if ((file_ext == "pdf") || (file_ext == "PDF")) {
+            if (file_ext == "pdf") {
                 img.src = 'icons/pdf.png'
             }
-            if ((file_ext == "zip") || (file_ext == "ZIP")) {
+            if (file_ext == "zip") {
                 img.src = 'icons/zip.png'
             }
-            if ((file_ext == "mp4") || (file_ext == "MP4") || (file_ext == "avi") || (file_ext == "AVI") || (file_ext == "mkv") || (file_ext == "MKV")) {
+            if ((file_ext == "mp4") || (file_ext == "avi") || (file_ext == "mkv")) {
                 img.src = 'icons/video.png'
             }
             img.height = 100;

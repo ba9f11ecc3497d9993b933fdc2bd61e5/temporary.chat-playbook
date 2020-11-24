@@ -18,7 +18,6 @@
 - FEATURE/preview url 
 - FEATURE/add timestamp on messags
 - FEATURE/copy url to clipboard & invite people on room creation
-- UX_IMPROVEMENTS/Yeah, that seems very "buggy" behavior; getting like 50 messages saying that the room is about to be destroyed.
 - UX_IMPROVEMENTS/and also, using skeuomorphic iconography these days is a pretty difficult thing to do right. I would absolutely wholeheartedly recommend switching all your icons/images to use a single cohesive "iconfont", such as FontAwesome
 - 
 ##### APP:
@@ -31,7 +30,6 @@
 - FEATURE/create api for expert users that want to manage their encryption
 - FEATURE/support other OS (centos, openbsd to start with; check nixos)
 - SPECIFIC/implement uploading images from temporary.chat to https://projectarachnid.ca/en/ api when domain is temporary.chat and think of a disclaimer
-- CODE_IMPROVEMENTS/file_ext = file_name.split('.').pop().toLowerCase(); would save you from a bunch of repetition in the if -statements
 - CODE_IMPROVEMENTS/parse invalid chars in create_room.sh & destroy_room.sh with "read -r -d "" -n 1 and $REPLY" instead
 - CODE_IMPROVEMENTS/dont use shell=True in app.py (will have to catch the result of cmd = ['/some/prog', first_arg, second_arg]; subprocess.run(..)
 - CODE_IMPROVEMENTS/template ngnix.conf custom values

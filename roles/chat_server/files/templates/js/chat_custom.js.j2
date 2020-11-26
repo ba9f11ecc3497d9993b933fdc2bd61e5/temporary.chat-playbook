@@ -319,6 +319,25 @@ function enable_notif() {
             });
         }
     }
+   
+    // create a trustedScriptUrl within a policy for the service worker ScriptURL
+    if (window.trustedTypes && trustedTypes.createPolicy) { 
+        const sw = trustedTypes.createPolicy('sw', {
+            createScriptURL: string => string 
+        });
+        var safe_script_url = sw.createScriptURL('js/sw.js'); 
+    }
+    
+ 
+    // register service worker
+    if (navigator && navigator.serviceWorker) {
+        navigator.serviceWorker
+            .register(safe_script_url)
+            .then((registration) => {
+                console.log("ServiceWorker registered with scope:", registration.scope);
+            })
+            .catch((e) => console.error("ServiceWorker failed:", e));
+    } 
     else {
         alert("your browser does not support notifications")
     }

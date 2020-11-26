@@ -88,6 +88,17 @@
     group: www-data
     mode: 0440
 
+- name : create sw.js from template 
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/templates/js/sw.js.j2
+    dest: /home/app/templates/js/sw.js
+    owner: www-data
+    group: www-data
+    mode: 0440
+
 - name : copy icons
   remote_user: ubuntu
   become: yes

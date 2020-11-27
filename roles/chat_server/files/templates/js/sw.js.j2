@@ -1,0 +1,176 @@
+// functions
+
+async function print_messages(local_version, remote_version) {
+    var div_conversation = document.getElementById('conversation');
+    var user_name = localStorage.username;
+    while (local_version < remote_version) {
+        local_version++;
+        message_url = current_url + "/messages/" + local_version + ".json"
+        let response = await fetch(message_url);
+        if (response.ok) {
+            let message_file = await response.json();
+            if(message_file.hasOwnProperty('file_url')) {
+                if ((message_file.file_url == "bomb") && (message_file.src_user == "room_bot V1.0")) {
+                    while(div_conversation.hasChildNodes()) {
+                         div_conversation.removeChild(div_conversation.lastChild);
+                    }
+                    var src_user = message_file.src_user;
+                    var message = message_file.message;
+                    var img = document.createElement('img');
+                    img.src = 'data:image/png;base64,' + message_file.file_or_thumbnail;
+                    var bot_div = document.createElement('div');
+                    var bomb_div = document.createElement('div');
+                    bot_div.classList.add('speech-bot');
+                    bomb_div.classList.add('speech-bot');
+                    bot_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    bomb_div.appendChild(img);
+                    div_conversation.appendChild(bot_div);
+                    div_conversation.appendChild(bomb_div);
+                }
+                else if ((message_file.src_user != "room_bot V1.0") && (message_file.file_type == "image") || (message_file.file_type == "gif")) {
+                    var src_user = message_file.src_user;
+                    var message = src_user + " Uploaded a file : ";
+                    var file_url = message_file.file_url;
+                    var file_thumbnail = message_file.file_or_thumbnail;
+                    var speech_div = document.createElement('div');
+                    var image_div = document.createElement('div');
+                    speech_div.classList.add('speech');
+                    image_div.classList.add('speech');
+                    var url = document.createElement('a');
+                    url.appendChild(document.createTextNode(file_url));
+                    url.title = file_url;
+                    url.href = file_url;
+                    var img = document.createElement('img');
+                    image_ext =  file_url.split('.').pop()
+                    if (image_ext == "jpg" || image_ext == "jpeg" || image_ext == "JPG" || image_ext == "JPEG") {
+                        img.src = 'data:image/jpeg;base64,' + file_thumbnail;
+                    }
+                    if (image_ext == "png" || image_ext == "PNG") {
+                        img.src = 'data:image/png;base64,' + file_thumbnail;
+                    }
+                    if (image_ext == "gif" || image_ext == "GIF") {
+                        img.src = 'data:image/gif;base64,' + file_thumbnail;
+                    }
+                    image_div.appendChild(img);
+                    speech_div.appendChild(document.createTextNode(message));
+                    speech_div.appendChild(url);
+                    div_conversation.appendChild(speech_div);
+                    div_conversation.appendChild(image_div);
+                }
+                else if ((message_file.src_user != "room_bot V1.0") && (message_file.file_type != "image") && (message_file.file_type != "gif")) {
+                    var src_user = message_file.src_user;
+                    var message = src_user + " Uploaded a file : "; 
+                    var file_url = message_file.file_url;
+                    var speech_div = document.createElement('div');
+                    var url = document.createElement('a');
+                    url.appendChild(document.createTextNode(file_url));
+                    url.title = file_url;
+                    url.href = file_url;
+                    speech_div.classList.add('speech');
+                    speech_div.appendChild(document.createTextNode(message));
+                    speech_div.appendChild(url);
+                    div_conversation.appendChild(speech_div);
+                }
+            }
+            else if (message_file.ping == true) {
+                var src_user = message_file.src_user;
+                var dst_user = message_file.dst_user;
+                var message = message_file.message;
+                if ( dst_user === user_name ) {
+                    Notification.requestPermission(function(result) {
+                    if (result === 'granted') {
+                        var title = src_user;
+                        var body = message;
+                        const notification = new Notification(title, {body: body});
+                        ping_ack(src_user)
+                        }
+                    })
+                }
+                var src_user = message_file.src_user;
+                var dst_user = message_file.dst_user;
+                var message = message_file.message;
+                if (src_user == "room_bot V1.0") {
+                    var bot_div = document.createElement('div');
+                    bot_div.classList.add('speech-bot');
+                    bot_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    div_conversation.appendChild(bot_div);
+                }
+                else {
+                    var speech_div = document.createElement('div');
+                    speech_div.classList.add('speech-imp');
+                    speech_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    div_conversation.appendChild(speech_div);
+                }
+            }
+            else if (!message_file.hasOwnProperty('file_url')) {
+                var src_user = message_file.src_user;
+                var message = message_file.message;
+                if (src_user == "room_bot V1.0") {
+                    var bot_div = document.createElement('div');
+                    bot_div.classList.add('speech-bot');
+                    bot_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    div_conversation.appendChild(bot_div);
+                }
+                else {
+                    var words = message.split(" ");
+                    var speech_div = document.createElement('div');
+                    speech_div.classList.add('speech');
+                    speech_div.appendChild(document.createTextNode(src_user + " : "));
+                    var url_pattern = new RegExp("https://|http://|ftp://|ftps://");
+                    for (var i = 0; i < words.length; i += 1) {
+                        var check_url = url_pattern.test(words[i]);
+                        if (check_url == true) {
+                            var url = document.createElement('a');
+                            url.appendChild(document.createTextNode(words[i]));
+                            url.title = words[i];
+                            url.href = words[i];
+                            speech_div.appendChild(url);
+                            speech_div.appendChild(document.createTextNode(" "));
+                        }
+                        else {
+                            speech_div.appendChild(document.createTextNode(words[i] + " "));
+                        }
+                    }
+                    div_conversation.appendChild(speech_div);
+                }
+            }
+        }
+    }
+}
+
+async function check_updates(arg) {
+    var local_version = arg;
+    update_url = current_url + "/updates.json?v=" + (new Date());
+    let response = await fetch(update_url);
+    if (response.ok) {
+        let update_file = await response.json();
+        remote_version = update_file.version;
+        ping = update_file.ping;
+        ping_src_user = update_file.ping_src_user;
+        ping_dst_user = update_file.ping_dst_user;
+        ping_message = update_file.ping_message;
+        if (remote_version > local_version) {
+            print_messages(local_version, remote_version);
+            var local_version = remote_version;
+            setTimeout(scroll_down, 500);
+            pong(local_version);
+        }
+        else if (remote_version == local_version) {
+            pong(local_version);
+        }
+        else if (remote_version < local_version) {
+            var local_version = 0;
+            pong(local_version);
+        }
+    }
+    else {
+        pong(local_version);
+    }
+}
+
+function pong(arg) {
+    var local_version = arg;
+    setTimeout(check_updates, 750, local_version);
+}
+
+check_updates(0)

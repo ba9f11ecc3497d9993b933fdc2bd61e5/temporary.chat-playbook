@@ -90,6 +90,17 @@
     group: app
     mode: 0755
 
+- name: Create /var/www/[my_fqdn]/app/vapid_keys
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  file:
+    path: "{{ '/var/www/' + my_fqdn + '/app/vapid_keys' }}"
+    state: directory
+    owner: app
+    group: app
+    mode: 0700
+
 - name: Create /var/log/uwsgi
   remote_user: ubuntu
   become: yes

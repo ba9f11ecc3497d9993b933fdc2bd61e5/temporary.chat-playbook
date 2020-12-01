@@ -77,14 +77,11 @@ async function print_messages(local_version, remote_version) {
                 var dst_user = message_file.dst_user;
                 var message = message_file.message;
                 if ( dst_user === user_name ) {
-                    Notification.requestPermission(function(result) {
-                    if (result === 'granted') {
-                        var title = src_user;
-                        var body = message;
-                        const notification = new Notification(title, {body: body});
-                        ping_ack(src_user)
-                        }
-                    })
+                    var title = src_user;
+                    var body = message;
+                    const notification = new Notification(title, {body: body});
+                    register_service_worker() 
+                    ping_ack(src_user)
                 }
                 var src_user = message_file.src_user;
                 var dst_user = message_file.dst_user;
@@ -312,34 +309,11 @@ function enable_notif() {
     if (typeof Notification !== "undefined") {
         permission = Notification.permission;
         if (permission !== "granted") {
-            // normal notifs
             Notification.requestPermission().then(function(permission) {
                 location.reload();
                 return false; 
             });
         }
-    }
-   
-    // create a trustedScriptUrl within a policy for the service worker ScriptURL
-    if (window.trustedTypes && trustedTypes.createPolicy) { 
-        const sw = trustedTypes.createPolicy('sw', {
-            createScriptURL: string => string 
-        });
-        var safe_script_url = sw.createScriptURL('js/sw.js'); 
-    }
-    
- 
-    // register service worker
-    if (navigator && navigator.serviceWorker) {
-        navigator.serviceWorker
-            .register(safe_script_url)
-            .then((registration) => {
-                console.log("ServiceWorker registered with scope:", registration.scope);
-            })
-            .catch((e) => console.error("ServiceWorker failed:", e));
-    } 
-    else {
-        alert("your browser does not support notifications")
     }
 }
 
@@ -379,6 +353,41 @@ function help() {
     div_conversation.appendChild(help_div);
     scroll_down()
 }
+
+function register_service_worker() {
+    // create a trustedScriptUrl within a policy for the service worker ScriptURL
+    if (window.trustedTypes && trustedTypes.createPolicy) { 
+        const sw = trustedTypes.createPolicy('sw', {
+            createScriptURL: string => string
+        }); 
+        var safe_script_url = sw.createScriptURL('js/sw.js');
+    }
+    // register service worker
+    if (navigator && navigator.serviceWorker) {
+        navigator.serviceWorker
+            .register(safe_script_url)
+            .then((registration) => {
+                console.log("ServiceWorker registered with scope:", registration.scope);
+                    setTimeout(() => {
+                        console.log("ServiceWorker is ready");
+                        registration.showNotification('Vibration Sample', {
+                            body: 'body of message will be here',
+                            icon: 'tc.ico',
+                            vibrate: [200, 100, 200, 100, 200, 100, 200],
+                            tag: 'vibration-sample'
+                        });
+                    registration.update();
+                    }, 100);
+            })
+            .catch((e) => console.error("ServiceWorker failed:", e));
+    }
+    else {
+        alert("your browser does not support notifications")
+    }
+}
+
+
+
 
 // code & listeners
 

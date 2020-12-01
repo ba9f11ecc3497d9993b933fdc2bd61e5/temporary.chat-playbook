@@ -4,7 +4,7 @@ from flask import request
 from flask import make_response
 from flask import jsonify
 
-#import json to modify update file
+#import json to modify update file, create messages and Jason Web Tokens 
 import json
 
 #import module uuid & random to create user & rooms
@@ -32,7 +32,7 @@ from passlib.apache import HtpasswdFile
 import PIL
 from PIL import Image
 
-#import base64 for images
+#import base64 for images and Jason web tokens
 import base64
 
 #create an instance of this class
@@ -304,5 +304,55 @@ def upload():
   else:
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'other', public_path_to_file)
   res = make_response("OK")
+  return res
+
+@app.route("/app/create_vapid", methods=['GET', 'POST'])
+def create_vapid(): 
+  user_name = request.form['user_name']
+  referrer = request.referrer
+  room = referrer.replace("https://","")
+  user_id = room + '-' + user_name
+  command1 = 'openssl ecparam -name prime256v1 -genkey -noout -out vapid_keys/' + user_id + '.pem'
+  shell_result1 = subprocess.call([command1], shell=True)
+  command2 = 'openssl ec -in vapid_keys/' + user_id + '.pem' + ' -pubout -out vapid_keys/' + user_id + '.pub'
+  shell_result2 = subprocess.call([command2], shell=True)
+  path_to_private_key = 'vapid_keys/' + user_id + '.pem'
+  path_to_pubkey = 'vapid_keys/' + user_id + '.pub'
+  pub_key_file = open(path_to_pubkey, "r")
+  pub_key_clean = pub_key_file.read().replace('-----BEGIN PUBLIC KEY-----','').replace('-----END PUBLIC KEY-----','').replace('\n','')
+  pub_key_file.close
+  json_response = {}
+  json_response['user_id'] = room + '-' + user_name
+  json_response['pubkey'] = pub_key_clean
+  header = {}
+  header['typ'] = "JWT"
+  header['alg'] = "ES256"
+  json_string_header = json.dumps(header)
+  header_bytes = str(json_string_header).encode('ascii')
+  b64_header = base64.b64encode(header_bytes)
+  claim = {}
+  claim['sub'] = "mailto:devnull@dev.null"
+  claim['aud'] = referrer
+  date_now = datetime.datetime.utcnow().strftime('%s')
+  date_exp = int(date_now) + 86400
+  claim['exp'] = str(date_exp)
+  json_string_claim = json.dumps(claim)
+  claim_bytes = str(json_string_claim).encode('ascii')
+  b64_claim = base64.urlsafe_b64encode(claim_bytes)
+  path_to_claim = 'vapid_keys/' + user_id + '.claim'
+  claim_file = open(path_to_claim, "w")
+  json.dump(claim, claim_file)
+  claim_file.close
+  path_to_binary_sign = 'vapid_keys/' + user_id + '.claim.sig'
+  command3 = 'openssl dgst -sign ' + path_to_private_key + ' -out ' + path_to_binary_sign + ' ' + path_to_claim
+  shell_result3 = subprocess.call([command3], shell=True)
+  path_to_b64_sign = 'vapid_keys/' + user_id + '.claim.sig.b64'
+  command4 = 'openssl enc -base64 -in ' + path_to_binary_sign + ' -out ' + path_to_b64_sign
+  shell_result4 = subprocess.call([command4], shell=True)
+  file_b64_sign = open(path_to_b64_sign, "r")
+  b64_sign_content = file_b64_sign.read()
+  file_b64_sign.close
+  print(b64_header.decode("utf-8") + '.' + b64_claim.decode("utf-8") + '.' + b64_sign_content)
+  res = make_response(json_response)
   return res
 

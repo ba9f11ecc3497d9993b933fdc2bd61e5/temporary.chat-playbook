@@ -43,4 +43,5 @@ ansible-playbook --extra-vars="aws_region=us-east-1" --extra-vars="aws_tag=perma
 curl -X POST --referer https://b6e64653-2170-4664-bd20-d94b21444832.temporary.chat -d user_name="Botv2_0" -d message="rls" https://temporary.chat/app/post
 DATA="Nagios Alert xyz is down";curl -X POST --referer https://b6e64653-2170-4664-bd20-d94b21444832.temporary.chat -d user_name="NagiosBot" -d message="$DATA" https://temporary.chat/app/post
 
-
+# describe machines
+aws ec2 describe-instances | jq .Reservations[].Instances[] | jq -r ".Tags[].Value, .NetworkInterfaces[].Association.PublicIp"

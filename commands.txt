@@ -7,7 +7,7 @@ ansible-playbook --extra-vars "aws_region=us-east-1" --extra-vars "aws_vpc=vpc-2
 FQDN=poubelle.cc;ansible-playbook -u ubuntu -i $FQDN, -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=$FQDN" -e "tls_mode=wildcard" -e "le_mailaddress=all@200013.net" deploy_chat.yaml
 FQDN=poubelle.cc;ansible-playbook -u ubuntu -i $FQDN, -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=$FQDN" -e "tls_mode=normal" -e "le_mailaddress=all@200013.net" deploy_chat.yaml
 FQDN=poubelle.cc;ansible-playbook -u ubuntu -i $FQDN, -e '{"have_fqdn":true}' -e '{"multirooms":false}' -e "my_fqdn=$FQDN" -e "tls_mode=normal" -e "le_mailaddress=all@200013.net" deploy_chat.yaml
-IP=34.228.75.55;ansible-playbook -u ubuntu -i ${IP}, -e '{"have_fqdn":false}' -e '{"multirooms":false}' -e "my_fqdn=$IP" -e "tls_mode=pki" deploy_chat.yaml
+IP=34.201.148.132;ansible-playbook -u ubuntu -i ${IP}, -e '{"have_fqdn":false}' -e '{"multirooms":false}' -e "my_fqdn=$IP" -e "tls_mode=pki" deploy_chat.yaml
 
 # aws destroy
 ansible-playbook --extra-vars="aws_region=us-east-1" --extra-vars="aws_tag=poubelle.cc" destroy_aws.yaml

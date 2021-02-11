@@ -262,6 +262,20 @@ button:hover,
         color: #777;
         background: url('../icons/notifications.png') no-repeat left;
 }
+.sidebar-actions .btn-rss-notif-all {
+        background: url('../icons/rss.png') no-repeat left;
+}
+.sidebar-actions .btn-rss-notif-all:hover {
+        color: #777;
+        background: url('../icons/rss.png') no-repeat left;
+}
+.sidebar-actions .btn-rss-notif-ping {
+        background: url('../icons/rss.png') no-repeat left;
+}
+.sidebar-actions .btn-rss-notif-ping:hover {
+        color: #777;
+        background: url('../icons/rss.png') no-repeat left;
+}
 .sidebar-actions .btn-destroy { 
         color: #e13;
         background: url('../icons/destroy.png') no-repeat left;
@@ -269,6 +283,13 @@ button:hover,
 .sidebar-actions .btn-destroy:hover { 
         color: #777; 
         background: url('../icons/destroy.png') no-repeat left;
+}
+.sidebar-actions .btn-help {
+        background: url('../icons/help.png') no-repeat left;
+}
+.sidebar-actions .btn-help:hover {
+        color: #777;
+        background: url('../icons/help.png') no-repeat left;
 }
 .sidebar-actions .btn-close_menu {
         background: url('../icons/close_menu.png') no-repeat left;

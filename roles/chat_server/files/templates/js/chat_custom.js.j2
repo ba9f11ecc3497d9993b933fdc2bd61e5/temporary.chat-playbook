@@ -80,7 +80,6 @@ async function print_messages(local_version, remote_version) {
                     var title = src_user;
                     var body = message;
                     const notification = new Notification(title, {body: body});
-                    register_service_worker() 
                     ping_ack(src_user)
                 }
                 var src_user = message_file.src_user;
@@ -305,6 +304,29 @@ function toggleSidebar() {
     document.body.classList.toggle('sidebar-open');
 }
 
+function rss_all_notifs() {
+    var div_conversation = document.getElementById('conversation');
+    var br = document.createElement("br");
+    var rss_all_div = document.createElement('div');
+    rss_all_div.classList.add('speech-bot');
+    const url = 'https://{{ my_fqdn }}/'
+    rss_all_div.appendChild(document.createTextNode(url + 'all.rss'));
+    div_conversation.appendChild(rss_all_div);
+    scroll_down()
+}
+
+function rss_ping_notifs() {
+    var div_conversation = document.getElementById('conversation');
+    var br = document.createElement("br");
+    var rss_all_div = document.createElement('div');
+    rss_all_div.classList.add('speech-bot');
+    const url = 'https://{{ my_fqdn }}/'
+    var user_name = localStorage.username;
+    rss_all_div.appendChild(document.createTextNode(url + user_name + '_ping_notifs.rss'));
+    div_conversation.appendChild(rss_all_div);
+    scroll_down()
+}
+
 function enable_notif() {
     if (typeof Notification !== "undefined") {
         permission = Notification.permission;
@@ -353,41 +375,6 @@ function help() {
     div_conversation.appendChild(help_div);
     scroll_down()
 }
-
-function register_service_worker() {
-    // create a trustedScriptUrl within a policy for the service worker ScriptURL
-    if (window.trustedTypes && trustedTypes.createPolicy) { 
-        const sw = trustedTypes.createPolicy('sw', {
-            createScriptURL: string => string
-        }); 
-        var safe_script_url = sw.createScriptURL('js/sw.js');
-    }
-    // register service worker
-    if (navigator && navigator.serviceWorker) {
-        navigator.serviceWorker
-            .register(safe_script_url)
-            .then((registration) => {
-                console.log("ServiceWorker registered with scope:", registration.scope);
-                    setTimeout(() => {
-                        console.log("ServiceWorker is ready");
-                        registration.showNotification('Vibration Sample', {
-                            body: 'body of message will be here',
-                            icon: 'tc.ico',
-                            vibrate: [200, 100, 200, 100, 200, 100, 200],
-                            tag: 'vibration-sample'
-                        });
-                    registration.update();
-                    }, 100);
-            })
-            .catch((e) => console.error("ServiceWorker failed:", e));
-    }
-    else {
-        alert("your browser does not support notifications")
-    }
-}
-
-
-
 
 // code & listeners
 
@@ -444,7 +431,21 @@ document.addEventListener('DOMContentLoaded', function () {
     .addEventListener('submit', upload_file)
 })
 
-// listen for notifs
+// listen for rss all notifs
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-rss-notif-all')[0]
+    .addEventListener('click', rss_all_notifs) 
+})
+
+// listen for rss ping notifs
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-rss-notif-ping')[0]
+    .addEventListener('click', rss_ping_notifs) 
+})
+
+// listen for Desktop notifs
 
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementsByClassName('btn-notif')[0]
@@ -465,9 +466,17 @@ document.addEventListener('DOMContentLoaded', function () {
     .addEventListener('click', destroy)
 })
 
+// listen for help
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-help')[0]
+    .addEventListener('click', help)
+})
+
 // listen for close menu
 
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementsByClassName('btn-close_menu')[0]
     .addEventListener('click', toggleSidebar) 
 })
+

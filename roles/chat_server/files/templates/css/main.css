@@ -50,8 +50,8 @@ button,
         font-size: .8em;
         text-transform: uppercase;
         transition: color .2s,
-                                border .2s,
-                                background .2s;
+        border .2s,
+        background .2s;
 }
 button:hover,
 [type='button']:hover,
@@ -97,9 +97,6 @@ button:hover,
         cursor: pointer;
         color: #fff;
 }
-
-
-
 .container-fluid {
         display: flex;
         flex-flow: column nowrap;

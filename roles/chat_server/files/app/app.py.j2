@@ -312,7 +312,7 @@ def upload():
 
 
 @app.route("/app/all_rss", methods=['GET', 'POST'])
-def create_rss():
+def all_rss():
   client_message = request.form['message']
   user_name = request.form['user_name']
   referrer = request.referrer

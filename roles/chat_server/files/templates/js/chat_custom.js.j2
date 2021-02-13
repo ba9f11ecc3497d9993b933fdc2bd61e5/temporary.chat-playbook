@@ -307,7 +307,7 @@ function toggleSidebar() {
 async function rss_all_notifs() {
     const remote_url = 'https://{{ my_fqdn }}/app/all_rss';
     var user_name = localStorage.username;
-    var message = "request_all_rss" + user_name;
+    var message = "request_all_rss";
     let formData = new FormData();
     formData.append("user_name", user_name);
     formData.append("message", message);

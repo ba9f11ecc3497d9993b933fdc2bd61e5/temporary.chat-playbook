@@ -112,7 +112,7 @@ server {
 EOF
 fi
 
-#create ngnix config for public room
+#create ngnix config for private room
 if [[ "$ROOM_TYPE" == "private" ]];then
 
 cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
@@ -209,7 +209,7 @@ server {
 EOF
 fi
 
-#create ngnix config for public room
+#create ngnix config for private room
 if [[ "$ROOM_TYPE" == "private" ]];then
 
 
@@ -332,6 +332,18 @@ server {
                 add_header Content-type 'application/json';
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
+        location /app/all_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/user_ping_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
         
 }
 EOF
@@ -394,7 +406,18 @@ server {
                 add_header Content-type 'application/json';
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
-        
+        location /app/all_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/user_ping_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }  
 }
 EOF
 fi
@@ -500,7 +523,18 @@ server {
                 add_header Content-type 'application/json';
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
-        
+        location /app/all_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/user_ping_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
 }
 EOF
 fi
@@ -562,7 +596,18 @@ server {
                 add_header Content-type 'application/json';
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
-        
+        location /app/all_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/user_ping_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
 }
 EOF
 fi

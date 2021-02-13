@@ -332,7 +332,7 @@ def all_rss():
   all_xml = rss_dir + 'all.rss'
   if client_message == 'request_all_rss':
     if os.path.isfile(all_xml) == True:
-      client_message = 'file all.rss already exist'
+      client_message = 'rss feed all.rss already exist'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
       res = make_response("OK")
       return res
@@ -361,22 +361,54 @@ def all_rss():
       return res
 
 
-#@app.route("/app/user_ping_rss", methods=['GET', 'POST'])
-#def create_user_rss():
-#  client_message = request.form['message']
-#  user_name = request.form['user_name']
-#  referrer = request.referrer
-#  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
-#  user_xml = user_name + '_ping_notifs.rss'
-#  xml_prolog = '<?xml version="1.0" encoding="utf-8"?>'
-#{% if multirooms == True %}
-#  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
-#  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
-#{% endif %}
-#{% if multirooms == False %}
-#  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
-#  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
-#{% endif %}
+@app.route("/app/user_ping_rss", methods=['GET', 'POST'])
+def user_ping_rss():
+  client_message = request.form['message']
+  user_name = request.form['user_name']
+  referrer = request.referrer
+  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+{% if multirooms == True %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
+  title = 'ping Notifications for ' + user_name + ' in' + room + '{{ my_fqdn }}'
+{% endif %}
+{% if multirooms == False %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/rss/'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
+  title = 'ping Notifications for ' + user_name + ' in {{ my_fqdn }}'   
+{% endif %}
+  user_xml = rss_dir + user_name + '_ping_notifs.rss'
+  if client_message == 'request_user_rss':
+    if os.path.isfile(user_xml) == True:
+      client_message = 'rss feed ' + user_name + '_ping_notifs.rss already exist'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      res = make_response("OK")
+      return res
+    else:
+      xml_prolog = '<?xml version="1.0" encoding="utf-8"?>'
+      rss = ET.Element('rss')
+      channel = ET.SubElement(rss, 'channel')
+      xml_title = ET.SubElement(channel, 'title')
+      xml_link = ET.SubElement(channel, 'link')
+      xml_description = ET.SubElement(channel, 'description')
+      xml_title.text = title
+      xml_link.text = referrer
+      xml_description.text = 'ping notifications for ' + user_name + 'in room ' + referrer
+      xml_file = open(all_xml, "a")
+      xml_file.write(xml_prolog)
+      xml_file.write(ET.tostring(rss, encoding='unicode'))
+      xml_file.close()
+      client_message = 'rss feed ' + user_name + '_ping_notifs.rss was created'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      res = make_response("OK")
+      return res
+  else:
+      client_message = 'Invalid request for this api call (/app/all_rss)'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      res = make_response("OK")
+      return res
 
 
 

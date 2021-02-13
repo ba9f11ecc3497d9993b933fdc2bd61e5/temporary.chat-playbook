@@ -337,9 +337,13 @@ async function rss_ping_notifs() {
     formData.append("user_name", user_name);
     formData.append("message", message);
     let response = await fetch(remote_url, {body:formData,method:"post"});
+    print_rss_ping_notifs()
     if (response.ok == true) {
         return false;
     }
+}
+
+function print_rss_ping_notifs() {
     var div_conversation = document.getElementById('conversation');
     var br = document.createElement("br");
     var rss_all_div = document.createElement('div');

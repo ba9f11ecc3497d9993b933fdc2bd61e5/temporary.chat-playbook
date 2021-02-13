@@ -343,7 +343,7 @@ def all_rss():
       xml_description = ET.SubElement(channel, 'description')
       xml_title.text = title
       xml_link.text = referrer
-      xml_description.text = 'all notifications for room ' + referer
+      xml_description.text = 'all notifications for room ' + referrer
       xml_file = open("all.rss", "a")
       xml_file.write(xml_prolog)
       xml_file.write(ET.tostring(rss, encoding='unicode'))

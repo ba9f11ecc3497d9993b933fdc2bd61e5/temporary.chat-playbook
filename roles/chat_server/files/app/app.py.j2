@@ -341,7 +341,7 @@ def all_rss():
       xml_title = ET.SubElement(channel, 'title')
       xml_link = ET.SubElement(channel, 'link')
       xml_description = ET.SubElement(channel, 'description')
-      xml_title.test = title
+      xml_title.text = title
       xml_link.text = referrer
       xml_description.text = 'all notifications for room ' + referer
       xml_file = open("all.rss", "a")

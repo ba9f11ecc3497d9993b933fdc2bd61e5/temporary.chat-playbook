@@ -352,10 +352,13 @@ def all_rss():
       xml_file.close()
       client_message = 'rss feed all.rss was created'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      res = make_response("OK")
       return res
   else:
       client_message = 'Invalid request for this api call (/app/all_rss)'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      res = make_response("OK")
+      return res
 
 
 #@app.route("/app/user_ping_rss", methods=['GET', 'POST'])

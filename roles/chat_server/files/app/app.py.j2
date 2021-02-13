@@ -396,7 +396,7 @@ def user_ping_rss():
       xml_title.text = title
       xml_link.text = referrer
       xml_description.text = 'ping notifications for ' + user_name + 'in room ' + referrer
-      xml_file = open(all_xml, "a")
+      xml_file = open(user_xml, "a")
       xml_file.write(xml_prolog)
       xml_file.write(ET.tostring(rss, encoding='unicode'))
       xml_file.close()

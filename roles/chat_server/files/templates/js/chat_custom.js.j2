@@ -304,7 +304,7 @@ function toggleSidebar() {
     document.body.classList.toggle('sidebar-open');
 }
 
-function rss_all_notifs() {
+async function rss_all_notifs() {
     const remote_url = 'https://{{ my_fqdn }}/app/all_rss';
     var user_name = localStorage.username;
     var message = "request_all_rss" + user_name;
@@ -325,7 +325,7 @@ function rss_all_notifs() {
     scroll_down()
 }
 
-function rss_ping_notifs() {
+async function rss_ping_notifs() {
     const remote_url = 'https://{{ my_fqdn }}/app/user_ping_rss';
     var user_name = localStorage.username;
     var message = "request_user_rss" + user_name;

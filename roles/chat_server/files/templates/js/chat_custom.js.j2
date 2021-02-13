@@ -312,15 +312,19 @@ async function rss_all_notifs() {
     formData.append("user_name", user_name);
     formData.append("message", message);
     let response = await fetch(remote_url, {body:formData,method:"post"});
+    print_rss_all_notifs()
     if (response.ok == true) {
         return false;
     }
+}
+
+function print_rss_all_notifs() {
     var div_conversation = document.getElementById('conversation');
     var br = document.createElement("br");
     var rss_all_div = document.createElement('div');
     rss_all_div.classList.add('speech-bot');
     const local_url = 'https://{{ my_fqdn }}/'
-    rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + local_url + 'all.rss'));
+    rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + local_url + 'rss/all.rss'));
     div_conversation.appendChild(rss_all_div);
     scroll_down()
 }

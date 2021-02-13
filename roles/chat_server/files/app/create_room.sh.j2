@@ -144,10 +144,12 @@ fi
 
 #copy templates to room
 mkdir -p /var/www/${DOMAIN}/app/rooms/${UUID}/files
+mkdir -p /var/www/${DOMAIN}/app/rooms/${UUID}/rss
 cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/${UUID}/
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/${UUID}
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
+chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/rss
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/css/*
 chmod 0444 /var/www/${DOMAIN}/app/rooms/${UUID}/icons/*
@@ -242,9 +244,11 @@ fi
 
 #copy templates to room
 mkdir -p /var/www/${DOMAIN}/app/rooms/${UUID}/files
+mkdir -p /var/www/${DOMAIN}/app/rooms/${UUID}/rss
 cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/${UUID}/
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/${UUID}
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
+chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/rss
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/css/*
 chmod 0444 /var/www/${DOMAIN}/app/rooms/${UUID}/icons/*
@@ -427,8 +431,10 @@ fi
 #copy templates to room
 cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/
 mkdir /var/www/${DOMAIN}/app/rooms/files
+mkdir /var/www/${DOMAIN}/app/rooms/rss
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/
 chmod 0750 /var/www/${DOMAIN}/app/rooms/files
+chmod 0750 /var/www/${DOMAIN}/app/rooms/rss
 chmod 0440 /var/www/${DOMAIN}/app/rooms/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/css/*
 chmod 0444 /var/www/${DOMAIN}/app/rooms/icons/*
@@ -440,6 +446,7 @@ ln -s /var/www/${DOMAIN}/app/rooms/css /var/www/${DOMAIN}/html/css
 ln -s /var/www/${DOMAIN}/app/rooms/icons /var/www/${DOMAIN}/html/icons
 ln -s /var/www/${DOMAIN}/app/rooms/js /var/www/${DOMAIN}/html/js
 ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/files
+ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/rss
 ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
 ln -s /var/www/${DOMAIN}/app/rooms/updates.json /var/www/${DOMAIN}/html/updates.json
 ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
@@ -617,8 +624,10 @@ fi
 #copy templates to room
 cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/
 mkdir /var/www/${DOMAIN}/app/rooms/files
+mkdir /var/www/${DOMAIN}/app/rooms/rss
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/
 chmod 0750 /var/www/${DOMAIN}/app/rooms/files
+chmod 0750 /var/www/${DOMAIN}/app/rooms/rss
 chmod 0440 /var/www/${DOMAIN}/app/rooms/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/css/*
 chmod 0444 /var/www/${DOMAIN}/app/rooms/icons/*
@@ -630,6 +639,7 @@ ln -s /var/www/${DOMAIN}/app/rooms/css /var/www/${DOMAIN}/html/css
 ln -s /var/www/${DOMAIN}/app/rooms/icons /var/www/${DOMAIN}/html/icons
 ln -s /var/www/${DOMAIN}/app/rooms/js /var/www/${DOMAIN}/html/js
 ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/files
+ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/rss
 ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
 ln -s /var/www/${DOMAIN}/app/rooms/updates.json /var/www/${DOMAIN}/html/updates.json
 ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages

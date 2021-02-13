@@ -319,17 +319,17 @@ def all_rss():
   room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
-  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
   title = 'All Notifications for ' + room + '{{ my_fqdn }}'
 {% endif %}
 {% if multirooms == False %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
-  path_to_room = '/var/www/{{ my_fqdn }}/app/rooms/'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/rss/'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
   title = 'All Notifications for {{ my_fqdn }}'   
 {% endif %}
-  all_xml = path_to_room + 'all.rss'
+  all_xml = rss_dir + 'all.rss'
   if client_message == 'request_all_rss':
     if os.path.isfile(all_xml) == True:
       client_message = 'file all.rss already exist'

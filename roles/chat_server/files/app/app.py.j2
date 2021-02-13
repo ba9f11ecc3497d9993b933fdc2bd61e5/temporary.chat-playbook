@@ -312,7 +312,7 @@ def upload():
 
 
 @app.route("/app/all_rss", methods=['GET', 'POST'])
-  def create_rss():
+def create_rss():
   client_message = request.form['message']
   user_name = request.form['user_name']
   referrer = request.referrer
@@ -345,7 +345,6 @@ def upload():
       xml_title.test = title
       link.text = referrer
       description.text = 'all notifications for room ' + referer
-
   else:
       client_message = 'Invalid request for this api call (/app/all_rss)'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)

@@ -332,7 +332,7 @@ function print_rss_all_notifs() {
 async function rss_ping_notifs() {
     const remote_url = 'https://{{ my_fqdn }}/app/user_ping_rss';
     var user_name = localStorage.username;
-    var message = "request_user_rss" + user_name;
+    var message = "request_user_rss";
     let formData = new FormData();
     formData.append("user_name", user_name);
     formData.append("message", message);

@@ -12,7 +12,7 @@ import uuid
 import random
 import string
 
-#import os to create directories
+#import os to create directories, check if files exist, etc
 import os
 
 #import re to detect url
@@ -32,8 +32,11 @@ from passlib.apache import HtpasswdFile
 import PIL
 from PIL import Image
 
-#import base64 for images and Jason web tokens
+#import base64 for images and
 import base64
+
+#import ElementTree for rss feed/notifications
+import xml.etree.ElementTree as ET
 
 #create an instance of this class
 app = Flask(__name__)
@@ -74,8 +77,9 @@ def update_file_and_create_message(src_user, path_to_update, messages_dir, clien
   update_file = open(path_to_update, "w")
   json.dump(update_content, update_file)
   update_file.close
- 
- 
+
+
+
 @app.route("/app/create_private")
 def create_private():
     room_type = "private"
@@ -305,6 +309,64 @@ def upload():
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'other', public_path_to_file)
   res = make_response("OK")
   return res
+
+
+@app.route("/app/all_rss", methods=['GET', 'POST'])
+  def create_rss():
+  client_message = request.form['message']
+  user_name = request.form['user_name']
+  referrer = request.referrer
+  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+{% if multirooms == True %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
+  title = 'All Notifications for ' + room + '{{ my_fqdn }}'
+{% endif %}
+{% if multirooms == False %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
+  title = 'All Notifications for {{ my_fqdn }}'   
+{% endif %}
+  all_xml = 'all.rss'
+  if client_message == 'request_all_rss':
+    if os.path.isfile(all_xml) == True:
+      client_message = 'file all.rss already exist'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      res = make_response("OK")
+      return res
+    else:
+      xml_prolog = '<?xml version="1.0" encoding="utf-8"?>'
+      xml_file = open("/tmp/all.rss", "a")
+      rss = ET.Element('rss')
+      channel = ET.SubElement(rss, 'channel')
+      xml_title = ET.SubElement(channel, 'title')
+      xml_title = ET.SubElement(channel, 'link')
+      xml_title = ET.SubElement(channel, 'description')
+      xml_title.test = title
+      link.text = referrer
+      description.text = 'all notifications for room ' + referer
+
+  else:
+      client_message = 'Invalid request for this api call (/app/all_rss)'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+
+
+#@app.route("/app/user_ping_rss", methods=['GET', 'POST'])
+#def create_user_rss():
+#  client_message = request.form['message']
+#  user_name = request.form['user_name']
+#  referrer = request.referrer
+#  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+#  user_xml = user_name + '_ping_notifs.rss'
+#  xml_prolog = '<?xml version="1.0" encoding="utf-8"?>'
+#{% if multirooms == True %}
+#  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+#  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
+#{% endif %}
+#{% if multirooms == False %}
+#  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+#  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
+#{% endif %}
 
 
 

@@ -350,12 +350,12 @@ def all_rss():
       xml_file.write(xml_prolog)
       xml_file.write(ET.tostring(rss, encoding='unicode'))
       xml_file.close()
-      client_message = 'rss feed all.rss was created'
+      client_message = 'rss feed all.rss was created (requested by ' + user_name + ')'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
       res = make_response("OK")
       return res
   else:
-      client_message = 'Invalid request for this api call (/app/all_rss)'
+      client_message = 'Invalid request for this api call try user_name="$user" and message:"request_all_rss"'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
       res = make_response("OK")
       return res
@@ -395,17 +395,17 @@ def user_ping_rss():
       xml_description = ET.SubElement(channel, 'description')
       xml_title.text = title
       xml_link.text = referrer
-      xml_description.text = 'ping notifications for ' + user_name + 'in room ' + referrer
+      xml_description.text = 'ping notifications for ' + user_name + ' in room ' + referrer
       xml_file = open(user_xml, "a")
       xml_file.write(xml_prolog)
       xml_file.write(ET.tostring(rss, encoding='unicode'))
       xml_file.close()
-      client_message = 'rss feed ' + user_name + '_ping_notifs.rss was created'
+      client_message = 'rss feed ' + user_name + '_ping_notifs.rss was created (requested by ' + user_name + ')'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
       res = make_response("OK")
       return res
   else:
-      client_message = 'Invalid request for this api call (/app/all_rss)'
+      client_message = 'Invalid request for this api call try user_name="$user" and message:"request_all_rss"'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
       res = make_response("OK")
       return res

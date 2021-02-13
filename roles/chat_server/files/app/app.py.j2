@@ -336,15 +336,18 @@ def create_rss():
       return res
     else:
       xml_prolog = '<?xml version="1.0" encoding="utf-8"?>'
-      xml_file = open("/tmp/all.rss", "a")
       rss = ET.Element('rss')
       channel = ET.SubElement(rss, 'channel')
       xml_title = ET.SubElement(channel, 'title')
-      xml_title = ET.SubElement(channel, 'link')
-      xml_title = ET.SubElement(channel, 'description')
+      xml_link = ET.SubElement(channel, 'link')
+      xml_description = ET.SubElement(channel, 'description')
       xml_title.test = title
-      link.text = referrer
-      description.text = 'all notifications for room ' + referer
+      xml_link.text = referrer
+      xml_description.text = 'all notifications for room ' + referer
+      xml_file = open("all.rss", "a")
+      xml_file.write(xml_prolog)
+      xml_file.write(ET.tostring(rss, encoding='unicode'))
+      xml_file.close()
   else:
       client_message = 'Invalid request for this api call (/app/all_rss)'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)

@@ -65,4 +65,16 @@ server {
 		add_header Content-type 'application/json';
 		uwsgi_pass unix:/var/www/{{ my_fqdn }}/app/app.sock;
 	}
+	location /app/all_rss {
+		include uwsgi_params;
+		add_header Access-Control-Allow-Origin *;
+		add_header Content-type 'application/json';
+		uwsgi_pass unix:/var/www/{{ my_fqdn }}/app/app.sock;
+	}
+	location /app/user_ping_rss {
+		include uwsgi_params;
+		add_header Access-Control-Allow-Origin *;
+		add_header Content-type 'application/json';
+		uwsgi_pass unix:/var/www/{{ my_fqdn }}/app/app.sock;
+	}
 }

@@ -350,7 +350,7 @@ function print_rss_ping_notifs() {
     rss_all_div.classList.add('speech-bot');
     const local_url = 'https://{{ my_fqdn }}/'
     var user_name = localStorage.username;
-    rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + local_url + + 'rss/' + user_name + '_ping_notifs.rss'));
+    rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + local_url + 'rss/' + user_name + '_ping_notifs.rss'));
     div_conversation.appendChild(rss_all_div);
     scroll_down()
 }

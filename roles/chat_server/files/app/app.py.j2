@@ -99,7 +99,7 @@ def write_to_rss(referrer, path_to_update, src_user, rss_file, client_message, d
   guid.text = str(current_version)
   description.text = client_message
   PubDate.text = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
-  b_xml = ET.tostring(channel
+  b_xml = ET.tostring(channel)
   f = open(rss_file, "wb")
   f.write(b'<?xml version="1.0" encoding="utf-8"?><rss version="2.0">')
   f.write(b_xml)

@@ -214,7 +214,7 @@ def post():
     else:
       rss_file = rss_dir + target_user + '_ping_notifs.rss'
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message)
-      def write_to_rss(path_to_update, user_name, rss_file, client_message, ping=False, dst_user=None, file_type=None, file_url=None, file_or_thumbnail=None)
+      write_to_rss(path_to_update, user_name, rss_file, client_message, ping=False, dst_user=None, file_type=None, file_url=None, file_or_thumbnail=None)
       res = make_response("OK")
       return res
 

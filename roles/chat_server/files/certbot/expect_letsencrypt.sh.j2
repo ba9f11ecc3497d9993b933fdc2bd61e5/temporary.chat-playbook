@@ -13,6 +13,10 @@ sleep 2
 send -- "Y\r"
 sleep 2 
 expect "Press Enter to Continue"
-sleep 190 
+sleep 150 
+send -- "\r"
+expect "Press Enter to Continue"
+sleep 150
 send -- "\r"
 expect eof
+

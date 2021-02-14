@@ -323,8 +323,8 @@ function print_rss_all_notifs() {
     var br = document.createElement("br");
     var rss_all_div = document.createElement('div');
     rss_all_div.classList.add('speech-bot');
-    const local_url = 'https://{{ my_fqdn }}/'
-    rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + local_url + 'rss/all.rss'));
+    //const local_url = 'https://{{ my_fqdn }}/'
+    rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + current_url + 'rss/all.rss'));
     div_conversation.appendChild(rss_all_div);
     scroll_down()
 }
@@ -348,9 +348,9 @@ function print_rss_ping_notifs() {
     var br = document.createElement("br");
     var rss_all_div = document.createElement('div');
     rss_all_div.classList.add('speech-bot');
-    const local_url = 'https://{{ my_fqdn }}/'
+    //const local_url = 'https://{{ my_fqdn }}/'
     var user_name = localStorage.username;
-    rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + local_url + 'rss/' + user_name + '_ping_notifs.rss'));
+    rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + current_url + 'rss/' + user_name + '_ping_notifs.rss'));
     div_conversation.appendChild(rss_all_div);
     scroll_down()
 }

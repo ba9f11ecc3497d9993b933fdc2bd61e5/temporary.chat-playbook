@@ -78,7 +78,7 @@ def update_file_and_create_message(src_user, path_to_update, messages_dir, clien
   json.dump(update_content, update_file)
   update_file.close
 
-def write_to_rss(path_to_update, src_user, rss_file, client_message, ping=False, dst_user=None, file_type=None, file_url=None, file_or_thumbnail=None):
+def write_to_rss(path_to_update, src_user, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None):
   update_file = open(path_to_update, "r")
   update_content = json.load(update_file)
   update_file.close
@@ -195,7 +195,7 @@ def post():
       client_message = " ".join(client_message_words[2:])
       rss_file = rss_dir + target_user + '_ping_notifs.rss'
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message, True, target_user)
-      write_to_rss(path_to_update, user_name, rss_file, client_message, ping=True, dst_user=target_user, file_type=None, file_url=None, file_or_thumbnail=None)
+      write_to_rss(path_to_update, user_name, rss_file, client_message, target_user, ping=True, file_type=None, file_url=None, file_or_thumbnail=None)
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping => ' + target_user, True)  
       res = make_response("OK")
       return res
@@ -214,7 +214,7 @@ def post():
     else:
       rss_file = rss_dir + target_user + '_ping_notifs.rss'
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message)
-      write_to_rss(path_to_update, user_name, rss_file, client_message, ping=False, dst_user=None, file_type=None, file_url=None, file_or_thumbnail=None)
+      write_to_rss(path_to_update, user_name, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
       res = make_response("OK")
       return res
 

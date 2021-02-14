@@ -196,11 +196,16 @@ def post():
       client_message = " ".join(client_message_words[2:])
       rss_file = rss_dir + target_user + '_ping_notifs.rss'
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message, True, target_user)
-      write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, target_user, ping=True, file_type=None, file_url=None, file_or_thumbnail=None)
-      update_file_and_create_message(user_name, path_to_update, messages_dir, client_message, False, target_user)
+      try:
+        write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, target_user, ping=True, file_type=None, file_url=None, file_or_thumbnail=None)
+      except FileNotFoundError:
+        pass
       rss_file = rss_dir + 'all.rss'
       client_message = 'PING_MESSAGE from ' + user_name + ' to ' + target_user + ' : ' + client_message
-      write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, target_user, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
+      try:
+        write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, target_user, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
+      except FileNotFoundError:
+        pass
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping => ' + target_user, True)  
       res = make_response("OK")
       return res
@@ -219,7 +224,10 @@ def post():
     else:
       rss_file = rss_dir + 'all.rss'
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message)
-      write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
+      try:
+        write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
+      except FileNotFoundError:
+        pass
       res = make_response("OK")
       return res
 

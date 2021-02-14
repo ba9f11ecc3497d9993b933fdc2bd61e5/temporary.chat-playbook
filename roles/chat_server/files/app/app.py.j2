@@ -78,31 +78,32 @@ def update_file_and_create_message(src_user, path_to_update, messages_dir, clien
   json.dump(update_content, update_file)
   update_file.close
 
-def write_to_rss(path_to_update, src_user, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None):
+def write_to_rss(referer, path_to_update, src_user, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None):
   update_file = open(path_to_update, "r")
   update_content = json.load(update_file)
   update_file.close
   current_version = update_content.get('version')
-  xml_file = ET.parse(rss_file_path)
-  rss = xml_file.getroot()
-  channel = ET.SubElement(rss, 'channel')
+  xml_file = ET.parse(rss_file)
+  channel = xml_file.getroot()[0]
   item = ET.SubElement(channel, 'item')
   title = ET.SubElement(item, 'title')
   link = ET.SubElement(item, 'link')
   guid = ET.SubElement(item, 'guid')
   description = ET.SubElement(item, 'description')
   PubDate = ET.SubElement(item, 'PubDate')
-  if is_ping == True:
+  if ping == True:
     title.text = "Ping notification from " + src_user_name + ' in ' + referer
   else:
     title.text = "New message in " + referer
   link.text = referer
-  guid.text = current_version
+  guid.text = str(current_version)
   description.text = client_message
   PubDate.text = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
   b_xml = ET.tostring(rss)
   f = open(rss_file, "wb")
+  f.write(b'<?xml version="1.0" encoding="utf-8"?><rss version="2.0">')
   f.write(b_xml)
+  f.write(b'</rss>')
   f.close()
   f = open(rss_file, "r")
   content = f.read()
@@ -175,9 +176,9 @@ def post():
     client_message = request.form['message']
     user_name = request.form['user_name']
     client_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    referrer = request.referrer
+    referer = request.referer
     print(client_ip + ':' + client_message)
-    room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+    room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
     path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
     messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
@@ -186,7 +187,7 @@ def post():
 {% if multirooms == False %}
     path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
     messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
-    rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
+    rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/rss/'
 {% endif %}
     ping_detect = re.search('^/ping\s', client_message)
     if ping_detect is not None:
@@ -195,7 +196,7 @@ def post():
       client_message = " ".join(client_message_words[2:])
       rss_file = rss_dir + target_user + '_ping_notifs.rss'
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message, True, target_user)
-      write_to_rss(path_to_update, user_name, rss_file, client_message, target_user, ping=True, file_type=None, file_url=None, file_or_thumbnail=None)
+      write_to_rss(referer, path_to_update, user_name, rss_file, client_message, target_user, ping=True, file_type=None, file_url=None, file_or_thumbnail=None)
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping => ' + target_user, True)  
       res = make_response("OK")
       return res
@@ -212,9 +213,9 @@ def post():
       res = make_response("OK")
       return res
     else:
-      rss_file = rss_dir + target_user + '_ping_notifs.rss'
+      rss_file = rss_dir + target_user + 'all.rss'
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message)
-      write_to_rss(path_to_update, user_name, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
+      write_to_rss(referer, path_to_update, user_name, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
       res = make_response("OK")
       return res
 
@@ -222,8 +223,8 @@ def post():
 def quit():
   print(request.form)
   user_name = request.form['user_name']
-  referrer = request.referrer
-  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  referer = request.referer
+  room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
@@ -242,9 +243,9 @@ def destroy():
   print(request.form)
   the_domain = "{{ my_fqdn }}"
   user_name = request.form['user_name']
-  referrer = request.referrer
-  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
-  the_uuid = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  referer = request.referer
+  room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  the_uuid = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
   path_to_chat = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/chat.html'
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
@@ -302,8 +303,8 @@ def upload():
     file_name = file_name + '.dat'
   print(file_data)
   user_name = request.form['user_name']
-  referrer = request.referrer
-  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  referer = request.referer
+  room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
@@ -350,8 +351,8 @@ def upload():
 def all_rss():
   client_message = request.form['message']
   user_name = request.form['user_name']
-  referrer = request.referrer
-  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  referer = request.referer
+  room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
   rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
@@ -379,8 +380,8 @@ def all_rss():
       xml_link = ET.SubElement(channel, 'link')
       xml_description = ET.SubElement(channel, 'description')
       xml_title.text = title
-      xml_link.text = referrer
-      xml_description.text = 'all notifications for room ' + referrer
+      xml_link.text = referer
+      xml_description.text = 'all notifications for room ' + referer
       xml_file = open(all_xml, "a")
       xml_file.write(xml_prolog)
       xml_file.write(ET.tostring(rss, encoding='unicode'))
@@ -400,8 +401,8 @@ def all_rss():
 def user_ping_rss():
   client_message = request.form['message']
   user_name = request.form['user_name']
-  referrer = request.referrer
-  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  referer = request.referer
+  room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
   rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
@@ -429,8 +430,8 @@ def user_ping_rss():
       xml_link = ET.SubElement(channel, 'link')
       xml_description = ET.SubElement(channel, 'description')
       xml_title.text = title
-      xml_link.text = referrer
-      xml_description.text = 'ping notifications for ' + user_name + ' in room ' + referrer
+      xml_link.text = referer
+      xml_description.text = 'ping notifications for ' + user_name + ' in room ' + referer
       xml_file = open(user_xml, "a")
       xml_file.write(xml_prolog)
       xml_file.write(ET.tostring(rss, encoding='unicode'))

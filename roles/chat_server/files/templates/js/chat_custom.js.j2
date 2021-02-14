@@ -77,14 +77,10 @@ async function print_messages(local_version, remote_version) {
                 var dst_user = message_file.dst_user;
                 var message = message_file.message;
                 if ( dst_user === user_name ) {
-                    Notification.requestPermission(function(result) {
-                    if (result === 'granted') {
-                        var title = src_user;
-                        var body = message;
-                        const notification = new Notification(title, {body: body});
-                        ping_ack(src_user)
-                        }
-                    })
+                    var title = src_user;
+                    var body = message;
+                    const notification = new Notification(title, {body: body});
+                    ping_ack(src_user)
                 }
                 var src_user = message_file.src_user;
                 var dst_user = message_file.dst_user;
@@ -308,19 +304,66 @@ function toggleSidebar() {
     document.body.classList.toggle('sidebar-open');
 }
 
+async function rss_all_notifs() {
+    const remote_url = 'https://{{ my_fqdn }}/app/all_rss';
+    var user_name = localStorage.username;
+    var message = "request_all_rss";
+    let formData = new FormData();
+    formData.append("user_name", user_name);
+    formData.append("message", message);
+    let response = await fetch(remote_url, {body:formData,method:"post"});
+    print_rss_all_notifs()
+    if (response.ok == true) {
+        return false;
+    }
+}
+
+function print_rss_all_notifs() {
+    var div_conversation = document.getElementById('conversation');
+    var br = document.createElement("br");
+    var rss_all_div = document.createElement('div');
+    rss_all_div.classList.add('speech-bot');
+    //const local_url = 'https://{{ my_fqdn }}/'
+    rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + current_url + 'rss/all.rss'));
+    div_conversation.appendChild(rss_all_div);
+    scroll_down()
+}
+
+async function rss_ping_notifs() {
+    const remote_url = 'https://{{ my_fqdn }}/app/user_ping_rss';
+    var user_name = localStorage.username;
+    var message = "request_user_rss";
+    let formData = new FormData();
+    formData.append("user_name", user_name);
+    formData.append("message", message);
+    let response = await fetch(remote_url, {body:formData,method:"post"});
+    print_rss_ping_notifs()
+    if (response.ok == true) {
+        return false;
+    }
+}
+
+function print_rss_ping_notifs() {
+    var div_conversation = document.getElementById('conversation');
+    var br = document.createElement("br");
+    var rss_all_div = document.createElement('div');
+    rss_all_div.classList.add('speech-bot');
+    //const local_url = 'https://{{ my_fqdn }}/'
+    var user_name = localStorage.username;
+    rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + current_url + 'rss/' + user_name + '_ping_notifs.rss'));
+    div_conversation.appendChild(rss_all_div);
+    scroll_down()
+}
+
 function enable_notif() {
     if (typeof Notification !== "undefined") {
         permission = Notification.permission;
         if (permission !== "granted") {
-            // normal notifs
             Notification.requestPermission().then(function(permission) {
                 location.reload();
                 return false; 
             });
         }
-    }
-    else {
-        alert("your browser does not support notifications")
     }
 }
 
@@ -416,7 +459,21 @@ document.addEventListener('DOMContentLoaded', function () {
     .addEventListener('submit', upload_file)
 })
 
-// listen for notifs
+// listen for rss all notifs
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-rss-notif-all')[0]
+    .addEventListener('click', rss_all_notifs) 
+})
+
+// listen for rss ping notifs
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-rss-notif-ping')[0]
+    .addEventListener('click', rss_ping_notifs) 
+})
+
+// listen for Desktop notifs
 
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementsByClassName('btn-notif')[0]
@@ -437,9 +494,17 @@ document.addEventListener('DOMContentLoaded', function () {
     .addEventListener('click', destroy)
 })
 
+// listen for help
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-help')[0]
+    .addEventListener('click', help)
+})
+
 // listen for close menu
 
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementsByClassName('btn-close_menu')[0]
     .addEventListener('click', toggleSidebar) 
 })
+

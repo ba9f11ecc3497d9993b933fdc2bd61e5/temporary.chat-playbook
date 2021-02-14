@@ -102,8 +102,9 @@ server {
         add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "origin";
+	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
+        add_header Service-Worker-Allowed /;
 	location / {
 		index chat.html;
 	}
@@ -111,7 +112,7 @@ server {
 EOF
 fi
 
-#create ngnix config for public room
+#create ngnix config for private room
 if [[ "$ROOM_TYPE" == "private" ]];then
 
 cat <<EOF > /etc/nginx/sites-available/${UUID}.${DOMAIN}
@@ -127,8 +128,9 @@ server {
         add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "origin";
+	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
+        add_header Service-Worker-Allowed/;
 	location / {
 		index chat.html;
 		auth_basic "Private Chatroom";
@@ -142,10 +144,12 @@ fi
 
 #copy templates to room
 mkdir -p /var/www/${DOMAIN}/app/rooms/${UUID}/files
+mkdir -p /var/www/${DOMAIN}/app/rooms/${UUID}/rss
 cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/${UUID}/
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/${UUID}
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
+chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/rss
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/css/*
 chmod 0444 /var/www/${DOMAIN}/app/rooms/${UUID}/icons/*
@@ -197,8 +201,9 @@ server {
         add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "origin";
+	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
+        add_header Service-Worker-Allowed /;
 	location / {
 		index chat.html;
 	}
@@ -206,7 +211,7 @@ server {
 EOF
 fi
 
-#create ngnix config for public room
+#create ngnix config for private room
 if [[ "$ROOM_TYPE" == "private" ]];then
 
 
@@ -223,8 +228,9 @@ server {
         add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "origin";
+	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
+        add_header Service-Worker-Allowed /;
 	location / {
 		index chat.html;
 		auth_basic "Private Chatroom";
@@ -238,9 +244,11 @@ fi
 
 #copy templates to room
 mkdir -p /var/www/${DOMAIN}/app/rooms/${UUID}/files
+mkdir -p /var/www/${DOMAIN}/app/rooms/${UUID}/rss
 cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/${UUID}/
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/${UUID}
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/files
+chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/rss
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/css/*
 chmod 0444 /var/www/${DOMAIN}/app/rooms/${UUID}/icons/*
@@ -290,8 +298,9 @@ server {
         add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "origin";
+	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
+        add_header Service-Worker-Allowed /;
         location / {
             index chat.html;
         }
@@ -327,6 +336,18 @@ server {
                 add_header Content-type 'application/json';
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
+        location /app/all_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/user_ping_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
         
 }
 EOF
@@ -349,8 +370,9 @@ server {
         add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "origin";
+	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
+        add_header Service-Worker-Allowed /;
         location / {
         index chat.html;
         auth_basic "Private Chatroom";
@@ -388,7 +410,18 @@ server {
                 add_header Content-type 'application/json';
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
-        
+        location /app/all_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/user_ping_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }  
 }
 EOF
 fi
@@ -398,8 +431,10 @@ fi
 #copy templates to room
 cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/
 mkdir /var/www/${DOMAIN}/app/rooms/files
+mkdir /var/www/${DOMAIN}/app/rooms/rss
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/
 chmod 0750 /var/www/${DOMAIN}/app/rooms/files
+chmod 0750 /var/www/${DOMAIN}/app/rooms/rss
 chmod 0440 /var/www/${DOMAIN}/app/rooms/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/css/*
 chmod 0444 /var/www/${DOMAIN}/app/rooms/icons/*
@@ -411,6 +446,7 @@ ln -s /var/www/${DOMAIN}/app/rooms/css /var/www/${DOMAIN}/html/css
 ln -s /var/www/${DOMAIN}/app/rooms/icons /var/www/${DOMAIN}/html/icons
 ln -s /var/www/${DOMAIN}/app/rooms/js /var/www/${DOMAIN}/html/js
 ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/files
+ln -s /var/www/${DOMAIN}/app/rooms/rss /var/www/${DOMAIN}/html/rss
 ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
 ln -s /var/www/${DOMAIN}/app/rooms/updates.json /var/www/${DOMAIN}/html/updates.json
 ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages
@@ -456,8 +492,9 @@ server {
         add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "origin";
+	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
+        add_header Service-Worker-Allowed /;
         location / {
             index chat.html;
         }
@@ -493,7 +530,18 @@ server {
                 add_header Content-type 'application/json';
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
-        
+        location /app/all_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/user_ping_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
 }
 EOF
 fi
@@ -515,8 +563,9 @@ server {
         add_header Permissions-Policy "fullscreen=();geolocation=();camera=();payment=();accelerometer();ambient-light-sensor();autoplay();battery();cross-origin-isolated();display-capture();document-domain();encrypted-media();execution-while-not-rendered();execution-while-out-of-viewport();gyroscope();magnetometer();microphone();midi();navigation-override();picture-in-picture();publickey-credentials-get();screen-wake-lock();sync-xhr();usb();web-share();xr-spatial-tracking()";
 	add_header X-XSS-Protection "1; mode=block";
 	add_header X-Frame-Options "SAMEORIGIN";
-	add_header Referrer-Policy "origin";
+	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
+        add_header Service-Worker-Allowed /;
         location / {
         index chat.html;
         auth_basic "Private Chatroom";
@@ -554,7 +603,18 @@ server {
                 add_header Content-type 'application/json';
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
-        
+        location /app/all_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/user_ping_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
 }
 EOF
 fi
@@ -564,8 +624,10 @@ fi
 #copy templates to room
 cp -rvp /home/app/templates/* /var/www/${DOMAIN}/app/rooms/
 mkdir /var/www/${DOMAIN}/app/rooms/files
+mkdir /var/www/${DOMAIN}/app/rooms/rss
 chown -R app:www-data /var/www/${DOMAIN}/app/rooms/
 chmod 0750 /var/www/${DOMAIN}/app/rooms/files
+chmod 0750 /var/www/${DOMAIN}/app/rooms/rss
 chmod 0440 /var/www/${DOMAIN}/app/rooms/js/*
 chmod 0440 /var/www/${DOMAIN}/app/rooms/css/*
 chmod 0444 /var/www/${DOMAIN}/app/rooms/icons/*
@@ -577,6 +639,7 @@ ln -s /var/www/${DOMAIN}/app/rooms/css /var/www/${DOMAIN}/html/css
 ln -s /var/www/${DOMAIN}/app/rooms/icons /var/www/${DOMAIN}/html/icons
 ln -s /var/www/${DOMAIN}/app/rooms/js /var/www/${DOMAIN}/html/js
 ln -s /var/www/${DOMAIN}/app/rooms/files /var/www/${DOMAIN}/html/files
+ln -s /var/www/${DOMAIN}/app/rooms/rss /var/www/${DOMAIN}/html/rss
 ln -s /var/www/${DOMAIN}/app/rooms/chat.html /var/www/${DOMAIN}/html/chat.html
 ln -s /var/www/${DOMAIN}/app/rooms/updates.json /var/www/${DOMAIN}/html/updates.json
 ln -s /var/www/${DOMAIN}/app/rooms/messages /var/www/${DOMAIN}/html/messages

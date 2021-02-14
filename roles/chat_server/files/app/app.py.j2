@@ -4,7 +4,7 @@ from flask import request
 from flask import make_response
 from flask import jsonify
 
-#import json to modify update file
+#import json to modify update file, create messages and Jason Web Tokens 
 import json
 
 #import module uuid & random to create user & rooms
@@ -12,7 +12,7 @@ import uuid
 import random
 import string
 
-#import os to create directories
+#import os to create directories, check if files exist, etc
 import os
 
 #import re to detect url
@@ -32,8 +32,11 @@ from passlib.apache import HtpasswdFile
 import PIL
 from PIL import Image
 
-#import base64 for images
+#import base64 for images and
 import base64
+
+#import ElementTree for rss feed/notifications
+import xml.etree.ElementTree as ET
 
 #create an instance of this class
 app = Flask(__name__)
@@ -74,8 +77,39 @@ def update_file_and_create_message(src_user, path_to_update, messages_dir, clien
   update_file = open(path_to_update, "w")
   json.dump(update_content, update_file)
   update_file.close
- 
- 
+
+def write_to_rss(referrer, path_to_update, src_user, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None):
+  update_file = open(path_to_update, "r")
+  update_content = json.load(update_file)
+  update_file.close
+  current_version = update_content.get('version')
+  xml_file = ET.parse(rss_file)
+  channel = xml_file.getroot()[0]
+  item = ET.SubElement(channel, 'item')
+  title = ET.SubElement(item, 'title')
+  link = ET.SubElement(item, 'link')
+  guid = ET.SubElement(item, 'guid')
+  description = ET.SubElement(item, 'description')
+  PubDate = ET.SubElement(item, 'PubDate')
+  if ping == True:
+    title.text = "Ping notification from " + src_user + ' in ' + referrer
+  else:
+    title.text = "New message in " + referrer
+  link.text = referrer
+  guid.text = str(current_version)
+  description.text = src_user + ' : ' + client_message
+  PubDate.text = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
+  b_xml = ET.tostring(channel)
+  f = open(rss_file, "wb")
+  f.write(b'<?xml version="1.0" encoding="utf-8"?><rss version="2.0">')
+  f.write(b_xml)
+  f.write(b'</rss>')
+  f.close()
+  f = open(rss_file, "r")
+  content = f.read()
+  print(content)
+
+
 @app.route("/app/create_private")
 def create_private():
     room_type = "private"
@@ -148,17 +182,25 @@ def post():
 {% if multirooms == True %}
     path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
     messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
+    rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
 {% endif %}
 {% if multirooms == False %}
     path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
     messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
+    rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/rss/'
 {% endif %}
     ping_detect = re.search('^/ping\s', client_message)
     if ping_detect is not None:
       client_message_words = client_message.split()
       target_user = client_message_words[1]
       client_message = " ".join(client_message_words[2:])
+      rss_file = rss_dir + target_user + '_ping_notifs.rss'
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message, True, target_user)
+      write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, target_user, ping=True, file_type=None, file_url=None, file_or_thumbnail=None)
+      update_file_and_create_message(user_name, path_to_update, messages_dir, client_message, False, target_user)
+      rss_file = rss_dir + 'all.rss'
+      client_message = 'PING_MESSAGE from ' + user_name + ' to ' + target_user + ' : ' + client_message
+      write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, target_user, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping => ' + target_user, True)  
       res = make_response("OK")
       return res
@@ -175,7 +217,9 @@ def post():
       res = make_response("OK")
       return res
     else:
+      rss_file = rss_dir + 'all.rss'
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message)
+      write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
       res = make_response("OK")
       return res
 
@@ -305,4 +349,106 @@ def upload():
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'other', public_path_to_file)
   res = make_response("OK")
   return res
+
+
+@app.route("/app/all_rss", methods=['GET', 'POST'])
+def all_rss():
+  client_message = request.form['message']
+  user_name = request.form['user_name']
+  referrer = request.referrer
+  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+{% if multirooms == True %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
+  title = 'All Notifications for ' + room + '{{ my_fqdn }}'
+{% endif %}
+{% if multirooms == False %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/rss/'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
+  title = 'All Notifications for {{ my_fqdn }}'   
+{% endif %}
+  all_xml = rss_dir + 'all.rss'
+  if client_message == 'request_all_rss':
+    if os.path.isfile(all_xml) == True:
+      client_message = 'rss feed all.rss already exist'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      res = make_response("OK")
+      return res
+    else:
+      xml_prolog = '<?xml version="1.0" encoding="utf-8"?>'
+      rss = ET.Element('rss')
+      channel = ET.SubElement(rss, 'channel')
+      xml_title = ET.SubElement(channel, 'title')
+      xml_link = ET.SubElement(channel, 'link')
+      xml_description = ET.SubElement(channel, 'description')
+      xml_title.text = title
+      xml_link.text = referrer
+      xml_description.text = 'all notifications for room ' + referrer
+      xml_file = open(all_xml, "a")
+      xml_file.write(xml_prolog)
+      xml_file.write(ET.tostring(rss, encoding='unicode'))
+      xml_file.close()
+      client_message = 'rss feed all.rss was created (requested by ' + user_name + ')'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      res = make_response("OK")
+      return res
+  else:
+      client_message = 'Invalid request for this api call try user_name="$user" and message:"request_all_rss"'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      res = make_response("OK")
+      return res
+
+
+@app.route("/app/user_ping_rss", methods=['GET', 'POST'])
+def user_ping_rss():
+  client_message = request.form['message']
+  user_name = request.form['user_name']
+  referrer = request.referrer
+  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+{% if multirooms == True %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
+  title = 'ping Notifications for ' + user_name + ' in' + room + '{{ my_fqdn }}'
+{% endif %}
+{% if multirooms == False %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/rss/'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
+  title = 'ping Notifications for ' + user_name + ' in {{ my_fqdn }}'   
+{% endif %}
+  user_xml = rss_dir + user_name + '_ping_notifs.rss'
+  if client_message == 'request_user_rss':
+    if os.path.isfile(user_xml) == True:
+      client_message = 'rss feed ' + user_name + '_ping_notifs.rss already exist'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      res = make_response("OK")
+      return res
+    else:
+      xml_prolog = '<?xml version="1.0" encoding="utf-8"?>'
+      rss = ET.Element('rss')
+      channel = ET.SubElement(rss, 'channel')
+      xml_title = ET.SubElement(channel, 'title')
+      xml_link = ET.SubElement(channel, 'link')
+      xml_description = ET.SubElement(channel, 'description')
+      xml_title.text = title
+      xml_link.text = referrer
+      xml_description.text = 'ping notifications for ' + user_name + ' in room ' + referrer
+      xml_file = open(user_xml, "a")
+      xml_file.write(xml_prolog)
+      xml_file.write(ET.tostring(rss, encoding='unicode'))
+      xml_file.close()
+      client_message = 'rss feed ' + user_name + '_ping_notifs.rss was created (requested by ' + user_name + ')'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      res = make_response("OK")
+      return res
+  else:
+      client_message = 'Invalid request for this api call try user_name="$user" and message:"request_all_rss"'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      res = make_response("OK")
+      return res
+
+
 

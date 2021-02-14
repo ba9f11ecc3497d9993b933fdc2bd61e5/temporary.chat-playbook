@@ -78,6 +78,35 @@ def update_file_and_create_message(src_user, path_to_update, messages_dir, clien
   json.dump(update_content, update_file)
   update_file.close
 
+def write_to_rss(path_to_update, src_user, rss_file, client_message, ping=False, dst_user=None, file_type=None, file_url=None, file_or_thumbnail=None):
+  update_file = open(path_to_update, "r")
+  update_content = json.load(update_file)
+  update_file.close
+  current_version = update_content.get('version')
+  xml_file = ET.parse(rss_file_path)
+  rss = xml_file.getroot()
+  channel = ET.SubElement(rss, 'channel')
+  item = ET.SubElement(channel, 'item')
+  title = ET.SubElement(item, 'title')
+  link = ET.SubElement(item, 'link')
+  guid = ET.SubElement(item, 'guid')
+  description = ET.SubElement(item, 'description')
+  PubDate = ET.SubElement(item, 'PubDate')
+  if is_ping=True:
+    title.text = "Ping notification from " + src_user_name + ' in ' + referer
+  else:
+    title.text = "New message in " + referer
+  link.text = referer
+  guid.text = current_version
+  description.text = client_message
+  PubDate.text = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
+  b_xml = ET.tostring(rss)
+  f = open(rss_file, "wb")
+  f.write(b_xml)
+  f.close()
+  f = open(rss_file, "r")
+  content = f.read()
+  print(content)
 
 
 @app.route("/app/create_private")
@@ -163,6 +192,7 @@ def post():
       target_user = client_message_words[1]
       client_message = " ".join(client_message_words[2:])
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message, True, target_user)
+      write_to_rss(path_to_update, user_name, '/rss/' + target_user + '_ping_notifs.rss', client_message, ping=True, dst_user=target_user, file_type=None, file_url=None, file_or_thumbnail=None):
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping => ' + target_user, True)  
       res = make_response("OK")
       return res
@@ -180,6 +210,7 @@ def post():
       return res
     else:
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message)
+      def write_to_rss(path_to_update, user_name, '/rss/all.rss', client_message, ping=False, dst_user=None, file_type=None, file_url=None, file_or_thumbnail=None):
       res = make_response("OK")
       return res
 

@@ -16,6 +16,7 @@
 
 ##### UI:
 - UX/IMPROVEMENT/visiting the site without js gives no information it can be used with curl
+- UX/IMPROVEMENT/list all commands possible via api ^
 - UX/IMPROVEMENT I clicked the destroy room button twice and it started two counters.
 - FEATURE/preview url 
 - FEATURE/add timestamp on messags

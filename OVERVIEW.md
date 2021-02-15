@@ -38,8 +38,8 @@ how to deploy is here : https://github.com/ba9f11ecc3497d9993b933fdc2bd61e5/temp
 
 and stable code here : https://github.com/ba9f11ecc3497d9993b933fdc2bd61e5/temporary.chat-playbook/tree/staging
 
-I posted a few months back, hope it is not considered spammy. I consider posting again in 3 months since it is pretty much a work in progress still! I will concentrate a bit more energy on the api side of things now.
-
 any feedback welcome, you can deploy it, attack it, give me constructive bad reviews, I take everything! (you can also use it to post a picture easily to your grandma)
+
+if you need help to deploy it, I can also assist and improve my documentation in the process.
 
 enjoy!

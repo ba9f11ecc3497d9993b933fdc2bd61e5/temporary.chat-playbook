@@ -30,6 +30,7 @@
 - FEATURE/create api for expert users that want to manage their encryption
 - FEATURE/support other OS (centos, openbsd to start with; check nixos)
 - SPECIFIC/implement uploading images from temporary.chat to https://projectarachnid.ca/en/ api when domain is temporary.chat and think of a disclaimer
+- CODE_IMPROVEMENTS/use let instead of var in javascript https://evertpot.com/javascript-let-const/
 - CODE_IMPROVEMENTS/template room_bot version
 - CODE_IMPROVEMENTS/parse invalid chars in create_room.sh & destroy_room.sh with "read -r -d "" -n 1 and $REPLY" instead
 - CODE_IMPROVEMENTS/dont use shell=True in app.py (will have to catch the result of cmd = ['/some/prog', first_arg, second_arg]; subprocess.run(..)

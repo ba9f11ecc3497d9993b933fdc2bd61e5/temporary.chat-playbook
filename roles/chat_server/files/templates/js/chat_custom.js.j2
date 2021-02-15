@@ -1,8 +1,8 @@
 // functions
 
 async function print_messages(local_version, remote_version) {
-    var div_conversation = document.getElementById('conversation');
-    var user_name = localStorage.username;
+    let div_conversation = document.getElementById('conversation');
+    let user_name = localStorage.username;
     while (local_version < remote_version) {
         local_version++;
         message_url = current_url + "/messages/" + local_version + ".json"
@@ -14,12 +14,12 @@ async function print_messages(local_version, remote_version) {
                     while(div_conversation.hasChildNodes()) {
                          div_conversation.removeChild(div_conversation.lastChild);
                     }
-                    var src_user = message_file.src_user;
-                    var message = message_file.message;
-                    var img = document.createElement('img');
+                    let src_user = message_file.src_user;
+                    let message = message_file.message;
+                    let img = document.createElement('img');
                     img.src = 'data:image/png;base64,' + message_file.file_or_thumbnail;
-                    var bot_div = document.createElement('div');
-                    var bomb_div = document.createElement('div');
+                    let bot_div = document.createElement('div');
+                    let bomb_div = document.createElement('div');
                     bot_div.classList.add('speech-bot');
                     bomb_div.classList.add('speech-bot');
                     bot_div.appendChild(document.createTextNode(src_user + " : " + message));
@@ -28,19 +28,19 @@ async function print_messages(local_version, remote_version) {
                     div_conversation.appendChild(bomb_div);
                 }
                 else if ((message_file.src_user != "room_bot V1.0") && (message_file.file_type == "image") || (message_file.file_type == "gif")) {
-                    var src_user = message_file.src_user;
-                    var message = src_user + " Uploaded a file : ";
-                    var file_url = message_file.file_url;
-                    var file_thumbnail = message_file.file_or_thumbnail;
-                    var speech_div = document.createElement('div');
-                    var image_div = document.createElement('div');
+                    let src_user = message_file.src_user;
+                    let message = src_user + " Uploaded a file : ";
+                    let file_url = message_file.file_url;
+                    let file_thumbnail = message_file.file_or_thumbnail;
+                    let speech_div = document.createElement('div');
+                    let image_div = document.createElement('div');
                     speech_div.classList.add('speech');
                     image_div.classList.add('speech');
-                    var url = document.createElement('a');
+                    let url = document.createElement('a');
                     url.appendChild(document.createTextNode(file_url));
                     url.title = file_url;
                     url.href = file_url;
-                    var img = document.createElement('img');
+                    let img = document.createElement('img');
                     image_ext =  file_url.split('.').pop()
                     if (image_ext == "jpg" || image_ext == "jpeg" || image_ext == "JPG" || image_ext == "JPEG") {
                         img.src = 'data:image/jpeg;base64,' + file_thumbnail;
@@ -58,11 +58,11 @@ async function print_messages(local_version, remote_version) {
                     div_conversation.appendChild(image_div);
                 }
                 else if ((message_file.src_user != "room_bot V1.0") && (message_file.file_type != "image") && (message_file.file_type != "gif")) {
-                    var src_user = message_file.src_user;
-                    var message = src_user + " Uploaded a file : "; 
-                    var file_url = message_file.file_url;
-                    var speech_div = document.createElement('div');
-                    var url = document.createElement('a');
+                    let src_user = message_file.src_user;
+                    let message = src_user + " Uploaded a file : "; 
+                    let file_url = message_file.file_url;
+                    let speech_div = document.createElement('div');
+                    let url = document.createElement('a');
                     url.appendChild(document.createTextNode(file_url));
                     url.title = file_url;
                     url.href = file_url;
@@ -73,50 +73,50 @@ async function print_messages(local_version, remote_version) {
                 }
             }
             else if (message_file.ping == true) {
-                var src_user = message_file.src_user;
-                var dst_user = message_file.dst_user;
-                var message = message_file.message;
+                let src_user = message_file.src_user;
+                let dst_user = message_file.dst_user;
+                let message = message_file.message;
                 if ( dst_user === user_name ) {
-                    var title = src_user;
-                    var body = message;
+                    let title = src_user;
+                    let body = message;
                     const notification = new Notification(title, {body: body});
                     ping_ack(src_user)
                 }
-                var src_user = message_file.src_user;
-                var dst_user = message_file.dst_user;
-                var message = message_file.message;
+                let src_user = message_file.src_user;
+                let dst_user = message_file.dst_user;
+                let message = message_file.message;
                 if (src_user == "room_bot V1.0") {
-                    var bot_div = document.createElement('div');
+                    let bot_div = document.createElement('div');
                     bot_div.classList.add('speech-bot');
                     bot_div.appendChild(document.createTextNode(src_user + " : " + message));
                     div_conversation.appendChild(bot_div);
                 }
                 else {
-                    var speech_div = document.createElement('div');
+                    let speech_div = document.createElement('div');
                     speech_div.classList.add('speech-imp');
                     speech_div.appendChild(document.createTextNode(src_user + " : " + message));
                     div_conversation.appendChild(speech_div);
                 }
             }
             else if (!message_file.hasOwnProperty('file_url')) {
-                var src_user = message_file.src_user;
-                var message = message_file.message;
+                let src_user = message_file.src_user;
+                let message = message_file.message;
                 if (src_user == "room_bot V1.0") {
-                    var bot_div = document.createElement('div');
+                    let bot_div = document.createElement('div');
                     bot_div.classList.add('speech-bot');
                     bot_div.appendChild(document.createTextNode(src_user + " : " + message));
                     div_conversation.appendChild(bot_div);
                 }
                 else {
-                    var words = message.split(" ");
-                    var speech_div = document.createElement('div');
+                    let words = message.split(" ");
+                    let speech_div = document.createElement('div');
                     speech_div.classList.add('speech');
                     speech_div.appendChild(document.createTextNode(src_user + " : "));
-                    var url_pattern = new RegExp("https://|http://|ftp://|ftps://");
-                    for (var i = 0; i < words.length; i += 1) {
-                        var check_url = url_pattern.test(words[i]);
+                    let url_pattern = new RegExp("https://|http://|ftp://|ftps://");
+                    for (let i = 0; i < words.length; i += 1) {
+                        let check_url = url_pattern.test(words[i]);
                         if (check_url == true) {
-                            var url = document.createElement('a');
+                            let url = document.createElement('a');
                             url.appendChild(document.createTextNode(words[i]));
                             url.title = words[i];
                             url.href = words[i];
@@ -135,7 +135,7 @@ async function print_messages(local_version, remote_version) {
 }
 
 async function check_updates(arg) {
-    var local_version = arg;
+    let local_version = arg;
     update_url = current_url + "/updates.json?v=" + (new Date());
     let response = await fetch(update_url);
     if (response.ok) {
@@ -147,7 +147,7 @@ async function check_updates(arg) {
         ping_message = update_file.ping_message;
         if (remote_version > local_version) {
             print_messages(local_version, remote_version);
-            var local_version = remote_version;
+            let local_version = remote_version;
             setTimeout(scroll_down, 500);
             pong(local_version);
         }
@@ -155,7 +155,7 @@ async function check_updates(arg) {
             pong(local_version);
         }
         else if (remote_version < local_version) {
-            var local_version = 0;
+            let local_version = 0;
             pong(local_version);
         }
     }
@@ -165,7 +165,7 @@ async function check_updates(arg) {
 }
 
 function pong(arg) {
-    var local_version = arg;
+    let local_version = arg;
     setTimeout(check_updates, 750, local_version);
 }
 
@@ -181,7 +181,7 @@ function fileChosen() {
 }
 
 function set_user_name() {
-    var new_user_name = document.getElementById('user_name').value;
+    let new_user_name = document.getElementById('user_name').value;
     if (new_user_name.match(/^[a-z0-9]+$/i)) {
         if (new_user_name.length > 25) {
             alert("user name must be less than 25 characters");
@@ -198,13 +198,13 @@ function set_user_name() {
 
 async function post_message() {
     const url = 'https://{{ my_fqdn }}/app/post';
-    var message = document.getElementById('post').value;
+    let message = document.getElementById('post').value;
     document.getElementsByClassName('send-row')[0].reset();
     if (message == "/help") {
         help()
     }
     else {
-        var user_name = localStorage.username;
+        let user_name = localStorage.username;
         let formData = new FormData();
         formData.append("user_name", user_name);
         formData.append("message", message);
@@ -217,7 +217,7 @@ async function post_message() {
 
 async function user_quit() {
     const url = 'https://{{ my_fqdn }}/app/quit';
-    var user_name = localStorage.username;
+    let user_name = localStorage.username;
     let formData = new FormData();
     formData.append("user_name", user_name);
     let response = await fetch(url, {body:formData,method:"post"});
@@ -228,22 +228,22 @@ async function user_quit() {
 
 function destroy() {
     const url = 'https://{{ my_fqdn }}/app/destroy';
-    var user_name = localStorage.username;
+    let user_name = localStorage.username;
     let formData = new FormData();
     formData.append("user_name", user_name);
     fetch(url, {body:formData,method:"post"});
 }
 
 function preview_image() {
-    var filesToUpload = document.getElementById('file').files;
-    var file_name = document.getElementById('file').value;
+    let filesToUpload = document.getElementById('file').files;
+    let file_name = document.getElementById('file').value;
     file = filesToUpload[0];
     if (file) {
-        var reader = new FileReader();
+        let reader = new FileReader();
         reader.onload = function(event) {
-            var img = document.createElement('img');
+            let img = document.createElement('img');
             img.src = 'icons/document.png'
-            var file_ext = file_name.split('.').pop().toLowerCase();
+            let file_ext = file_name.split('.').pop().toLowerCase();
             if ((file_ext == "jpg") || (file_ext == "jpeg") || (file_ext == "png") || (file_ext == "gif")) {
                 img.src = event.target.result;
             }
@@ -260,22 +260,22 @@ function preview_image() {
                 img.src = 'icons/video.png'
             }
             img.height = 100;
-            var preview = document.getElementById('preview');
+            let preview = document.getElementById('preview');
             preview.appendChild(img);
         }
         reader.readAsDataURL(file);
     }
     else {
-        var preview = document.getElementById('preview');
+        let preview = document.getElementById('preview');
         preview.removeChild(preview.childNodes[0]);
     }
 }
 
 async function upload_file() {
     const url = 'https://{{ my_fqdn }}/app/upload';
-    var user_name = localStorage.username;
-    var fileInput = document.getElementById('file');
-    var file = fileInput.files[0];
+    let user_name = localStorage.username;
+    let fileInput = document.getElementById('file');
+    let file = fileInput.files[0];
     let formData = new FormData();
     formData.append("user_name", user_name);
     formData.append("file", file);
@@ -288,7 +288,7 @@ async function upload_file() {
 }
 
 function clear_preview() {
-    var preview_section = document.getElementById('preview');
+    let preview_section = document.getElementById('preview');
     while(preview_section.hasChildNodes()) {
         preview_section.removeChild(preview_section.lastChild);
     }
@@ -296,7 +296,7 @@ function clear_preview() {
 
 
 function scroll_down() {
-    var textarea = document.getElementById('conversation');
+    let textarea = document.getElementById('conversation');
     textarea.scrollTop = textarea.scrollHeight;
 }
 
@@ -306,8 +306,8 @@ function toggleSidebar() {
 
 async function rss_all_notifs() {
     const remote_url = 'https://{{ my_fqdn }}/app/all_rss';
-    var user_name = localStorage.username;
-    var message = "request_all_rss";
+    let user_name = localStorage.username;
+    let message = "request_all_rss";
     let formData = new FormData();
     formData.append("user_name", user_name);
     formData.append("message", message);
@@ -319,9 +319,9 @@ async function rss_all_notifs() {
 }
 
 function print_rss_all_notifs() {
-    var div_conversation = document.getElementById('conversation');
-    var br = document.createElement("br");
-    var rss_all_div = document.createElement('div');
+    let div_conversation = document.getElementById('conversation');
+    let br = document.createElement("br");
+    let rss_all_div = document.createElement('div');
     rss_all_div.classList.add('speech-bot');
     //const local_url = 'https://{{ my_fqdn }}/'
     rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + current_url + 'rss/all.rss'));
@@ -331,8 +331,8 @@ function print_rss_all_notifs() {
 
 async function rss_ping_notifs() {
     const remote_url = 'https://{{ my_fqdn }}/app/user_ping_rss';
-    var user_name = localStorage.username;
-    var message = "request_user_rss";
+    let user_name = localStorage.username;
+    let message = "request_user_rss";
     let formData = new FormData();
     formData.append("user_name", user_name);
     formData.append("message", message);
@@ -344,12 +344,12 @@ async function rss_ping_notifs() {
 }
 
 function print_rss_ping_notifs() {
-    var div_conversation = document.getElementById('conversation');
-    var br = document.createElement("br");
-    var rss_all_div = document.createElement('div');
+    let div_conversation = document.getElementById('conversation');
+    let br = document.createElement("br");
+    let rss_all_div = document.createElement('div');
     rss_all_div.classList.add('speech-bot');
     //const local_url = 'https://{{ my_fqdn }}/'
-    var user_name = localStorage.username;
+    let user_name = localStorage.username;
     rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + current_url + 'rss/' + user_name + '_ping_notifs.rss'));
     div_conversation.appendChild(rss_all_div);
     scroll_down()
@@ -369,8 +369,8 @@ function enable_notif() {
 
 async function ping_ack(src_user) {
     const url = 'https://{{ my_fqdn }}/app/post';
-    var message = "/ping_ack " + src_user;
-    var user_name = localStorage.username;
+    let message = "/ping_ack " + src_user;
+    let user_name = localStorage.username;
     let formData = new FormData();
     formData.append("user_name", user_name);
     formData.append("message", message);
@@ -381,25 +381,27 @@ async function ping_ack(src_user) {
 }
 
 function help() {
-    var div_conversation = document.getElementById('conversation');
-    var br = document.createElement("br");
-    var help_div = document.createElement('div');
+    let div_conversation = document.getElementById('conversation');
+    let br = document.createElement("br");
+    let help_div = document.createElement('div');
     help_div.classList.add('speech-bot');
     help_div.appendChild(document.createTextNode("###        Help Menu         ###\n"));
+
     help_div.appendChild(document.createElement("br"));
-    help_div.appendChild(document.createTextNode("/help           : open this menu"));
+    help_div.appendChild(document.createTextNode("/upload         : no arguments"));
     help_div.appendChild(document.createElement("br"));
-    help_div.appendChild(document.createTextNode("/ping           : notify specific user for this message"));
+    help_div.appendChild(document.createTextNode("/ping           : takes arguments [username] and [message]"));
     help_div.appendChild(document.createElement("br"));
-    help_div.appendChild(document.createTextNode("/notifications  : shortcut for enable notifications button"));
+    help_div.appendChild(document.createTextNode("/rss            : takes arguments [all] or [user]"));
     help_div.appendChild(document.createElement("br"));
-    help_div.appendChild(document.createTextNode("/upload         : shortcut for upload button"));
+    help_div.appendChild(document.createTextNode("/notifications  : no arguments"));
     help_div.appendChild(document.createElement("br"));
-    help_div.appendChild(document.createTextNode("/quit           : shortcut for quit button"));
+    help_div.appendChild(document.createTextNode("/quit           : no arguments"));
     help_div.appendChild(document.createElement("br"));
-    help_div.appendChild(document.createTextNode("/destroy        : shortcut for destroy button"));
+    help_div.appendChild(document.createTextNode("/destroy        : no arguments"));
     help_div.appendChild(document.createElement("br"));
-    help_div.appendChild(document.createTextNode("eg : /ping userx urgent message"));
+    help_div.appendChild(document.createTextNode("/help           : no arguments"));
+
     div_conversation.appendChild(help_div);
     scroll_down()
 }
@@ -408,8 +410,8 @@ function help() {
 
 // set defaults
 
-var complete_url = window.location.href;
-var current_url = complete_url.replace("chat.html", "");
+let complete_url = window.location.href;
+let current_url = complete_url.replace("chat.html", "");
 const d = document;
 
 if (localStorage.getItem("username") === null) {

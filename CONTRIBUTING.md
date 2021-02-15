@@ -24,7 +24,7 @@
 - UX_IMPROVEMENTS/and also, using skeuomorphic iconography these days is a pretty difficult thing to do right. I would absolutely wholeheartedly recommend switching all your icons/images to use a single cohesive "iconfont", such as FontAwesome
 - 
 ##### APP:
-- FEATURE/CLI interface within the gui : missing commands : /nick [username] /upload /quit /destroy /rss [user|all]
+- FEATURE/CLI interface within the gui : missing commands : /nick [username] /upload /quit /destroy /rss [user|all] /notifications
 - FEATURE/API make an /api_help endpoint and list them all the api endpoints available and how to use them.
 - FEATURE/API return proper answer for api calls.
 - FEATURE/Create Named rooms (remove the uuid check and restrict the create rooms api endpoints.) New subdomain will be encrypted, neat (room familly.example.com, room friends.exmple.com) 
@@ -32,7 +32,6 @@
 - FEATURE/create api for expert users that want to manage their encryption
 - FEATURE/support other OS (centos, openbsd to start with; check nixos)
 - SPECIFIC/implement uploading images from temporary.chat to https://projectarachnid.ca/en/ api when domain is temporary.chat and think of a disclaimer
-- CODE_IMPROVEMENTS/use let instead of var in javascript https://evertpot.com/javascript-let-const/
 - CODE_IMPROVEMENTS/template room_bot version
 - CODE_IMPROVEMENTS/parse invalid chars in create_room.sh & destroy_room.sh with "read -r -d "" -n 1 and $REPLY" instead
 - CODE_IMPROVEMENTS/dont use shell=True in app.py (will have to catch the result of cmd = ['/some/prog', first_arg, second_arg]; subprocess.run(..)

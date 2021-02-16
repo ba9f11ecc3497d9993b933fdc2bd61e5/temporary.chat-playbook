@@ -226,7 +226,7 @@ def post():
       res = make_response("OK")
       return res
       error_dict = {}
-      error_dict['error'] = 'what are you trying to write here ' + user_name + ' a novel??? 1000 characters maximum.''
+      error_dict['error'] = 'what are you trying to write here ' + user_name + ' a novel??? 1000 characters maximum.'
       return jsonify(error_dict)
     else:
       rss_file = rss_dir + 'all.rss'

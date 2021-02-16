@@ -144,7 +144,7 @@ async function check_updates(arg) {
         ping_message = update_file.ping_message;
         if (remote_version > local_version) {
             print_messages(local_version, remote_version);
-            let local_version = remote_version;
+            local_version = remote_version;
             setTimeout(scroll_down, 500);
             pong(local_version);
         }
@@ -152,7 +152,7 @@ async function check_updates(arg) {
             pong(local_version);
         }
         else if (remote_version < local_version) {
-            let local_version = 0;
+            local_version = 0;
             pong(local_version);
         }
     }

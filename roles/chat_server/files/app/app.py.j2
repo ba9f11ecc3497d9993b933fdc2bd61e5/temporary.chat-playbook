@@ -403,7 +403,7 @@ def all_rss():
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
       rss_feed = referrer + 'rss/all.rss'
       rss_response_dict = {}
-      api_response_dict['rss'] = rss_feed
+      rss_response_dict['rss'] = rss_feed
       return jsonify(rss_response_dict)
   else:
       client_message = 'Invalid request for this api call try user_name="$user" and message:"request_all_rss"'
@@ -457,7 +457,7 @@ def user_ping_rss():
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
       rss_feed = referrer + 'rss/' + user_name + '_ping_notifs.rss'
       rss_response_dict = {}
-      api_response_dict['rss'] = rss_feed
+      rss_response_dict['rss'] = rss_feed
       return jsonify(rss_response_dict)
   else:
       client_message = 'Invalid request for this api call try user_name="$user" and message:"request_user_rss"'

@@ -1,4 +1,0 @@
----
-# file: group_vars/all
-vars:
-  deploy: "False"

@@ -132,7 +132,7 @@ async function print_messages(local_version, remote_version) {
 }
 
 async function check_updates(arg) {
-    let local_version = arg;
+    local_version = arg;
     update_url = current_url + "/updates.json?v=" + (new Date());
     let response = await fetch(update_url);
     if (response.ok) {
@@ -162,7 +162,7 @@ async function check_updates(arg) {
 }
 
 function pong(arg) {
-    let local_version = arg;
+    local_version = arg;
     setTimeout(check_updates, 750, local_version);
 }
 
@@ -417,8 +417,8 @@ if (localStorage.getItem("username") === null) {
 
 
 // start the check server loop
-arg = 0;
-check_updates(arg);
+
+check_updates(0);
 
 
 

@@ -400,7 +400,7 @@ def all_rss():
       xml_file.close()
       client_message = 'rss feed all.rss was created (requested by ' + user_name + ')'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
-      rss_feed = referrer + "rss/" + user_name + '_ping_notifs.rss
+      rss_feed = referrer + 'rss/all.rss'
       rss_response_dict = {}
       api_response_dict['rss'] = rss_feed
       return jsonify(rss_response_dict)
@@ -453,7 +453,7 @@ def user_ping_rss():
       xml_file.close()
       client_message = 'rss feed ' + user_name + '_ping_notifs.rss was created (requested by ' + user_name + ')'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
-      rss_feed = referrer + "rss/" + user_name + '_ping_notifs.rss
+      rss_feed = referrer + 'rss/' + user_name + '_ping_notifs.rss'
       rss_response_dict = {}
       api_response_dict['rss'] = rss_feed
       return jsonify(rss_response_dict)

@@ -82,9 +82,6 @@ async function print_messages(local_version, remote_version) {
                     const notification = new Notification(title, {body: body});
                     ping_ack(src_user)
                 }
-                let src_user = message_file.src_user;
-                let dst_user = message_file.dst_user;
-                let message = message_file.message;
                 if (src_user == "room_bot V1.0") {
                     let bot_div = document.createElement('div');
                     bot_div.classList.add('speech-bot');

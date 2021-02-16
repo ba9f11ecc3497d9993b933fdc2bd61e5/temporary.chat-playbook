@@ -400,13 +400,16 @@ def all_rss():
       xml_file.close()
       client_message = 'rss feed all.rss was created (requested by ' + user_name + ')'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
-      res = make_response("OK")
-      return res
+      rss_feed = referrer + "rss/" + user_name + '_ping_notifs.rss
+      rss_response_dict = {}
+      api_response_dict['rss'] = rss_feed
+      return jsonify(rss_response_dict)
   else:
       client_message = 'Invalid request for this api call try user_name="$user" and message:"request_all_rss"'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
-      res = make_response("OK")
-      return res
+      error_dict = {}
+      error_dict['error'] = 'Invalid request for this api call try user_name="$user" and message:"request_all_rss"'
+      return jsonify(error_dict)
 
 
 @app.route("/app/user_ping_rss", methods=['GET', 'POST'])
@@ -450,19 +453,22 @@ def user_ping_rss():
       xml_file.close()
       client_message = 'rss feed ' + user_name + '_ping_notifs.rss was created (requested by ' + user_name + ')'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
-      res = make_response("OK")
-      return res
+      rss_feed = referrer + "rss/" + user_name + '_ping_notifs.rss
+      rss_response_dict = {}
+      api_response_dict['rss'] = rss_feed
+      return jsonify(rss_response_dict)
   else:
-      client_message = 'Invalid request for this api call try user_name="$user" and message:"request_all_rss"'
+      client_message = 'Invalid request for this api call try user_name="$user" and message:"request_user_rss"'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
-      res = make_response("OK")
-      return res
+      error_dict = {}
+      error_dict['error'] = 'Invalid request for this api call try user_name="$user" and message:"request_user_rss"'
+      return jsonify(error_dict)
 
 @app.route("/app/api_help", methods=['GET', 'POST'])
 def api_help():
   api_response_dict = {}
-  api_response_dict['create public room'] = "/app/create_public"
-  api_response_dict['create private room'] = "/app/create_private"
+  api_response_dict['create a public room'] = "/app/create_public"
+  api_response_dict['create a private room'] = "/app/create_private"
   api_response_dict['post a message'] = "/app/post"
   api_response_dict['send a quit message'] = "/app/quit"
   api_response_dict['upload a file'] = "/app/upload"

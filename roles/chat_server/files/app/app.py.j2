@@ -460,8 +460,16 @@ def user_ping_rss():
 
 @app.route("/app/api_help", methods=['GET', 'POST'])
 def api_help():
-  res = make_response("/app/create_private, /app/create_public, /app/post, /app/quit, /app/upload, /app/destroy, /app/all_rss, /app/user_ping_rss\n")
-  return res
+  api_response_dict = {}
+  api_response_dict['create public room'] = "/app/create_public"
+  api_response_dict['create private room'] = "/app/create_private"
+  api_response_dict['post a message'] = "/app/post"
+  api_response_dict['send a quit message'] = "/app/quit"
+  api_response_dict['upload a file'] = "/app/upload"
+  api_response_dict['destroy the room'] = "/app/destroy"
+  api_response_dict['request rss feed for all messages'] = "/app/all_rss"
+  api_response_dict['request rss feed for ping to your user '] = "/app/user_ping_rss"
+  return jsonify(api_response_dict)
 
 
 

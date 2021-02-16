@@ -256,7 +256,6 @@ chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/chat.html
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/messages
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/tc.ico
-chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
 echo '{"version":2}' > /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 
 #if room private, copy the password file
@@ -348,6 +347,12 @@ server {
                 add_header Content-type 'application/json';
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
+        location /app/api_help {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
         
 }
 EOF
@@ -417,6 +422,12 @@ server {
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
         location /app/user_ping_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/api_help {
                 include uwsgi_params;
                 add_header Access-Control-Allow-Origin *;
                 add_header Content-type 'application/json';
@@ -542,6 +553,12 @@ server {
                 add_header Content-type 'application/json';
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
+        location /app/api_help {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
 }
 EOF
 fi
@@ -610,6 +627,12 @@ server {
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
         location /app/user_ping_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/api_help {
                 include uwsgi_params;
                 add_header Access-Control-Allow-Origin *;
                 add_header Content-type 'application/json';

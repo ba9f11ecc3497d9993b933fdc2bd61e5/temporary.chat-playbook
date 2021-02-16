@@ -28,5 +28,8 @@ LAST_MESSAGE_NUMBER=$(curl -s "${PUBLIC_URL}/updates.json" | jq -r .version)
 #read the message above
 curl -s "${PUBLIC_URL}/messages/${LAST_MESSAGE_NUMBER}.json"
 
-#request rss feed for all messages (not yet implemented via api)
-curl -s "${PUBLIC_URL}/messages/${LAST_MESSAGE_NUMBER}.json"
+#request rss feed for all messages sent to the room
+curl -s --referer $PUBLIC_URL "${PUBLIC_URL}/app/all_rss -d user_name=$NICKNAME -d message=request_all_rss
+
+#request rss feed for ping notifications to user $NICKNAME
+curl -s --referer $PUBLIC_URL "${PUBLIC_URL}/app/user_ping_rss" -d user_name=$NICKNAME -d message=request_user_rss

@@ -207,8 +207,9 @@ def post():
       except FileNotFoundError:
         pass
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping => ' + target_user, True)  
-      res = make_response("OK")
-      return res
+      success_dict = {}
+      success_dict['Success'] = 'ping message sent to user ' + target_user
+      return jsonify(success_dict)
     pingack_detect = re.search('^/ping_ack', client_message)
     if pingack_detect is not None:
       client_message_words = client_message.split()
@@ -221,6 +222,9 @@ def post():
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, " what are you trying to write here " + user_name + " a novel??? 1000 characters maximum.", False)
       res = make_response("OK")
       return res
+      error_dict = {}
+      error_dict['error'] = 'what are you trying to write here ' + user_name + ' a novel??? 1000 characters maximum.''
+      return jsonify(error_dict)
     else:
       rss_file = rss_dir + 'all.rss'
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message)
@@ -228,8 +232,9 @@ def post():
         write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
       except FileNotFoundError:
         pass
-      res = make_response("OK")
-      return res
+      success_dict = {}
+      success_dict['Success'] = 'message sent'
+      return jsonify(success_dict)
 
 @app.route("/app/quit", methods=['GET', 'POST'])
 def quit():
@@ -246,8 +251,9 @@ def quit():
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
 {% endif %}
   update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + " has quit", False)
-  res = make_response("OK")
-  return res
+  success_dict = {}
+  success_dict['Success'] = 'you have sent a quit message to the room'
+  return jsonify(success_dict)
 
 
 @app.route("/app/destroy", methods=['GET', 'POST'])
@@ -286,8 +292,9 @@ def destroy():
   chat_html = open(path_to_chat, "w")
   chat_html.write("<html><body><h1>This room was destroyed by " + user_name + " on " + datetime.datetime.utcnow().strftime("%a %b %d %Y @ %H:%M:%S UTC") + "</h1></body></html>")
   chat_html.close
-  res = make_response("OK BOSS")
-  return res
+  success_dict = {}
+  success_dict['Success'] = 'OK BOSS'
+  return jsonify(success_dict)
 
 
 @app.route("/app/upload", methods=['GET', 'POST'])
@@ -296,7 +303,9 @@ def upload():
   file_name = file_data.filename
   file_name_length = len(file_name)
   if (file_name_length == 0) or (file_name_length > 100):
-    res = make_response("Invalid file length")
+    error_dict = {}
+    error_dict['error'] = 'Invalid file length'
+    return jsonify(error_dict)
     return res
   dot_detect = re.search('\.', file_name)
   if dot_detect is None:
@@ -355,9 +364,9 @@ def upload():
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'gif', public_path_to_file, b64_gif_string)
   else:
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'other', public_path_to_file)
-  res = make_response("OK")
-  return res
-
+  success_dict = {}
+  success_dict['Success'] = 'File uploaded'
+  return jsonify(success_dict)
 
 @app.route("/app/all_rss", methods=['GET', 'POST'])
 def all_rss():

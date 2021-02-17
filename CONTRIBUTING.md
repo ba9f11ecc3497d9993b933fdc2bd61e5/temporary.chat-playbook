@@ -16,6 +16,7 @@
 
 ##### UI:
 - UX/IMPROVEMENT I clicked the destroy room button twice and it started two counters.
+- UX/IMPROVEMENT why/updates/q&a/content pages don't have a defined width. add  max-width: 100% add line-height as well
 - FEATURE/preview url 
 - FEATURE/add timestamp on messags
 - FEATURE/copy url to clipboard & invite people on room creation

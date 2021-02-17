@@ -177,8 +177,13 @@ function fileChosen() {
     }
 }
 
-function set_user_name() {
-    let new_user_name = document.getElementById('user_name').value;
+function set_user_name(nick_from_cli = "placeholder") {
+    if (nick_from_cli !== "placeholder") {
+        new_user_name = nick_from_cli;
+    }
+    else {
+        let new_user_name = document.getElementById('user_name').value;
+    }
     if (new_user_name.match(/^[a-z0-9]+$/i)) {
         if (new_user_name.length > 25) {
             alert("user name must be less than 25 characters");
@@ -197,7 +202,31 @@ async function post_message() {
     const url = 'https://{{ my_fqdn }}/app/post';
     let message = document.getElementById('post').value;
     document.getElementsByClassName('send-row')[0].reset();
-    if (message == "/help") {
+    if (message.startsWith("/nick")) {
+        nick_from_cli = message.split(" ")[1]
+        set_user_name(nick_from_cli)
+    }
+    if (message === "/upload") {
+        preview_image()
+    }
+    if (message.startsWith("/rss")) {
+        if (message.plit(" ")[1] === "all") {
+            rss_all_notifs()
+        }
+        if message.plit(" ")[1] === "user") {
+            rss_ping_notifs()
+        }
+    }
+    if (message === "/notifications") {
+        enable_notif()
+    }
+    if (message === "/quit") {
+        user_quit()
+    }
+    if (message === "/destroy") {
+        destroy()
+    }
+    if (message === "/help") {
         help()
     }
     else {
@@ -383,7 +412,9 @@ function help() {
     let help_div = document.createElement('div');
     help_div.classList.add('speech-bot');
     help_div.appendChild(document.createTextNode("###        Help Menu         ###\n"));
-
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/nick           : takes argument [new_username]"));
     help_div.appendChild(document.createElement("br"));
     help_div.appendChild(document.createTextNode("/upload         : no arguments"));
     help_div.appendChild(document.createElement("br"));
@@ -398,7 +429,6 @@ function help() {
     help_div.appendChild(document.createTextNode("/destroy        : no arguments"));
     help_div.appendChild(document.createElement("br"));
     help_div.appendChild(document.createTextNode("/help           : no arguments"));
-
     div_conversation.appendChild(help_div);
     scroll_down()
 }

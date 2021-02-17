@@ -1,3 +1,0 @@
----
-# file: main.yaml
-- include: destroy_ec2.yaml

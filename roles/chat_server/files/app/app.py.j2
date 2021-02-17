@@ -1,14 +1,18 @@
 #import the Flask class, request, and response
 from flask import Flask
 from flask import request 
-from flask import make_response 
+from flask import make_response
+from flask import jsonify
 
-#import module uuid to create user & rooms
+#import json to modify update file, create messages and Jason Web Tokens 
+import json
+
+#import module uuid & random to create user & rooms
 import uuid
 import random
 import string
 
-#import os to create directories
+#import os to create directories, check if files exist, etc
 import os
 
 #import re to detect url
@@ -17,8 +21,9 @@ import re
 #import subproces for room creation
 import subprocess
 
-#import html to sanitize user input
-import html
+#import time and datetime for room destruction
+import time
+import datetime
 
 #import passlib apache for .htaccess files
 from passlib.apache import HtpasswdFile
@@ -26,6 +31,12 @@ from passlib.apache import HtpasswdFile
 #import pillow to resize images
 import PIL
 from PIL import Image
+
+#import base64 for images and
+import base64
+
+#import ElementTree for rss feed/notifications
+import xml.etree.ElementTree as ET
 
 #create an instance of this class
 app = Flask(__name__)
@@ -38,80 +49,67 @@ def create_thumbnail(src_image):
   img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
   return img
 
+def update_file_and_create_message(src_user, path_to_update, messages_dir, client_message, ping=False, dst_user=None, file_type=None, file_url=None, file_or_thumbnail=None):
+  update_file = open(path_to_update, "r")
+  update_content = json.load(update_file)
+  update_file.close
+  current_version = update_content.get('version')
+  new_version = current_version + 1
+  path_to_message = messages_dir + str(new_version) + ".json"
+  message = {}
+  message['src_user'] = src_user
+  message['message'] = client_message
+  if file_type is not None:
+    message['file_type'] = file_type
+  if file_url is not None:
+    message['file_url'] = file_url
+  if file_or_thumbnail is not None:
+    message['file_or_thumbnail'] = file_or_thumbnail
+  if ping is not None:
+    message['ping'] = ping
+  if dst_user is not None:
+    message['dst_user'] = dst_user
+  message_file = open(path_to_message, "w")
+  json.dump(message, message_file)
+  message_file.close
+  update_content['version'] = new_version
+  print(update_content)
+  update_file = open(path_to_update, "w")
+  json.dump(update_content, update_file)
+  update_file.close
 
-def highlight_url(client_message):
-  list_words = client_message.split(" ")
-  new_message = ""
-  for word in list_words:
-    check_http = re.search('http://', word)
-    if check_http is not None:  
-      new_word = '<a href="' + word + '">' + word + '</a> '
-      new_message = new_message + new_word
-      continue
-    check_https = re.search('https://', word)
-    if check_https is not None:  
-      new_word = '<a href="' + word + '">' + word + '</a> '
-      new_message = new_message + new_word
-      continue
-    check_ftp = re.search('ftp://', word)
-    if check_ftp is not None:  
-      new_word = '<a href="' + word + '">' + word + '</a> '
-      new_message = new_message + new_word
-      continue
-    check_ftps = re.search('ftps://', word)
-    if check_ftps is not None:  
-      new_word = '<a href="' + word + '">' + word + '</a> '
-      new_message = new_message + new_word
-      continue
-    else:
-      new_word = word + ' '
-      new_message = new_message + new_word
-  client_message = new_message
-  return client_message
+def write_to_rss(referrer, path_to_update, src_user, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None):
+  update_file = open(path_to_update, "r")
+  update_content = json.load(update_file)
+  update_file.close
+  current_version = update_content.get('version')
+  xml_file = ET.parse(rss_file)
+  channel = xml_file.getroot()[0]
+  item = ET.SubElement(channel, 'item')
+  title = ET.SubElement(item, 'title')
+  link = ET.SubElement(item, 'link')
+  guid = ET.SubElement(item, 'guid')
+  description = ET.SubElement(item, 'description')
+  PubDate = ET.SubElement(item, 'PubDate')
+  if ping == True:
+    title.text = "Ping notification from " + src_user + ' in ' + referrer
+  else:
+    title.text = "New message in " + referrer
+  link.text = referrer
+  guid.text = str(current_version)
+  description.text = src_user + ' : ' + client_message
+  PubDate.text = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
+  b_xml = ET.tostring(channel)
+  f = open(rss_file, "wb")
+  f.write(b'<?xml version="1.0" encoding="utf-8"?><rss version="2.0">')
+  f.write(b_xml)
+  f.write(b'</rss>')
+  f.close()
+  f = open(rss_file, "r")
+  content = f.read()
+  print(content)
 
 
-def build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message):
-  path_to_htmltop = path_to_htmltop
-  path_to_messages = path_to_messages
-  path_to_htmlbottom = path_to_htmlbottom
-  user_name = user_name
-  formatted_message = formatted_message
-  messages = open(path_to_messages, "a")
-  messages.write(formatted_message)
-  messages.close
-  htmltop = open(path_to_htmltop, "r")
-  messages = open(path_to_messages, "r")
-  htmlbottom = open(path_to_htmlbottom, "r")
-  htmltop_content = htmltop.read()
-  messages_content = messages.read()
-  htmlbottom_content = htmlbottom.read()
-  temp_conversation = ""
-  temp_conversation = temp_conversation + htmltop_content
-  temp_conversation = temp_conversation + messages_content
-  temp_conversation = temp_conversation + htmlbottom_content
-  htmltop.close
-  messages.close
-  htmlbottom.close
-  return temp_conversation
-  
-def write_message(path_to_conversation, temp_conversation):
-  path_to_conversation = path_to_conversation
-  temp_conversation = temp_conversation
-  conversation = open(path_to_conversation, "w+")
-  conversation.write(temp_conversation)
-  conversation.close
-
-def update_version(path_to_version):
-  path_to_version = path_to_version
-  version_file = open(path_to_version, "r")
-  version = version_file.read()
-  version_file.close
-  newversion = int(version) + 1
-  version_file = open(path_to_version, "w")
-  version_file.write(str(newversion))
-  version_file.close
-  
-  
 @app.route("/app/create_private")
 def create_private():
     room_type = "private"
@@ -136,14 +134,21 @@ def create_private():
 {% if multirooms == True %}
     url = "https://" + the_uuid + ".{{ my_fqdn }}"
     server_name = the_uuid + ".{{ my_fqdn }}"
-    return "<h6>User : " + user + "</h6><br>" + "<h6>Password : " + passwd + "</h6><br>" + "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
+    room_response_dict = {}
+    room_response_dict['User'] = user
+    room_response_dict['Password'] = passwd
+    room_response_dict['URL'] = url
+    return jsonify(room_response_dict)
 {% endif %}
 {% if multirooms == False %}
     url = "https://{{ my_fqdn }}" + '/chat.html'
     server_name = "{{ my_fqdn }}"
-    return "<h6>User : " + user + "</h6><br>" + "<h6>Password : " + passwd + "</h6><br>" + "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
+    room_response_dict = {}
+    room_response_dict['User'] = user
+    room_response_dict['Password'] = passwd
+    room_response_dict['URL'] = url
+    return jsonify(room_response_dict)
 {% endif %}
-
 
 @app.route("/app/create_public")
 def create_public():
@@ -154,14 +159,16 @@ def create_public():
     shell_result = subprocess.call([command], shell=True)
 {% if multirooms == True %}
     url = 'https://' + the_uuid + '.' + the_domain
-    return "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
+    room_response_dict = {}
+    room_response_dict['URL'] = url
+    return jsonify(room_response_dict)
 {% endif %}
 {% if multirooms == False %}
     url = 'https://' + the_domain + '/chat.html'
-    return "<h6>URL : " + url + "</h6><br>" + "<h6>Direct link : <a href=\"" + url + "\">" + url + "</h6>"
+    room_response_dict = {}
+    room_response_dict['URL'] = url
+    return jsonify(room_response_dict)
 {% endif %}
-
-
 
 @app.route("/app/post", methods=['GET', 'POST'])
 def post():
@@ -169,71 +176,87 @@ def post():
     client_message = request.form['message']
     user_name = request.form['user_name']
     client_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    referer = request.referrer
+    referrer = request.referrer
     print(client_ip + ':' + client_message)
-    room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+    room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
-    path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_top'
-    path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages'
-    path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_bottom'
-    path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
-    path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/version.txt'
+    path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+    messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
+    rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
 {% endif %}
 {% if multirooms == False %}
-    path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/html_top'
-    path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/messages'
-    path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/html_bottom'
-    path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
-    path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/version.txt'
+    path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+    messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
+    rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/rss/'
 {% endif %}
-    user_name = html.escape(user_name)
-    client_message = html.escape(client_message)
-    formatted_message = ""
-    url_detect = re.search('http://|https://|ftp://|ftps://', client_message)
-    if url_detect is not None:
-      client_message = highlight_url(client_message)
-      formatted_message = formatted_message + '<div class="speech"><p><b>' + user_name + ' : </b>' + client_message + '</p></div>'
-      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
-      write_message(path_to_conversation, temp_conversation)
-      update_version(path_to_version)
+    ping_detect = re.search('^/ping\s', client_message)
+    if ping_detect is not None:
+      client_message_words = client_message.split()
+      target_user = client_message_words[1]
+      client_message = " ".join(client_message_words[2:])
+      rss_file = rss_dir + target_user + '_ping_notifs.rss'
+      update_file_and_create_message(user_name, path_to_update, messages_dir, client_message, True, target_user)
+      try:
+        write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, target_user, ping=True, file_type=None, file_url=None, file_or_thumbnail=None)
+      except FileNotFoundError:
+        pass
+      rss_file = rss_dir + 'all.rss'
+      client_message = 'PING_MESSAGE to ' + target_user + ' : ' + client_message
+      try:
+        write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, target_user, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
+      except FileNotFoundError:
+        pass
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping => ' + target_user, True)  
+      success_dict = {}
+      success_dict['Success'] = 'ping message sent to user ' + target_user
+      return jsonify(success_dict)
+    pingack_detect = re.search('^/ping_ack', client_message)
+    if pingack_detect is not None:
+      client_message_words = client_message.split()
+      src_user = client_message_words[1]
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping ack => ' + src_user, False)
       res = make_response("OK")
       return res
+      success_dict = {}
+      success_dict['Success'] = 'ping ack message sent to user ' + src_user
+      return jsonify(success_dict)
     client_message_len = len(client_message)
-    if client_message_len > 5000:
-      formatted_message = '<div class="speech"><p><b>What are you trying to write here ' + user_name + '? a novel? (5000 char max)</b></p></div>'
-      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
-      write_message(path_to_conversation, temp_conversation)
-      update_version(path_to_version)
+    if client_message_len > 1000:
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, " what are you trying to write here " + user_name + " a novel??? 1000 characters maximum.", False)
       res = make_response("OK")
       return res
+      error_dict = {}
+      error_dict['error'] = 'what are you trying to write here ' + user_name + ' a novel??? 1000 characters maximum.'
+      return jsonify(error_dict)
     else:
-      formatted_message = '<div class="speech"><p><b>' + user_name + ' : </b>' + client_message + '</p></div>'
-      temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
-      write_message(path_to_conversation, temp_conversation)
-      update_version(path_to_version)
-      res = make_response("OK")
-      return res
+      rss_file = rss_dir + 'all.rss'
+      update_file_and_create_message(user_name, path_to_update, messages_dir, client_message)
+      try:
+        write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
+      except FileNotFoundError:
+        pass
+      success_dict = {}
+      success_dict['Success'] = 'message sent'
+      return jsonify(success_dict)
 
 @app.route("/app/quit", methods=['GET', 'POST'])
 def quit():
   print(request.form)
   user_name = request.form['user_name']
-  user_name = html.escape(user_name)
-  referer = request.referrer
-  room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  referrer = request.referrer
+  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
-  path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
 {% endif %}
 {% if multirooms == False %}
-  path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
 {% endif %}
-  formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' has quit the room' + '</b></p></div>'
-  print(formatted_message)
-  file = open(path_to_conversation, "a")
-  file.write(formatted_message)
-  file.close
-  res = make_response("OK")
-  return res
+  update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + " has quit", False)
+  success_dict = {}
+  success_dict['Success'] = 'you have sent a quit message to the room'
+  return jsonify(success_dict)
 
 
 @app.route("/app/destroy", methods=['GET', 'POST'])
@@ -241,62 +264,232 @@ def destroy():
   print(request.form)
   the_domain = "{{ my_fqdn }}"
   user_name = request.form['user_name']
-  user_name = html.escape(user_name)
-  referer = request.referrer
-  the_uuid = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  referrer = request.referrer
+  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  the_uuid = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+{% if multirooms == True %}
+  path_to_chat = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/chat.html'
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
+  path_to_bomb = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/icons/bomb.png'
+{% endif %}
+{% if multirooms == False %}
+  path_to_chat = '/var/www/{{ my_fqdn }}/app/rooms/chat.html'
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
+  path_to_bomb = "/var/www/{{ my_fqdn }}/app/rooms/icons/bomb.png"
+{% endif %}
+  bomb_open = open(path_to_bomb, "rb")
+  b64_bomb_bytes = base64.b64encode(bomb_open.read())
+  b64_bomb_string = b64_bomb_bytes.decode('utf-8')
+  bomb_open.close
+  countdown_seconds = 15
+  while countdown_seconds > 0:
+    update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + " have dropped the bomb, this room will auto-destroy in " + str(countdown_seconds) + " seconds.", False, "bomb", 'image', "bomb", b64_bomb_string)
+    time.sleep(1)
+    countdown_seconds -= 1
+  update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, "This room was destroyed by " + user_name + " on " + datetime.datetime.utcnow().strftime("%a %b %d %Y @ %H:%M:%S UTC"), False, "bomb", 'image', "bomb", b64_bomb_string)
+  time.sleep(2)
   command = 'sudo /var/www/' + the_domain + '/app/destroy_room.sh ' + user_name + ' ' + the_uuid + ' ' +  the_domain
   shell_result = subprocess.call([command], shell=True)
-  return "<h6>OK BOSS</h6>" 
+  chat_html = open(path_to_chat, "w")
+  chat_html.write("<html><body><h1>This room was destroyed by " + user_name + " on " + datetime.datetime.utcnow().strftime("%a %b %d %Y @ %H:%M:%S UTC") + "</h1></body></html>")
+  chat_html.close
+  success_dict = {}
+  success_dict['Success'] = 'OK BOSS'
+  return jsonify(success_dict)
 
 
 @app.route("/app/upload", methods=['GET', 'POST'])
 def upload():
   file_data = request.files['file']
   file_name = file_data.filename
+  file_name_length = len(file_name)
+  if (file_name_length == 0) or (file_name_length > 100):
+    error_dict = {}
+    error_dict['error'] = 'Invalid file length'
+    return jsonify(error_dict)
+    return res
+  dot_detect = re.search('\.', file_name)
+  if dot_detect is None:
+    clean_file_name = re.sub(r'\W+', '', file_name)
+    file_name = clean_file_name
+  if dot_detect is not None:
+    unclean_file_name_parts = file_name.split(".")
+    unclean_extention = unclean_file_name_parts[-1:]
+    unclean_file_name_sections = unclean_file_name_parts[:-1]
+    clean_extension = re.sub(r'\W+', '', str(unclean_extention))
+    unclean_file_name = '.'.join(unclean_file_name_sections)
+    clean_file_name = re.sub(r'\W+', '', str(unclean_file_name))
+    file_name = clean_file_name + '.' + clean_extension
+  webfiles_detect = re.search('.js$|.html$|.css$|.htm$', file_name)
+  if webfiles_detect is not None:
+    file_name = file_name + '.dat'
   print(file_data)
   user_name = request.form['user_name']
-  user_name = html.escape(user_name)
-  referer = request.referrer
-  room = referer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+  referrer = request.referrer
+  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
 {% if multirooms == True %}
-  path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_top'
-  path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages'
-  path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/html_bottom'
-  path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/conversation.html'
-  path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/version.txt'
-  path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_data.filename
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
+  path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_name
   path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/'
 {% endif %}
 {% if multirooms == False %}
-  path_to_htmltop = '/var/www/{{ my_fqdn }}/app/rooms/html_top'
-  path_to_messages = '/var/www/{{ my_fqdn }}/app/rooms/messages'
-  path_to_htmlbottom = '/var/www/{{ my_fqdn }}/app/rooms/html_bottom'
-  path_to_conversation = '/var/www/{{ my_fqdn }}/app/rooms/conversation.html'
-  path_to_version = '/var/www/{{ my_fqdn }}/app/rooms/version.txt'
-  path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/files/' + file_data.filename
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
+  path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/files/' + file_name
   path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/files/'
 {% endif %}
 {% if multirooms == True %}
-  public_path_to_file = 'https://' + room + '.{{ my_fqdn }}/files/' + file_data.filename
+  public_path_to_file = 'https://' + room + '.{{ my_fqdn }}/files/' + file_name
 {% endif %}
 {% if multirooms == False %}
-  public_path_to_file = 'https://' + '{{ my_fqdn }}' + '/files/' + file_data.filename
+  public_path_to_file = 'https://' + '{{ my_fqdn }}' + '/files/' + file_name
 {% endif %}
-  print(path_to_file)
-  print(public_path_to_file)
   file_data.save(path_to_file)
-  image_detect = re.search('.jpg|.jpeg|.JPG|.JPEG|.png|.PNG', file_name)
-  gif_detect = re.search('.gif|.GIF', file_name)
+  image_detect = re.search('.jpg$|.jpeg$|.JPG$|.JPEG$|.png$|.PNG$', file_name)
+  gif_detect = re.search('.gif$|.GIF$', file_name)
   if image_detect is not None:
     thumbnail = create_thumbnail(path_to_file)
-    thumbnail.save(path_to_file_folder + 'thumb.' + file_name)
-    formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' have uploaded a file : </b>' + '<a href="' + public_path_to_file + '">' + file_name + '</a></p><img src="files/thumb.' + file_name + '" alt="' + file_name + '"></div>'
+    thumbnail_file = thumbnail.save(path_to_file_folder + "thumb." + file_name)
+    thumbnail_file_path = path_to_file_folder + "thumb." + file_name
+    thumbnail_open = open(thumbnail_file_path, "rb")
+    b64_thumbnail_bytes = base64.b64encode(thumbnail_open.read())
+    b64_thumbnail_string = b64_thumbnail_bytes.decode('utf-8')
+    thumbnail_open.close
+    update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'image', public_path_to_file, b64_thumbnail_string)
   elif gif_detect is not None:
-    formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' have uploaded a file : </b>' + '<a href="' + public_path_to_file + '">' + file_name + '</a></p><img src="files/' + file_name + '" alt="' + file_name + '"></div>'
+    gif_open = open(path_to_file, "rb")
+    b64_gif_bytes = base64.b64encode(gif_open.read())
+    b64_gif_string = b64_gif_bytes.decode('utf-8')
+    gif_open.close
+    update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'gif', public_path_to_file, b64_gif_string)
   else:
-    formatted_message = '<div class="speech"><p><b>=> ' + user_name + ' have uploaded a file : </b>' + '<a href="' + public_path_to_file + '">' + file_data.filename + '</a></p></div>'
-  temp_conversation = build_message(path_to_htmltop, path_to_messages, path_to_htmlbottom, user_name, formatted_message)
-  write_message(path_to_conversation, temp_conversation)
-  update_version(path_to_version)
-  res = make_response("OK")
-  return res
+    update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'other', public_path_to_file)
+  success_dict = {}
+  success_dict['Success'] = 'File uploaded'
+  return jsonify(success_dict)
+
+@app.route("/app/all_rss", methods=['GET', 'POST'])
+def all_rss():
+  client_message = request.form['message']
+  user_name = request.form['user_name']
+  referrer = request.referrer
+  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+{% if multirooms == True %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
+  title = 'All Notifications for ' + room + '{{ my_fqdn }}'
+{% endif %}
+{% if multirooms == False %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/rss/'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
+  title = 'All Notifications for {{ my_fqdn }}'   
+{% endif %}
+  all_xml = rss_dir + 'all.rss'
+  if client_message == 'request_all_rss':
+    if os.path.isfile(all_xml) == True:
+      client_message = 'rss feed all.rss already exist'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      error_dict = {}
+      error_dict['error'] = 'rss feed all.rss already exist'
+      return jsonify(error_dict)
+    else:
+      xml_prolog = '<?xml version="1.0" encoding="utf-8"?>'
+      rss = ET.Element('rss')
+      channel = ET.SubElement(rss, 'channel')
+      xml_title = ET.SubElement(channel, 'title')
+      xml_link = ET.SubElement(channel, 'link')
+      xml_description = ET.SubElement(channel, 'description')
+      xml_title.text = title
+      xml_link.text = referrer
+      xml_description.text = 'all notifications for room ' + referrer
+      xml_file = open(all_xml, "a")
+      xml_file.write(xml_prolog)
+      xml_file.write(ET.tostring(rss, encoding='unicode'))
+      xml_file.close()
+      client_message = 'rss feed all.rss was created (requested by ' + user_name + ')'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      rss_feed = referrer + 'rss/all.rss'
+      rss_response_dict = {}
+      rss_response_dict['rss'] = rss_feed
+      return jsonify(rss_response_dict)
+  else:
+      client_message = 'Invalid request for this api call try user_name="$user" and message:"request_all_rss"'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      error_dict = {}
+      error_dict['error'] = 'Invalid request for this api call try user_name="$user" and message:"request_all_rss"'
+      return jsonify(error_dict)
+
+
+@app.route("/app/user_ping_rss", methods=['GET', 'POST'])
+def user_ping_rss():
+  client_message = request.form['message']
+  user_name = request.form['user_name']
+  referrer = request.referrer
+  room = referrer.replace("https://","").replace(".{{ my_fqdn }}","").replace("/","")
+{% if multirooms == True %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
+  title = 'ping Notifications for ' + user_name + ' in' + room + '{{ my_fqdn }}'
+{% endif %}
+{% if multirooms == False %}
+  path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/rss/'
+  messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
+  title = 'ping Notifications for ' + user_name + ' in {{ my_fqdn }}'   
+{% endif %}
+  user_xml = rss_dir + user_name + '_ping_notifs.rss'
+  if client_message == 'request_user_rss':
+    if os.path.isfile(user_xml) == True:
+      client_message = 'rss feed ' + user_name + '_ping_notifs.rss already exist'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      error_dict = {}
+      error_dict['error'] = user_name + '_ping_notifs.rss already exist'
+      return jsonify(error_dict)
+    else:
+      xml_prolog = '<?xml version="1.0" encoding="utf-8"?>'
+      rss = ET.Element('rss')
+      channel = ET.SubElement(rss, 'channel')
+      xml_title = ET.SubElement(channel, 'title')
+      xml_link = ET.SubElement(channel, 'link')
+      xml_description = ET.SubElement(channel, 'description')
+      xml_title.text = title
+      xml_link.text = referrer
+      xml_description.text = 'ping notifications for ' + user_name + ' in room ' + referrer
+      xml_file = open(user_xml, "a")
+      xml_file.write(xml_prolog)
+      xml_file.write(ET.tostring(rss, encoding='unicode'))
+      xml_file.close()
+      client_message = 'rss feed ' + user_name + '_ping_notifs.rss was created (requested by ' + user_name + ')'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      rss_feed = referrer + 'rss/' + user_name + '_ping_notifs.rss'
+      rss_response_dict = {}
+      rss_response_dict['rss'] = rss_feed
+      return jsonify(rss_response_dict)
+  else:
+      client_message = 'Invalid request for this api call try user_name="$user" and message:"request_user_rss"'
+      update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
+      error_dict = {}
+      error_dict['error'] = 'Invalid request for this api call try user_name="$user" and message:"request_user_rss"'
+      return jsonify(error_dict)
+
+@app.route("/app/api_help", methods=['GET', 'POST'])
+def api_help():
+  api_response_dict = {}
+  api_response_dict['create a public room'] = "/app/create_public"
+  api_response_dict['create a private room'] = "/app/create_private"
+  api_response_dict['post a message'] = "/app/post"
+  api_response_dict['send a quit message'] = "/app/quit"
+  api_response_dict['upload a file'] = "/app/upload"
+  api_response_dict['destroy the room'] = "/app/destroy"
+  api_response_dict['request rss feed for all messages'] = "/app/all_rss"
+  api_response_dict['request rss feed for ping to your user '] = "/app/user_ping_rss"
+  return jsonify(api_response_dict)
+
+
+

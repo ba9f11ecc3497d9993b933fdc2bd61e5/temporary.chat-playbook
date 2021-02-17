@@ -1,14 +1,150 @@
 // functions
 
-async function check_version(arg) {
-    var local_version = arg;
-    version_url = current_url + "/version.txt?v=" + (new Date());
-    let response = await fetch(version_url);
+async function print_messages(local_version, remote_version) {
+    let div_conversation = document.getElementById('conversation');
+    let user_name = localStorage.username;
+    while (local_version < remote_version) {
+        local_version++;
+        message_url = current_url + "/messages/" + local_version + ".json"
+        let response = await fetch(message_url);
+        if (response.ok) {
+            let message_file = await response.json();
+            if(message_file.hasOwnProperty('file_url')) {
+                if ((message_file.file_url == "bomb") && (message_file.src_user == "room_bot V1.0")) {
+                    while(div_conversation.hasChildNodes()) {
+                         div_conversation.removeChild(div_conversation.lastChild);
+                    }
+                    let src_user = message_file.src_user;
+                    let message = message_file.message;
+                    let img = document.createElement('img');
+                    img.src = 'data:image/png;base64,' + message_file.file_or_thumbnail;
+                    let bot_div = document.createElement('div');
+                    let bomb_div = document.createElement('div');
+                    bot_div.classList.add('speech-bot');
+                    bomb_div.classList.add('speech-bot');
+                    bot_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    bomb_div.appendChild(img);
+                    div_conversation.appendChild(bot_div);
+                    div_conversation.appendChild(bomb_div);
+                }
+                else if ((message_file.src_user != "room_bot V1.0") && (message_file.file_type == "image") || (message_file.file_type == "gif")) {
+                    let src_user = message_file.src_user;
+                    let message = src_user + " Uploaded a file : ";
+                    let file_url = message_file.file_url;
+                    let file_thumbnail = message_file.file_or_thumbnail;
+                    let speech_div = document.createElement('div');
+                    let image_div = document.createElement('div');
+                    speech_div.classList.add('speech');
+                    image_div.classList.add('speech');
+                    let url = document.createElement('a');
+                    url.appendChild(document.createTextNode(file_url));
+                    url.title = file_url;
+                    url.href = file_url;
+                    let img = document.createElement('img');
+                    image_ext =  file_url.split('.').pop()
+                    if (image_ext == "jpg" || image_ext == "jpeg" || image_ext == "JPG" || image_ext == "JPEG") {
+                        img.src = 'data:image/jpeg;base64,' + file_thumbnail;
+                    }
+                    if (image_ext == "png" || image_ext == "PNG") {
+                        img.src = 'data:image/png;base64,' + file_thumbnail;
+                    }
+                    if (image_ext == "gif" || image_ext == "GIF") {
+                        img.src = 'data:image/gif;base64,' + file_thumbnail;
+                    }
+                    image_div.appendChild(img);
+                    speech_div.appendChild(document.createTextNode(message));
+                    speech_div.appendChild(url);
+                    div_conversation.appendChild(speech_div);
+                    div_conversation.appendChild(image_div);
+                }
+                else if ((message_file.src_user != "room_bot V1.0") && (message_file.file_type != "image") && (message_file.file_type != "gif")) {
+                    let src_user = message_file.src_user;
+                    let message = src_user + " Uploaded a file : "; 
+                    let file_url = message_file.file_url;
+                    let speech_div = document.createElement('div');
+                    let url = document.createElement('a');
+                    url.appendChild(document.createTextNode(file_url));
+                    url.title = file_url;
+                    url.href = file_url;
+                    speech_div.classList.add('speech');
+                    speech_div.appendChild(document.createTextNode(message));
+                    speech_div.appendChild(url);
+                    div_conversation.appendChild(speech_div);
+                }
+            }
+            else if (message_file.ping == true) {
+                let src_user = message_file.src_user;
+                let dst_user = message_file.dst_user;
+                let message = message_file.message;
+                if ( dst_user === user_name ) {
+                    let title = src_user;
+                    let body = message;
+                    const notification = new Notification(title, {body: body});
+                    ping_ack(src_user)
+                }
+                if (src_user == "room_bot V1.0") {
+                    let bot_div = document.createElement('div');
+                    bot_div.classList.add('speech-bot');
+                    bot_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    div_conversation.appendChild(bot_div);
+                }
+                else {
+                    let speech_div = document.createElement('div');
+                    speech_div.classList.add('speech-imp');
+                    speech_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    div_conversation.appendChild(speech_div);
+                }
+            }
+            else if (!message_file.hasOwnProperty('file_url')) {
+                let src_user = message_file.src_user;
+                let message = message_file.message;
+                if (src_user == "room_bot V1.0") {
+                    let bot_div = document.createElement('div');
+                    bot_div.classList.add('speech-bot');
+                    bot_div.appendChild(document.createTextNode(src_user + " : " + message));
+                    div_conversation.appendChild(bot_div);
+                }
+                else {
+                    let words = message.split(" ");
+                    let speech_div = document.createElement('div');
+                    speech_div.classList.add('speech');
+                    speech_div.appendChild(document.createTextNode(src_user + " : "));
+                    let url_pattern = new RegExp("https://|http://|ftp://|ftps://");
+                    for (let i = 0; i < words.length; i += 1) {
+                        let check_url = url_pattern.test(words[i]);
+                        if (check_url == true) {
+                            let url = document.createElement('a');
+                            url.appendChild(document.createTextNode(words[i]));
+                            url.title = words[i];
+                            url.href = words[i];
+                            speech_div.appendChild(url);
+                            speech_div.appendChild(document.createTextNode(" "));
+                        }
+                        else {
+                            speech_div.appendChild(document.createTextNode(words[i] + " "));
+                        }
+                    }
+                    div_conversation.appendChild(speech_div);
+                }
+            }
+        }
+    }
+}
+
+async function check_updates(arg) {
+    local_version = arg;
+    update_url = current_url + "/updates.json?v=" + (new Date());
+    let response = await fetch(update_url);
     if (response.ok) {
-        let remote_version = await response.text();
+        let update_file = await response.json();
+        remote_version = update_file.version;
+        ping = update_file.ping;
+        ping_src_user = update_file.ping_src_user;
+        ping_dst_user = update_file.ping_dst_user;
+        ping_message = update_file.ping_message;
         if (remote_version > local_version) {
-            $('#conversation').load('conversation.html');
-            var local_version = remote_version;
+            print_messages(local_version, remote_version);
+            local_version = remote_version;
             setTimeout(scroll_down, 500);
             pong(local_version);
         }
@@ -16,7 +152,7 @@ async function check_version(arg) {
             pong(local_version);
         }
         else if (remote_version < local_version) {
-            var local_version = 0;
+            local_version = 0;
             pong(local_version);
         }
     }
@@ -26,8 +162,8 @@ async function check_version(arg) {
 }
 
 function pong(arg) {
-    var local_version = arg;
-    setTimeout(check_version, 750, local_version);
+    local_version = arg;
+    setTimeout(check_updates, 750, local_version);
 }
 
 function fileChosen() {
@@ -41,14 +177,20 @@ function fileChosen() {
     }
 }
 
-function set_user_name() {
-    var user_name = document.getElementById('user_name').value;
-    if (user_name.match(/^[a-z0-9]+$/i)) {
-        if (user_name.length > 25) {
+function set_user_name(nick_from_cli = "placeholder") {
+    if (nick_from_cli !== "placeholder") {
+        new_user_name = nick_from_cli;
+    }
+    else {
+        let new_user_name = document.getElementById('user_name').value;
+    }
+    if (new_user_name.match(/^[a-z0-9]+$/i)) {
+        if (new_user_name.length > 25) {
             alert("user name must be less than 25 characters");
         }
         else {
-            document.cookie = user_name + ";SameSite=Strict; Secure";
+            localStorage.removeItem(user_name);
+            localStorage.username = new_user_name;
         }
     }
     else {
@@ -58,22 +200,47 @@ function set_user_name() {
 
 async function post_message() {
     const url = 'https://{{ my_fqdn }}/app/post';
-    var message = document.getElementById('post').value;
+    let message = document.getElementById('post').value;
     document.getElementsByClassName('send-row')[0].reset();
-    var user_name = document.cookie;
-    let formData = new FormData();
-    formData.append("user_name", user_name);
-    formData.append("message", message);
-    let response = await fetch(url, {body:formData,method:"post"});
-    if (response.ok == true) {
-        $('#conversation').load('conversation.html');
-        scroll_down();
+    if (message.startsWith("/nick")) {
+        nick_from_cli = message.split(" ")[1]
+        set_user_name(nick_from_cli)
+    }
+    if (message.startsWith("/rss")) {
+        if (message.split(" ")[1] === "all") {
+            rss_all_notifs()
+        }
+        if (message.split(" ")[1] === "user") {
+            rss_ping_notifs()
+        }
+    }
+    if (message === "/notifications") {
+        enable_notif()
+    }
+    if (message === "/quit") {
+        user_quit()
+    }
+    if (message === "/destroy") {
+        destroy()
+    }
+    if (message === "/help") {
+        help()
+    }
+    else {
+        let user_name = localStorage.username;
+        let formData = new FormData();
+        formData.append("user_name", user_name);
+        formData.append("message", message);
+        let response = await fetch(url, {body:formData,method:"post"});
+        if (response.ok == true) {
+            scroll_down();
+        }
     }
 }
 
 async function user_quit() {
     const url = 'https://{{ my_fqdn }}/app/quit';
-    var user_name = document.cookie;
+    let user_name = localStorage.username;
     let formData = new FormData();
     formData.append("user_name", user_name);
     let response = await fetch(url, {body:formData,method:"post"});
@@ -84,38 +251,59 @@ async function user_quit() {
 
 function destroy() {
     const url = 'https://{{ my_fqdn }}/app/destroy';
-    var user_name = document.cookie;
+    let user_name = localStorage.username;
     let formData = new FormData();
     formData.append("user_name", user_name);
     fetch(url, {body:formData,method:"post"});
 }
 
 function preview_image() {
-    var filesToUpload = document.getElementById('file').files;
+    let filesToUpload = document.getElementById('file').files;
+    let file_name = document.getElementById('file').value;
     file = filesToUpload[0];
     if (file) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            $('#preview').attr('src', e.target.result).height(100);
+        let reader = new FileReader();
+        reader.onload = function(event) {
+            let img = document.createElement('img');
+            img.src = 'icons/document.png'
+            let file_ext = file_name.split('.').pop().toLowerCase();
+            if ((file_ext == "jpg") || (file_ext == "jpeg") || (file_ext == "png") || (file_ext == "gif")) {
+                img.src = event.target.result;
+            }
+            if ((file_ext == "mp3") || (file_ext == "ogg") || (file_ext == "wav") || (file_ext == "aac") || (file_ext == "flac")) {
+                img.src = 'icons/audio.png'
+            }
+            if (file_ext == "pdf") {
+                img.src = 'icons/pdf.png'
+            }
+            if (file_ext == "zip") {
+                img.src = 'icons/zip.png'
+            }
+            if ((file_ext == "mp4") || (file_ext == "avi") || (file_ext == "mkv")) {
+                img.src = 'icons/video.png'
+            }
+            img.height = 100;
+            let preview = document.getElementById('preview');
+            preview.appendChild(img);
         }
         reader.readAsDataURL(file);
     }
     else {
-        $('#preview').attr('src', '');
+        let preview = document.getElementById('preview');
+        preview.removeChild(preview.childNodes[0]);
     }
 }
 
 async function upload_file() {
     const url = 'https://{{ my_fqdn }}/app/upload';
-    var user_name = document.cookie;
-    var fileInput = document.getElementById('file');
-    var file = fileInput.files[0];
+    let user_name = localStorage.username;
+    let fileInput = document.getElementById('file');
+    let file = fileInput.files[0];
     let formData = new FormData();
     formData.append("user_name", user_name);
     formData.append("file", file);
     let response = await fetch(url, {body:formData,method:"post"});
     if (response.ok == true) {
-        $('#conversation').load('conversation.html');
         scroll_down();
         clear_preview();
         d.getElementsByClassName('file-form')[0].classList.add('no-file-chosen');
@@ -123,13 +311,15 @@ async function upload_file() {
 }
 
 function clear_preview() {
-    document.getElementById('preview').src = '';
-    var filesToUpload = document.getElementById('file').files;
-    var file = '';
+    let preview_section = document.getElementById('preview');
+    while(preview_section.hasChildNodes()) {
+        preview_section.removeChild(preview_section.lastChild);
+    }
 }
 
+
 function scroll_down() {
-    var textarea = document.getElementById('conversation');
+    let textarea = document.getElementById('conversation');
     textarea.scrollTop = textarea.scrollHeight;
 }
 
@@ -137,22 +327,125 @@ function toggleSidebar() {
     document.body.classList.toggle('sidebar-open');
 }
 
+async function rss_all_notifs() {
+    const remote_url = 'https://{{ my_fqdn }}/app/all_rss';
+    let user_name = localStorage.username;
+    let message = "request_all_rss";
+    let formData = new FormData();
+    formData.append("user_name", user_name);
+    formData.append("message", message);
+    let response = await fetch(remote_url, {body:formData,method:"post"});
+    print_rss_all_notifs()
+    if (response.ok == true) {
+        return false;
+    }
+}
 
+function print_rss_all_notifs() {
+    let div_conversation = document.getElementById('conversation');
+    let br = document.createElement("br");
+    let rss_all_div = document.createElement('div');
+    rss_all_div.classList.add('speech-bot');
+    //const local_url = 'https://{{ my_fqdn }}/'
+    rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + current_url + 'rss/all.rss'));
+    div_conversation.appendChild(rss_all_div);
+    scroll_down()
+}
+
+async function rss_ping_notifs() {
+    const remote_url = 'https://{{ my_fqdn }}/app/user_ping_rss';
+    let user_name = localStorage.username;
+    let message = "request_user_rss";
+    let formData = new FormData();
+    formData.append("user_name", user_name);
+    formData.append("message", message);
+    let response = await fetch(remote_url, {body:formData,method:"post"});
+    print_rss_ping_notifs()
+    if (response.ok == true) {
+        return false;
+    }
+}
+
+function print_rss_ping_notifs() {
+    let div_conversation = document.getElementById('conversation');
+    let br = document.createElement("br");
+    let rss_all_div = document.createElement('div');
+    rss_all_div.classList.add('speech-bot');
+    //const local_url = 'https://{{ my_fqdn }}/'
+    let user_name = localStorage.username;
+    rss_all_div.appendChild(document.createTextNode('Insert this address in your favorite RSS Feed Reader : ' + current_url + 'rss/' + user_name + '_ping_notifs.rss'));
+    div_conversation.appendChild(rss_all_div);
+    scroll_down()
+}
+
+function enable_notif() {
+    if (typeof Notification !== "undefined") {
+        permission = Notification.permission;
+        if (permission !== "granted") {
+            Notification.requestPermission().then(function(permission) {
+                location.reload();
+                return false; 
+            });
+        }
+    }
+}
+
+async function ping_ack(src_user) {
+    const url = 'https://{{ my_fqdn }}/app/post';
+    let message = "/ping_ack " + src_user;
+    let user_name = localStorage.username;
+    let formData = new FormData();
+    formData.append("user_name", user_name);
+    formData.append("message", message);
+    let response = await fetch(url, {body:formData,method:"post"});
+    if (response.ok == true) {
+        return false;
+    }
+}
+
+function help() {
+    let div_conversation = document.getElementById('conversation');
+    let br = document.createElement("br");
+    let help_div = document.createElement('div');
+    help_div.classList.add('speech-bot');
+    help_div.appendChild(document.createTextNode("###        Help Menu         ###\n"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/nick           : takes argument [new_username]"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/ping           : takes arguments [username] and [message]"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/rss            : takes arguments [all] or [user]"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/notifications  : no arguments"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/quit           : no arguments"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/destroy        : no arguments"));
+    help_div.appendChild(document.createElement("br"));
+    help_div.appendChild(document.createTextNode("/help           : no arguments"));
+    div_conversation.appendChild(help_div);
+    scroll_down()
+}
 
 // code & listeners
 
-// set defaults and check version when page is loaded
+// set defaults
 
-var complete_url = window.location.href;
-var current_url = complete_url.replace("chat.html", "");
-
+let complete_url = window.location.href;
+let current_url = complete_url.replace("chat.html", "");
 const d = document;
-var user_name = document.cookie;
-if (user_name === "") {
-    document.cookie = "Anonymous; SameSite=Strict; Secure";
-}
 
-check_version(0);
+if (localStorage.getItem("username") === null) {
+    localStorage.username = 'Anonymous';
+} 
+
+
+// start the check server loop
+
+check_updates(0);
+
+
 
 // listen for post
 
@@ -190,6 +483,27 @@ document.addEventListener('DOMContentLoaded', function () {
     .addEventListener('submit', upload_file)
 })
 
+// listen for rss all notifs
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-rss-notif-all')[0]
+    .addEventListener('click', rss_all_notifs) 
+})
+
+// listen for rss ping notifs
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-rss-notif-ping')[0]
+    .addEventListener('click', rss_ping_notifs) 
+})
+
+// listen for Desktop notifs
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-notif')[0]
+    .addEventListener('click', enable_notif)
+})
+
 // listen for quit
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -204,9 +518,17 @@ document.addEventListener('DOMContentLoaded', function () {
     .addEventListener('click', destroy)
 })
 
+// listen for help
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementsByClassName('btn-help')[0]
+    .addEventListener('click', help)
+})
+
 // listen for close menu
 
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementsByClassName('btn-close_menu')[0]
     .addEventListener('click', toggleSidebar) 
 })
+

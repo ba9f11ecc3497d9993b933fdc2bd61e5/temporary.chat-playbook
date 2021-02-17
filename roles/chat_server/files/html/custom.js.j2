@@ -1,36 +1,54 @@
 document.addEventListener('DOMContentLoaded', function() {
-    $('#spinner').hide()
+    document.getElementById('spinner').style.visibility='hidden';
 });
 
 
 async function create_room() {
-    $('#spinner').show()
+    document.getElementById('spinner').style.visibility = 'hidden';
     document.getElementById("newroom");
     var room_type_private = document.getElementById('room_type_private').checked;
     if (room_type_private == true) {
+        document.getElementById('spinner').style.visibility = 'visible';
         let response = await fetch('https://{{ my_fqdn }}/app/create_private');
-        let responseText = await getTextFromStream(response.body);
-        $('#spinner').hide()
-        document.getElementById("room_info").innerHTML = responseText;
-    } else {
-        let response = await fetch('https://{{ my_fqdn }}/app/create_public');
-        let responseText = await getTextFromStream(response.body);
-        $('#spinner').hide()
-        document.getElementById("room_info").innerHTML = responseText;
+	if (response.ok) {
+	    let response_json = await response.json();
+	    var room_info_div = document.getElementById('room_info');
+            while(room_info_div.hasChildNodes()) {
+                room_info_div.removeChild(room_info_div.lastChild);
+            }
+	    var show_info_user = document.createElement('p');
+	    var show_info_password = document.createElement('p');
+	    var show_info_url = document.createElement('a');
+	    show_info_user.appendChild(document.createTextNode("User : " + response_json.User));
+	    show_info_password.appendChild(document.createTextNode("Password : " + response_json.Password));
+	    show_info_url.appendChild(document.createTextNode(response_json.URL));
+            show_info_url.title = response_json.URL;
+            show_info_url.href = response_json.URL;
+	    document.getElementById('spinner').style.visibility='hidden';
+	    room_info_div.appendChild(show_info_user);
+	    room_info_div.appendChild(show_info_password);
+	    room_info_div.appendChild(show_info_url);
+	}
+    }
+    else {
+       	document.getElementById('spinner').style.visibility = 'visible';
+       	let response = await fetch('https://{{ my_fqdn }}/app/create_public');
+	if (response.ok) {
+            let response_json = await response.json();
+	    var room_info_div = document.getElementById('room_info');
+            while(room_info_div.hasChildNodes()) {
+                room_info_div.removeChild(room_info_div.lastChild);
+            }
+	    var show_info_url = document.createElement('a');
+	    show_info_url.appendChild(document.createTextNode(response_json.URL));
+            show_info_url.title = response_json.URL;
+            show_info_url.href = response_json.URL;
+	    document.getElementById('spinner').style.visibility='hidden';
+	    room_info_div.appendChild(show_info_url);
+	}
     }
 }
 
-async function getTextFromStream(readableStream) {
-    let reader = readableStream.getReader();
-    let utf8Decoder = new TextDecoder();
-    let nextChunk;
-    let resultStr = '';
-    while (!(nextChunk = await reader.read()).done) {
-        let partialData = nextChunk.value;
-        resultStr += utf8Decoder.decode(partialData);
-    }
-    return resultStr;
-}
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('newroom')

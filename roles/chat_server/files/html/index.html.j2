@@ -5,11 +5,17 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Temporary private chatrooms with file uploading support. No invite or registration required. Ad-free and secure, always!">
     <link rel="shortcut icon" type="image/ico" href="tc.ico">
     <title>{{ my_fqdn }}</title>
-    <head/>
-    <script src="js/jquery.min.js"></script>
+</head>
     <script src="js/custom.js"></script>
+    <noscript>
+        <div class="jumbotron text-center">
+        <h4>Javascript is disabled either enable it or if you want to use the api,</h4>
+        <h4>curl https://{{ my_fqdn }}/app/api_help</h4>
+        </div>
+    </noscript>
     <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="screen" />
     <link href="css/spinner.css" rel="stylesheet" type="text/css" media="screen" />
 
@@ -25,19 +31,22 @@
             </button>
             <div class="collapse navbar-collapse" id="collapsibleNavbar">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="./who.html">Who</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="./why.html">Why</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="./about.html">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="./contact.html">Contact</a>
-                    </li>
-                </ul>
+                <li class="nav-item">
+                    <a class="nav-link" href="./who.html">Who</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./why.html">Why</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./updates.html">Updates</a>
+                </li>
+                <li class="Q & A">
+                    <a class="nav-link" href="./qa.html">Q&A</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./contact.html">Contact</a>
+                </li>
+            </ul>
             </div>
         </nav>
         <div class="container vh-100">
@@ -54,7 +63,7 @@
                 </form>
             </div>
             <div class="row h-10 justify-content-center align-items-center">
-                <p id="room_info"></p>
+                <div id="room_info"></div>
             </div>
             <br>
             <div id="spinner_row" class="row h-50 justify-content-center align-items-center">

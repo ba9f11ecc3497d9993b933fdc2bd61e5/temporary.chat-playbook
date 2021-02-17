@@ -1,0 +1,41 @@
+bash/curl/jq snippets of code
+
+#set your nickname
+NICKNAME="curlitos_way"
+
+#create a public room (when in multirooms mode)
+PUBLIC_URL=$(curl -s https://temporary.chat/app/create_public | jq -r .URL)
+BASE_URL=$(echo "https://$(echo $PUBLIC_URL | cut -d . -f 2-4)")
+
+#create a private room (when in multirooms mode)
+PRIVATE_INFOS=$(curl -s https://temporary.chat/app/create_private)
+PRIVATE_URL=$(echo $PRIVATE_INFOS | jq -r .URL)
+PRIVATE_USERNAME=$(echo $PRIVATE_INFOS | jq -r .User)
+PRIVATE_PASSWD=$(echo $PRIVATE_INFOS | jq -r .Password)
+BASE_URL=$(echo "https://$(echo $PRIVATE_URL | cut -d . -f 2-4)")
+
+#post messages to public room
+read -p "enter message here :" MESSAGE
+curl --referer "$PUBLIC_URL" -d user_name="$NICKNAME" -d "message=$MESSAGE" "${BASE_URL}/app/post"
+
+#post messages to private room
+read -p "enter message here :" MESSAGE
+curl -u "$PRIVATE_USERNAME":"$PRIVATE_PASSWD" --referer "$PRIVATE_URL" -d user_name="$NICKNAME" -d "message=$MESSAGE" "${BASE_URL}/app/post"
+
+#destroy a room
+curl -k -X POST --referer $PUBLIC_URL "${PUBLIC_URL}/app/destroy -d "user_name=toto"
+
+#upload a file to public room
+curl -k -X POST --referer $PUBLIC_URL -F 'file=@/local/path/image.jpg' -F "filename=image.jpg"  -F "user_name=$NICKNAME" "${BASE_URL}/app/upload"
+
+#check the version of last message in a room (public, when in multirooms mode)
+LAST_MESSAGE_NUMBER=$(curl -s "${PUBLIC_URL}/updates.json" | jq -r .version)
+
+#read the message above
+curl -s "${PUBLIC_URL}/messages/${LAST_MESSAGE_NUMBER}.json"
+
+#request rss feed for all messages sent to the room
+curl -s --referer $PUBLIC_URL "${PUBLIC_URL}/app/all_rss -d user_name=$NICKNAME -d message=request_all_rss
+
+#request rss feed for ping notifications to user $NICKNAME
+curl -s --referer $PUBLIC_URL "${PUBLIC_URL}/app/user_ping_rss" -d user_name=$NICKNAME -d message=request_user_rss

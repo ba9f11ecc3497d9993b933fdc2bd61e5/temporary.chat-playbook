@@ -6,7 +6,6 @@
    <meta name="viewport" content="width=device-width, initial-scale=1" />
    <link rel="shortcut icon" type="image/ico" href="tc.ico" />
    <link href="css/main.css" rel="stylesheet" />
-   <script src="js/jquery.min.js"></script>
    <script src="js/chat_custom.js"></script>
    <title>
        {{ my_fqdn }}
@@ -36,14 +35,18 @@
                             share file
                         </span>
                         <span class='file-preview'>
-                            <img src="" id="preview">
+				<div id="preview"></div>
                         </span>
                     </label>
                     <input type="submit" class="button-upload" value="Upload">
                 </form>
                 <div class='sidebar-actions'>
+                    <button type="submit" class="btn-rss-notif-all">Rss All Notifications</button>
+                    <button type="submit" class="btn-rss-notif-ping">Rss Ping Notifications</button>
+                    <button type="submit" class="btn-notif">Desktop Notifications</button>
                     <button type="submit" class="btn-quit">Quit</button>
                     <button type="submit" class="btn-destroy">Destroy</button>
+                    <button type="submit" class="btn-help">Help</button>
                     <button type="submit" class="btn-close_menu">Close menu</button>
                 </div>
             </div>

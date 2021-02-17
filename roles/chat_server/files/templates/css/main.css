@@ -50,8 +50,8 @@ button,
         font-size: .8em;
         text-transform: uppercase;
         transition: color .2s,
-                                border .2s,
-                                background .2s;
+        border .2s,
+        background .2s;
 }
 button:hover,
 [type='button']:hover,
@@ -97,9 +97,6 @@ button:hover,
         cursor: pointer;
         color: #fff;
 }
-
-
-
 .container-fluid {
         display: flex;
         flex-flow: column nowrap;
@@ -255,6 +252,27 @@ button:hover,
         color: #777;
         background: url('../icons/exit.png') no-repeat left;
 }
+.sidebar-actions .btn-notif {
+        background: url('../icons/notifications.png') no-repeat left;
+}
+.sidebar-actions .btn-notif:hover {
+        color: #777;
+        background: url('../icons/notifications.png') no-repeat left;
+}
+.sidebar-actions .btn-rss-notif-all {
+        background: url('../icons/rss.png') no-repeat left;
+}
+.sidebar-actions .btn-rss-notif-all:hover {
+        color: #777;
+        background: url('../icons/rss.png') no-repeat left;
+}
+.sidebar-actions .btn-rss-notif-ping {
+        background: url('../icons/rss.png') no-repeat left;
+}
+.sidebar-actions .btn-rss-notif-ping:hover {
+        color: #777;
+        background: url('../icons/rss.png') no-repeat left;
+}
 .sidebar-actions .btn-destroy { 
         color: #e13;
         background: url('../icons/destroy.png') no-repeat left;
@@ -262,6 +280,13 @@ button:hover,
 .sidebar-actions .btn-destroy:hover { 
         color: #777; 
         background: url('../icons/destroy.png') no-repeat left;
+}
+.sidebar-actions .btn-help {
+        background: url('../icons/help.png') no-repeat left;
+}
+.sidebar-actions .btn-help:hover {
+        color: #777;
+        background: url('../icons/help.png') no-repeat left;
 }
 .sidebar-actions .btn-close_menu {
         background: url('../icons/close_menu.png') no-repeat left;
@@ -309,3 +334,33 @@ speech p {
     margin-bottom: 10px;
 }
 
+.speech-imp {
+  background: #ff8080;
+  border: 1px solid #a7a7a7;
+  border-radius: 4px;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+  font-size: 1rem;
+  line-height: 1;
+  margin: 0 auto 10px;
+  padding: 5px;
+  position: relative;
+}
+speech-imp p {
+    margin-bottom: 10px;
+}
+
+.speech-bot {
+  background: #000000;
+  color: #66ff33;
+  border: 1px solid #a7a7a7;
+  border-radius: 4px;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+  font-size: 1rem;
+  line-height: 1;
+  margin: 0 auto 10px;
+  padding: 5px;
+  position: relative;
+}
+speech-bot p {
+    margin-bottom: 10px;
+}

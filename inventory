@@ -1,0 +1,12 @@
+[localhost]
+127.0.0.1 ansible_connection=local
+
+[qa]
+poubelle.cc ansible_ssh_private_key_file=/home/luciano/.ssh/temporarychat_rsa ansible_user=ubuntu
+95.179.185.213 ansible_ssh_private_key_file=/home/luciano/.ssh/temporarychat_rsa ansible_user=ubuntu
+
+[staging]
+temporary.chat ansible_ssh_private_key_file=/home/luciano/.ssh/temporarychat_rsa ansible_user=ubuntu
+
+[prod]
+permanent.chat ansible_ssh_private_key_file=/home/luciano/.ssh/temporarychat_rsa ansible_user=ubuntu

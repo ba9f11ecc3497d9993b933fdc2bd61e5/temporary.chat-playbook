@@ -104,7 +104,6 @@ server {
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
-        add_header Service-Worker-Allowed /;
 	location / {
 		index chat.html;
 	}
@@ -130,7 +129,6 @@ server {
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
-        add_header Service-Worker-Allowed/;
 	location / {
 		index chat.html;
 		auth_basic "Private Chatroom";
@@ -203,7 +201,6 @@ server {
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
-        add_header Service-Worker-Allowed /;
 	location / {
 		index chat.html;
 	}
@@ -230,7 +227,6 @@ server {
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
-        add_header Service-Worker-Allowed /;
 	location / {
 		index chat.html;
 		auth_basic "Private Chatroom";
@@ -256,7 +252,6 @@ chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/chat.html
 chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 chmod 0750 /var/www/${DOMAIN}/app/rooms/${UUID}/messages
 chmod 0440 /var/www/${DOMAIN}/app/rooms/${UUID}/tc.ico
-chmod 0640 /var/www/${DOMAIN}/app/rooms/${UUID}/conversation.html
 echo '{"version":2}' > /var/www/${DOMAIN}/app/rooms/${UUID}/updates.json
 
 #if room private, copy the password file
@@ -300,7 +295,6 @@ server {
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
-        add_header Service-Worker-Allowed /;
         location / {
             index chat.html;
         }
@@ -348,6 +342,12 @@ server {
                 add_header Content-type 'application/json';
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
+        location /app/api_help {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
         
 }
 EOF
@@ -372,7 +372,6 @@ server {
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
-        add_header Service-Worker-Allowed /;
         location / {
         index chat.html;
         auth_basic "Private Chatroom";
@@ -417,6 +416,12 @@ server {
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
         location /app/user_ping_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/api_help {
                 include uwsgi_params;
                 add_header Access-Control-Allow-Origin *;
                 add_header Content-type 'application/json';
@@ -494,7 +499,6 @@ server {
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
-        add_header Service-Worker-Allowed /;
         location / {
             index chat.html;
         }
@@ -542,6 +546,12 @@ server {
                 add_header Content-type 'application/json';
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
+        location /app/api_help {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
 }
 EOF
 fi
@@ -565,7 +575,6 @@ server {
 	add_header X-Frame-Options "SAMEORIGIN";
 	add_header Referrer-Policy "strict-origin";
 	add_header X-Content-Type-Options nosniff;
-        add_header Service-Worker-Allowed /;
         location / {
         index chat.html;
         auth_basic "Private Chatroom";
@@ -610,6 +619,12 @@ server {
                 uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
         }
         location /app/user_ping_rss {
+                include uwsgi_params;
+                add_header Access-Control-Allow-Origin *;
+                add_header Content-type 'application/json';
+                uwsgi_pass unix:/var/www/${DOMAIN}/app/app.sock;
+        }
+        location /app/api_help {
                 include uwsgi_params;
                 add_header Access-Control-Allow-Origin *;
                 add_header Content-type 'application/json';

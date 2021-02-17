@@ -15,22 +15,19 @@
 ### the roadmap (oh god!)
 
 ##### UI:
-- UX/IMPROVEMENT/visiting the site without js gives no information it can be used with curl
-- UX/IMPROVEMENT/list all commands possible via api ^
 - UX/IMPROVEMENT I clicked the destroy room button twice and it started two counters.
+- UX/IMPROVEMENT why/updates/q&a/content pages don't have a defined width. add  max-width: 100% add line-height as well
 - FEATURE/preview url 
 - FEATURE/add timestamp on messags
 - FEATURE/copy url to clipboard & invite people on room creation
 - UX_IMPROVEMENTS/and also, using skeuomorphic iconography these days is a pretty difficult thing to do right. I would absolutely wholeheartedly recommend switching all your icons/images to use a single cohesive "iconfont", such as FontAwesome
 - 
 ##### APP:
-- FEATURE/Create CLI interface /nick [username] /ping [username] /upload (will open your file browser of choice)
 - FEATURE/Create Named rooms (remove the uuid check and restrict the create rooms api endpoints.) New subdomain will be encrypted, neat (room familly.example.com, room friends.exmple.com) 
 - FEATURE/make a solution to use dynamic dns + let's encrypt for single room (does this already work? need to test) 
 - FEATURE/create api for expert users that want to manage their encryption
 - FEATURE/support other OS (centos, openbsd to start with; check nixos)
 - SPECIFIC/implement uploading images from temporary.chat to https://projectarachnid.ca/en/ api when domain is temporary.chat and think of a disclaimer
-- CODE_IMPROVEMENTS/use let instead of var in javascript https://evertpot.com/javascript-let-const/
 - CODE_IMPROVEMENTS/template room_bot version
 - CODE_IMPROVEMENTS/parse invalid chars in create_room.sh & destroy_room.sh with "read -r -d "" -n 1 and $REPLY" instead
 - CODE_IMPROVEMENTS/dont use shell=True in app.py (will have to catch the result of cmd = ['/some/prog', first_arg, second_arg]; subprocess.run(..)
@@ -38,7 +35,7 @@
 ##### FAR BACKEND & DEPLOYMENT:
 - make a "how to" guide on how to deploy on virtualbox or kvm
 - system updates
-- hostname
+- hostname : hard to template witout adding a variable.
 
 
 ### Actually contributing

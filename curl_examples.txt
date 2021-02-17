@@ -22,11 +22,20 @@ curl --referer "$PUBLIC_URL" -d user_name="$NICKNAME" -d "message=$MESSAGE" "${B
 read -p "enter message here :" MESSAGE
 curl -u "$PRIVATE_USERNAME":"$PRIVATE_PASSWD" --referer "$PRIVATE_URL" -d user_name="$NICKNAME" -d "message=$MESSAGE" "${BASE_URL}/app/post"
 
+#destroy a room
+curl -k -X POST --referer $PUBLIC_URL "${PUBLIC_URL}/app/destroy -d "user_name=toto"
+
+#upload a file to public room
+curl -k -X POST --referer $PUBLIC_URL -F 'file=@/local/path/image.jpg' -F "filename=image.jpg"  -F "user_name=$NICKNAME" "${BASE_URL}/app/upload"
+
 #check the version of last message in a room (public, when in multirooms mode)
 LAST_MESSAGE_NUMBER=$(curl -s "${PUBLIC_URL}/updates.json" | jq -r .version)
 
 #read the message above
 curl -s "${PUBLIC_URL}/messages/${LAST_MESSAGE_NUMBER}.json"
 
-#request rss feed for all messages (not yet implemented via api)
-curl -s "${PUBLIC_URL}/messages/${LAST_MESSAGE_NUMBER}.json"
+#request rss feed for all messages sent to the room
+curl -s --referer $PUBLIC_URL "${PUBLIC_URL}/app/all_rss -d user_name=$NICKNAME -d message=request_all_rss
+
+#request rss feed for ping notifications to user $NICKNAME
+curl -s --referer $PUBLIC_URL "${PUBLIC_URL}/app/user_ping_rss" -d user_name=$NICKNAME -d message=request_user_rss

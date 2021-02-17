@@ -207,8 +207,9 @@ def post():
       except FileNotFoundError:
         pass
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping => ' + target_user, True)  
-      res = make_response("OK")
-      return res
+      success_dict = {}
+      success_dict['Success'] = 'ping message sent to user ' + target_user
+      return jsonify(success_dict)
     pingack_detect = re.search('^/ping_ack', client_message)
     if pingack_detect is not None:
       client_message_words = client_message.split()
@@ -216,11 +217,17 @@ def post():
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping ack => ' + src_user, False)
       res = make_response("OK")
       return res
+      success_dict = {}
+      success_dict['Success'] = 'ping ack message sent to user ' + src_user
+      return jsonify(success_dict)
     client_message_len = len(client_message)
     if client_message_len > 1000:
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, " what are you trying to write here " + user_name + " a novel??? 1000 characters maximum.", False)
       res = make_response("OK")
       return res
+      error_dict = {}
+      error_dict['error'] = 'what are you trying to write here ' + user_name + ' a novel??? 1000 characters maximum.'
+      return jsonify(error_dict)
     else:
       rss_file = rss_dir + 'all.rss'
       update_file_and_create_message(user_name, path_to_update, messages_dir, client_message)
@@ -228,8 +235,9 @@ def post():
         write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, dst_user=None, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
       except FileNotFoundError:
         pass
-      res = make_response("OK")
-      return res
+      success_dict = {}
+      success_dict['Success'] = 'message sent'
+      return jsonify(success_dict)
 
 @app.route("/app/quit", methods=['GET', 'POST'])
 def quit():
@@ -246,8 +254,9 @@ def quit():
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
 {% endif %}
   update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + " has quit", False)
-  res = make_response("OK")
-  return res
+  success_dict = {}
+  success_dict['Success'] = 'you have sent a quit message to the room'
+  return jsonify(success_dict)
 
 
 @app.route("/app/destroy", methods=['GET', 'POST'])
@@ -286,8 +295,9 @@ def destroy():
   chat_html = open(path_to_chat, "w")
   chat_html.write("<html><body><h1>This room was destroyed by " + user_name + " on " + datetime.datetime.utcnow().strftime("%a %b %d %Y @ %H:%M:%S UTC") + "</h1></body></html>")
   chat_html.close
-  res = make_response("OK BOSS")
-  return res
+  success_dict = {}
+  success_dict['Success'] = 'OK BOSS'
+  return jsonify(success_dict)
 
 
 @app.route("/app/upload", methods=['GET', 'POST'])
@@ -296,7 +306,9 @@ def upload():
   file_name = file_data.filename
   file_name_length = len(file_name)
   if (file_name_length == 0) or (file_name_length > 100):
-    res = make_response("Invalid file length")
+    error_dict = {}
+    error_dict['error'] = 'Invalid file length'
+    return jsonify(error_dict)
     return res
   dot_detect = re.search('\.', file_name)
   if dot_detect is None:
@@ -355,9 +367,9 @@ def upload():
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'gif', public_path_to_file, b64_gif_string)
   else:
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'other', public_path_to_file)
-  res = make_response("OK")
-  return res
-
+  success_dict = {}
+  success_dict['Success'] = 'File uploaded'
+  return jsonify(success_dict)
 
 @app.route("/app/all_rss", methods=['GET', 'POST'])
 def all_rss():
@@ -382,8 +394,9 @@ def all_rss():
     if os.path.isfile(all_xml) == True:
       client_message = 'rss feed all.rss already exist'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
-      res = make_response("OK")
-      return res
+      error_dict = {}
+      error_dict['error'] = 'rss feed all.rss already exist'
+      return jsonify(error_dict)
     else:
       xml_prolog = '<?xml version="1.0" encoding="utf-8"?>'
       rss = ET.Element('rss')
@@ -400,13 +413,16 @@ def all_rss():
       xml_file.close()
       client_message = 'rss feed all.rss was created (requested by ' + user_name + ')'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
-      res = make_response("OK")
-      return res
+      rss_feed = referrer + 'rss/all.rss'
+      rss_response_dict = {}
+      rss_response_dict['rss'] = rss_feed
+      return jsonify(rss_response_dict)
   else:
       client_message = 'Invalid request for this api call try user_name="$user" and message:"request_all_rss"'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
-      res = make_response("OK")
-      return res
+      error_dict = {}
+      error_dict['error'] = 'Invalid request for this api call try user_name="$user" and message:"request_all_rss"'
+      return jsonify(error_dict)
 
 
 @app.route("/app/user_ping_rss", methods=['GET', 'POST'])
@@ -432,8 +448,9 @@ def user_ping_rss():
     if os.path.isfile(user_xml) == True:
       client_message = 'rss feed ' + user_name + '_ping_notifs.rss already exist'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
-      res = make_response("OK")
-      return res
+      error_dict = {}
+      error_dict['error'] = user_name + '_ping_notifs.rss already exist'
+      return jsonify(error_dict)
     else:
       xml_prolog = '<?xml version="1.0" encoding="utf-8"?>'
       rss = ET.Element('rss')
@@ -450,13 +467,29 @@ def user_ping_rss():
       xml_file.close()
       client_message = 'rss feed ' + user_name + '_ping_notifs.rss was created (requested by ' + user_name + ')'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
-      res = make_response("OK")
-      return res
+      rss_feed = referrer + 'rss/' + user_name + '_ping_notifs.rss'
+      rss_response_dict = {}
+      rss_response_dict['rss'] = rss_feed
+      return jsonify(rss_response_dict)
   else:
-      client_message = 'Invalid request for this api call try user_name="$user" and message:"request_all_rss"'
+      client_message = 'Invalid request for this api call try user_name="$user" and message:"request_user_rss"'
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, client_message)
-      res = make_response("OK")
-      return res
+      error_dict = {}
+      error_dict['error'] = 'Invalid request for this api call try user_name="$user" and message:"request_user_rss"'
+      return jsonify(error_dict)
+
+@app.route("/app/api_help", methods=['GET', 'POST'])
+def api_help():
+  api_response_dict = {}
+  api_response_dict['create a public room'] = "/app/create_public"
+  api_response_dict['create a private room'] = "/app/create_private"
+  api_response_dict['post a message'] = "/app/post"
+  api_response_dict['send a quit message'] = "/app/quit"
+  api_response_dict['upload a file'] = "/app/upload"
+  api_response_dict['destroy the room'] = "/app/destroy"
+  api_response_dict['request rss feed for all messages'] = "/app/all_rss"
+  api_response_dict['request rss feed for ping to your user '] = "/app/user_ping_rss"
+  return jsonify(api_response_dict)
 
 
 

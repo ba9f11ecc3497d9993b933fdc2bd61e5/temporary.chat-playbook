@@ -16,6 +16,7 @@
 
 ##### UI:
 - UX/IMPROVEMENT I clicked the destroy room button twice and it started two counters.
+- UX/IMPROVEMENT when username change nick via the cli, it looks glitchy (username change and then command print)
 - UX/IMPROVEMENT why/updates/q&a/content pages don't have a defined width. add  max-width: 100% add line-height as well
 - FEATURE/preview url 
 - FEATURE/add timestamp on messags
@@ -24,6 +25,7 @@
 - 
 ##### APP:
 - FEATURE/Create Named rooms (remove the uuid check and restrict the create rooms api endpoints.) New subdomain will be encrypted, neat (room familly.example.com, room friends.exmple.com) 
+- Feature/add images in rss feeds like : <description><![CDATA[<img src='https://urloffile.jpgalt='jays-dunedin-021721' width='460' title='user uploaded blah' height='259' />]]></description>
 - FEATURE/make a solution to use dynamic dns + let's encrypt for single room (does this already work? need to test) 
 - FEATURE/create api for expert users that want to manage their encryption
 - FEATURE/support other OS (centos, openbsd to start with; check nixos)

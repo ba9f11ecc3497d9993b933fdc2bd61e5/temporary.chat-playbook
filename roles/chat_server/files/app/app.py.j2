@@ -108,7 +108,10 @@ def write_to_rss(referrer, path_to_update, src_user, rss_file, client_message, d
     title.text = "New message in " + referrer
   link.text = referrer
   guid.text = str(current_version)
-  description.text = src_user + ' : ' + client_message
+  if file_url != None:
+    description = '<![CDATA[<img src="' + file_url + '" title="' + src_user + ' uploaded a file"/>]]>'
+  else: 
+    description.text = src_user + ' : ' + client_message
   PubDate.text = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
   b_xml = ET.tostring(channel)
   f = open(rss_file, "wb")
@@ -345,12 +348,14 @@ def upload():
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_name
   path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
 {% endif %}
 {% if multirooms == False %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/files/' + file_name
   path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/files/'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/rss/'
 {% endif %}
 {% if multirooms == True %}
   public_path_to_file = 'https://' + room + '.{{ my_fqdn }}/files/' + file_name
@@ -370,12 +375,22 @@ def upload():
     b64_thumbnail_string = b64_thumbnail_bytes.decode('utf-8')
     thumbnail_open.close
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'image', public_path_to_file, b64_thumbnail_string)
+    rss_file = rss_dir + 'all.rss'
+    try:
+      write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, None, False, file_type=image, thumbnail_file_path, None)
+    except FileNotFoundError:
+      pass
   elif gif_detect is not None:
     gif_open = open(path_to_file, "rb")
     b64_gif_bytes = base64.b64encode(gif_open.read())
     b64_gif_string = b64_gif_bytes.decode('utf-8')
     gif_open.close
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'gif', public_path_to_file, b64_gif_string)
+    rss_file = rss_dir + 'all.rss'
+    try:
+      write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, None, False, file_type=gif, thumbnail_file_path, None)
+    except FileNotFoundError:
+      pass
   else:
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'other', public_path_to_file)
   success_dict = {}

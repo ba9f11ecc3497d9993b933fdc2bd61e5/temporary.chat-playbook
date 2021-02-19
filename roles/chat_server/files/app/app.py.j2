@@ -377,7 +377,7 @@ def upload():
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'image', public_path_to_file, b64_thumbnail_string)
     rss_file = rss_dir + 'all.rss'
     try:
-      write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, None, False, file_type=image, thumbnail_file_path, None)
+      write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, None, False, None, thumbnail_file_path, None)
     except FileNotFoundError:
       pass
   elif gif_detect is not None:
@@ -388,7 +388,7 @@ def upload():
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'gif', public_path_to_file, b64_gif_string)
     rss_file = rss_dir + 'all.rss'
     try:
-      write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, None, False, file_type=gif, thumbnail_file_path, None)
+      write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, None, False, None, thumbnail_file_path, None)
     except FileNotFoundError:
       pass
   else:

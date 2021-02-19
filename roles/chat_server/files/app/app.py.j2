@@ -101,6 +101,11 @@ def write_to_rss(referrer, path_to_update, src_user, rss_file, client_message, d
   link = ET.SubElement(item, 'link')
   guid = ET.SubElement(item, 'guid')
   description = ET.SubElement(item, 'description')
+  if file_url != None:
+    image = ET.SubElement(description, 'image')
+    image_title = ET.SubElement(image, 'title')
+    image_link = ET.SubElement(image, 'link')
+    image_url = ET.SubElement(image, 'url')
   PubDate = ET.SubElement(item, 'PubDate')
   if ping == True:
     title.text = "Ping notification from " + src_user + ' in ' + referrer
@@ -109,7 +114,9 @@ def write_to_rss(referrer, path_to_update, src_user, rss_file, client_message, d
   link.text = referrer
   guid.text = str(current_version)
   if file_url != None:
-    description = '<![CDATA[<img src="' + file_url + '" title="' + src_user + ' uploaded a file"/>]]>'
+    image_title.text = src_user + ' uploaded a file '
+    image_url.text = file_or_thumbnail
+    image_link.text = file_url
   else: 
     description.text = src_user + ' : ' + client_message
   PubDate.text = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
@@ -377,7 +384,7 @@ def upload():
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'image', public_path_to_file, b64_thumbnail_string)
     rss_file = rss_dir + 'all.rss'
     try:
-      write_to_rss(referrer, path_to_update, user_name, rss_file, "Uploaded a file", None, False, None, thumbnail_file_path, None)
+      write_to_rss(referrer, path_to_update, user_name, rss_file, "Uploaded a file", None, False, None, public_path_to_file, thumbnail_file_path)
     except FileNotFoundError:
       pass
   elif gif_detect is not None:
@@ -388,7 +395,7 @@ def upload():
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'gif', public_path_to_file, b64_gif_string)
     rss_file = rss_dir + 'all.rss'
     try:
-      write_to_rss(referrer, path_to_update, user_name, rss_file, "Uploaded a file", None, False, None, thumbnail_file_path, None)
+      write_to_rss(referrer, path_to_update, user_name, rss_file, "Uploaded a file", None, False, None, public_path_to_file, thumbnail_file_path)
     except FileNotFoundError:
       pass
   else:

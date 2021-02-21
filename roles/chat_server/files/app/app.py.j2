@@ -193,6 +193,15 @@ def post():
     print(request.form)
     client_message = request.form['message']
     user_name = request.form['user_name']
+    check_alphanumeric = user_name.isalnum()
+    if check_alphanumeric == False:
+      error_dict = {}
+      error_dict['error'] = 'User name can only contain alpha numeric characters.'
+      return jsonify(error_dict)
+    if len (user_name) > 25:
+      error_dict = {}
+      error_dict['error'] = 'user name must be less than 25 characters'
+      return jsonify(error_dict)
     client_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     referrer = request.referrer
     print(client_ip + ':' + client_message)
@@ -233,16 +242,12 @@ def post():
       client_message_words = client_message.split()
       src_user = client_message_words[1]
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping ack => ' + src_user, False)
-      res = make_response("OK")
-      return res
       success_dict = {}
       success_dict['Success'] = 'ping ack message sent to user ' + src_user
       return jsonify(success_dict)
     client_message_len = len(client_message)
     if client_message_len > 1000:
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, " what are you trying to write here " + user_name + " a novel??? 1000 characters maximum.", False)
-      res = make_response("OK")
-      return res
       error_dict = {}
       error_dict['error'] = 'what are you trying to write here ' + user_name + ' a novel??? 1000 characters maximum.'
       return jsonify(error_dict)

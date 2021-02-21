@@ -10,8 +10,7 @@ an ansible playbook to deploy a chat server on an ubuntu server (see CONTRIBUTIN
 ### requirements : 
 - having ansible installed 
 - having an *empty* ubuntu server 20.04 LTS with ssh access as a target for the deployment (not responsible of damages if you run this on a server with stuff on it already)
-  - having a user named ubuntu on the server
-  - the user ubuntu must be allowed to run sudo for all commands without a password)
+  - having a user named ubuntu on the server that is allow to sudo without a password
   - having an ssh config the the target server : 
     - e.g on ip: `host 3.87.87.87
 hostname 3.87.87.87 

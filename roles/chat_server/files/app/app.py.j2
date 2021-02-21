@@ -9,6 +9,7 @@
 #GNU General Public License for more details.
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 #import the Flask class, request, and response
 from flask import Flask
 from flask import request 
@@ -104,14 +105,14 @@ def write_to_rss(referrer, path_to_update, src_user, rss_file, client_message, d
   description = ET.SubElement(item, 'description')
   PubDate = ET.SubElement(item, 'PubDate')
   if ping == True:
-    title.text = "Ping notification from " + src_user + ' in ' + referrer
+    title.text = src_user + " sent a ping message to " + dst_user
   else:
-    title.text = "New message in " + referrer
+    title.text = src_user + " sent a message"
   link.text = referrer
   guid.text = str(current_version)
   if file_url != None:
-    img = ET.SubElement(description, 'img')
-    img.set('src', file_or_thumbnail)
+    title.text = src_user + ' sent a picture'
+    description.text = '<img src="' + file_or_thumbnail + '">'
     link.text = file_url
   else: 
     description.text = src_user + ' : ' + client_message
@@ -218,7 +219,7 @@ def post():
       except FileNotFoundError:
         pass
       rss_file = rss_dir + 'all.rss'
-      client_message = 'PING_MESSAGE to ' + target_user + ' : ' + client_message
+      client_message = 'ping ' + target_user + ' : ' + client_message
       try:
         write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, target_user, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
       except FileNotFoundError:
@@ -412,13 +413,13 @@ def all_rss():
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
   rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
-  title = 'All Notifications for ' + room + '{{ my_fqdn }}'
+  title = 'All Notifications in room ' + referrer
 {% endif %}
 {% if multirooms == False %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
   rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/rss/'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
-  title = 'All Notifications for {{ my_fqdn }}'   
+  title = 'All Notifications in room ' + referrer   
 {% endif %}
   all_xml = rss_dir + 'all.rss'
   if client_message == 'request_all_rss':

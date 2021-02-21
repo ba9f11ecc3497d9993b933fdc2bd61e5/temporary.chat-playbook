@@ -16,7 +16,6 @@
 
 ##### UI:
 - UX/IMPROVEMENT I clicked the destroy room button twice and it started two counters.
-- UX/IMPROVEMENT when username change nick via the cli, it looks glitchy (username change and then command print)
 - UX/IMPROVEMENT why/updates/q&a/content pages don't have a defined width. add  max-width: 100% add line-height as well
 - FEATURE/preview url 
 - FEATURE/add timestamp on messags

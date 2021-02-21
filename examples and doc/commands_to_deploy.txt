@@ -1,8 +1,8 @@
 #### QA
 
-FQDN=poubelle.cc;ansible-playbook -u ubuntu -i $FQDN, -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=$FQDN" -e "tls_mode=wildcard" -e "le_mailaddress=all@200013.net" deploy_chat.yaml
-FQDN=poubelle.cc;ansible-playbook -u ubuntu -i $FQDN, -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=$FQDN" -e "tls_mode=normal" -e "le_mailaddress=all@200013.net" deploy_chat.yaml
-FQDN=poubelle.cc;ansible-playbook -u ubuntu -i $FQDN, -e '{"have_fqdn":true}' -e '{"multirooms":false}' -e "my_fqdn=$FQDN" -e "tls_mode=normal" -e "le_mailaddress=all@200013.net" deploy_chat.yaml
+ansible-playbook -i inventory -l qa  -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn_=poubelle.cc" -e "tls_mode=wildcard" -e "le_mailaddress=all@200013.net" deploy_chat.yaml
+ansible-playbook -i inventory -l qa  -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn_=poubelle.cc" -e "tls_mode=normal" -e "le_mailaddress=all@200013.net" deploy_chat.yaml
+ansible-playbook -i inventory -l qa  -e '{"have_fqdn":true}' -e '{"multirooms":false}' -e "my_fqdn_=poubelle.cc" -e "tls_mode=normal" -e "le_mailaddress=all@200013.net" deploy_chat.yaml
 
 #deploy without a domain name
 ansible-playbook -i inventory -l qa -e '{"have_fqdn":false}' -e '{"multirooms":false}' -e "my_fqdn=95.179.185.213" -e "tls_mode=pki" deploy_chat.yaml
@@ -14,4 +14,4 @@ ansible-playbook -i inventory -l staging -e '{"have_fqdn":true}' -e '{"multiroom
 
 #### PROD (permanent.chat)
 
-FQDN=permanent.chat;ansible-playbook -i ${FQDN},  -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=$FQDN" -e "tls_mode=wildcard" -e "le_mailaddress=all@200013.net" deploy_chat.yaml
+ansible-playbook -i inventory -l prod -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=permanent.chat" -e "tls_mode=wildcard" -e "le_mailaddress=all@200013.net" deploy_chat.yaml

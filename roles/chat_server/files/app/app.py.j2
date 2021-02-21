@@ -221,7 +221,7 @@ def post():
       rss_file = rss_dir + 'all.rss'
       client_message = 'ping ' + target_user + ' : ' + client_message
       try:
-        write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, target_user, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
+        write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, target_user, ping=True, file_type=None, file_url=None, file_or_thumbnail=None)
       except FileNotFoundError:
         pass
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping => ' + target_user, True)  

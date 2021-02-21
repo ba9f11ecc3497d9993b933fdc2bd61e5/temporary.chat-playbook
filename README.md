@@ -11,17 +11,9 @@ an ansible playbook to deploy a chat server on an ubuntu server (see CONTRIBUTIN
 - having ansible installed 
 - having an *empty* ubuntu server 20.04 LTS with ssh access as a target for the deployment (not responsible of damages if you run this on a server with stuff on it already)
   - having a user named ubuntu on the server that is allow to sudo without a password
-  - having an ssh config the the target server : 
-    - e.g on ip: `host 3.87.87.87
-hostname 3.87.87.87 
-user ubuntu
-IdentityFile /home/user/.ssh/privatekey_rsa`
-    - e.g on fqdn or subdomain `host subdomain.domain.com
-hostname subdomain.domain.com
-user ubuntu
-IdentityFile /home/luciano/.ssh/temporarychat_rsa
-`
-- having port 22,80 and 443 open on the server firewall
+  - having port 22,80 and 443 open on the server firewall
+  - having an ssh config the the target server 
+  `use the config_helper.sh script to generate both your ssh config and your ansible config`
 ### rooms options :
 - `multirooms:true` : will create a webpage where you can create random chatrooms (like temporary.chat)
 - `multirooms:false` : will create a webpage where you can create a single chatroom

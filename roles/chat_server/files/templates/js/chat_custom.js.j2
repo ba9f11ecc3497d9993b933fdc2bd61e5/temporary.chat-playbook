@@ -177,13 +177,24 @@ function fileChosen() {
     }
 }
 
-function set_user_name(nick_from_cli = "placeholder") {
-    if (nick_from_cli !== "placeholder") {
-        new_user_name = nick_from_cli;
+function set_user_name_cli(nick_from_cli) {
+    let new_user_name = nick_from_cli;
+    if (new_user_name.match(/^[a-z0-9]+$/i)) {
+        if (new_user_name.length > 25) {
+            alert("user name must be less than 25 characters");
+        }
+        else {
+            localStorage.removeItem(user_name);
+            localStorage.username = new_user_name;
+        }
     }
     else {
-        let new_user_name = document.getElementById('user_name').value;
+      alert("user name can only be alphanumeric (a-z) (0-9)");
     }
+}
+
+function set_user_name() {
+    let new_user_name = document.getElementById('user_name').value;
     if (new_user_name.match(/^[a-z0-9]+$/i)) {
         if (new_user_name.length > 25) {
             alert("user name must be less than 25 characters");
@@ -204,27 +215,34 @@ async function post_message() {
     document.getElementsByClassName('send-row')[0].reset();
     if (message.startsWith("/nick")) {
         nick_from_cli = message.split(" ")[1]
-        set_user_name(nick_from_cli)
+        set_user_name_cli(nick_from_cli)
+        return false;
     }
     if (message.startsWith("/rss")) {
         if (message.split(" ")[1] === "all") {
             rss_all_notifs()
+            return false;
         }
         if (message.split(" ")[1] === "user") {
             rss_ping_notifs()
+            return false;
         }
     }
-    if (message === "/notifications") {
+    if (message.startsWith("/notifications")) {
         enable_notif()
+        return false;
     }
-    if (message === "/quit") {
+    if (message.startsWith("/quit")) {
         user_quit()
+        return false;
     }
-    if (message === "/destroy") {
+    if (message.startsWith("/destroy")) {
         destroy()
+        return false;
     }
-    if (message === "/help") {
+    if (message.startsWith("/help")) {
         help()
+        return false;
     }
     else {
         let user_name = localStorage.username;

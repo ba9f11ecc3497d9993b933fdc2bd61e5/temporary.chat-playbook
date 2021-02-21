@@ -38,18 +38,18 @@ I wanted to abstract this totally from the user but it is not possible due to [l
 ## deployment examples :
 ### deploy with a fully qualified domain name that you own in multirooms mode 
 ##### usage example :
-`ansible-playbook -i inventory -l staging -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=temporary.chat" -e "tls_mode=wildcard" -e "le_mailaddress=all@200013.net" deploy_chat.yaml`
+`ansible-playbook -i inventory -l chat -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=temporary.chat" -e "tls_mode=wildcard" -e "le_mailaddress=all@200013.net" deploy_chat.yaml`
 
 or
 
-`FQDN=example.com;ansible-playbook -i ${FQDN},  -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=$FQDN" -e "tls_mode=normal" -e "le_mailaddress=myemail@example.com" deploy_chat.yaml`
+`ansible-playbook -i inventory -l chat -e '{"have_fqdn":true}' -e '{"multirooms":true}' -e "my_fqdn=temporary.chat" -e "tls_mode=normal" -e "le_mailaddress=all@200013.net" deploy_chat.yaml`
 ### deploy with a fully qualified domain or subdomain name that you own (single room)
 ##### usage example : 
-`FQDN=chat.example.com;ansible-playbook -i ${FQDN}, -e '{"have_fqdn":true}' -e '{"multirooms":false}' -e "my_fqdn=$FQDN" -e "tls_mode=normal" -e "le_mailaddress=all@200013.net" deploy_chat.yaml`
+`ansible-playbook -i inventory -l chat  -e '{"have_fqdn":true}' -e '{"multirooms":false}' -e "my_fqdn_=poubelle.cc" -e "tls_mode=normal" -e "le_mailaddress=all@200013.net" deploy_chat.yaml`
 (go to https://chat.example.com/launcher) to create your room once the deployment is done
 ### deploy *without* a fully qualified domain name (single room accessible via ip)
 ##### usage example : 
-`ansible-playbook -i inventory -l qa -e '{"have_fqdn":false}' -e '{"multirooms":false}' -e "my_fqdn=95.179.185.213" -e "tls_mode=pki" deploy_chat.yaml`
+`ansible-playbook -i inventory -l chat -e '{"have_fqdn":false}' -e '{"multirooms":false}' -e "my_fqdn=95.179.185.213" -e "tls_mode=pki" deploy_chat.yaml`
 
 
 ### the roadmap (oh god!)

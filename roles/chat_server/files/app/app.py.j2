@@ -1,3 +1,15 @@
+#temporary.chat
+#Copyright (C) 2020  Luc Baillargeon <all@200013.net>
+#This program is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License version 3 as 
+#published by the Free Software Foundation.
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#You should have received a copy of the GNU General Public License
+#along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 #import the Flask class, request, and response
 from flask import Flask
 from flask import request 
@@ -89,15 +101,21 @@ def write_to_rss(referrer, path_to_update, src_user, rss_file, client_message, d
   title = ET.SubElement(item, 'title')
   link = ET.SubElement(item, 'link')
   guid = ET.SubElement(item, 'guid')
+  guid.set('isPermaLink', 'false')
   description = ET.SubElement(item, 'description')
   PubDate = ET.SubElement(item, 'PubDate')
   if ping == True:
-    title.text = "Ping notification from " + src_user + ' in ' + referrer
+    title.text = src_user + " sent a ping message to " + dst_user
   else:
-    title.text = "New message in " + referrer
+    title.text = src_user + " sent a message"
   link.text = referrer
   guid.text = str(current_version)
-  description.text = src_user + ' : ' + client_message
+  if file_url != None:
+    title.text = src_user + ' sent a picture'
+    description.text = '<img src="' + file_or_thumbnail + '">'
+    link.text = file_url
+  else: 
+    description.text = src_user + ' : ' + client_message
   PubDate.text = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
   b_xml = ET.tostring(channel)
   f = open(rss_file, "wb")
@@ -175,6 +193,15 @@ def post():
     print(request.form)
     client_message = request.form['message']
     user_name = request.form['user_name']
+    check_alphanumeric = user_name.isalnum()
+    if check_alphanumeric == False:
+      error_dict = {}
+      error_dict['error'] = 'User name can only contain alpha numeric characters.'
+      return jsonify(error_dict)
+    if len (user_name) > 25:
+      error_dict = {}
+      error_dict['error'] = 'user name must be less than 25 characters'
+      return jsonify(error_dict)
     client_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     referrer = request.referrer
     print(client_ip + ':' + client_message)
@@ -201,9 +228,9 @@ def post():
       except FileNotFoundError:
         pass
       rss_file = rss_dir + 'all.rss'
-      client_message = 'PING_MESSAGE to ' + target_user + ' : ' + client_message
+      client_message = 'ping ' + target_user + ' : ' + client_message
       try:
-        write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, target_user, ping=False, file_type=None, file_url=None, file_or_thumbnail=None)
+        write_to_rss(referrer, path_to_update, user_name, rss_file, client_message, target_user, ping=True, file_type=None, file_url=None, file_or_thumbnail=None)
       except FileNotFoundError:
         pass
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping => ' + target_user, True)  
@@ -215,16 +242,12 @@ def post():
       client_message_words = client_message.split()
       src_user = client_message_words[1]
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, user_name + ' => ping ack => ' + src_user, False)
-      res = make_response("OK")
-      return res
       success_dict = {}
       success_dict['Success'] = 'ping ack message sent to user ' + src_user
       return jsonify(success_dict)
     client_message_len = len(client_message)
     if client_message_len > 1000:
       update_file_and_create_message('room_bot V1.0', path_to_update, messages_dir, " what are you trying to write here " + user_name + " a novel??? 1000 characters maximum.", False)
-      res = make_response("OK")
-      return res
       error_dict = {}
       error_dict['error'] = 'what are you trying to write here ' + user_name + ' a novel??? 1000 characters maximum.'
       return jsonify(error_dict)
@@ -334,18 +357,22 @@ def upload():
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/' + file_name
   path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/files/'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
 {% endif %}
 {% if multirooms == False %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
   path_to_file = '/var/www/{{ my_fqdn }}/app/rooms/files/' + file_name
   path_to_file_folder = '/var/www/{{ my_fqdn }}/app/rooms/files/'
+  rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/rss/'
 {% endif %}
 {% if multirooms == True %}
   public_path_to_file = 'https://' + room + '.{{ my_fqdn }}/files/' + file_name
+  public_path_to_thumbnail = 'https://' + room + '.{{ my_fqdn }}/files/thumb.' + file_name
 {% endif %}
 {% if multirooms == False %}
   public_path_to_file = 'https://' + '{{ my_fqdn }}' + '/files/' + file_name
+  public_path_to_thumbnail = 'https://' + '{{ my_fqdn }}' + '/files/thumb.' + file_name
 {% endif %}
   file_data.save(path_to_file)
   image_detect = re.search('.jpg$|.jpeg$|.JPG$|.JPEG$|.png$|.PNG$', file_name)
@@ -359,12 +386,22 @@ def upload():
     b64_thumbnail_string = b64_thumbnail_bytes.decode('utf-8')
     thumbnail_open.close
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'image', public_path_to_file, b64_thumbnail_string)
+    rss_file = rss_dir + 'all.rss'
+    try:
+      write_to_rss(referrer, path_to_update, user_name, rss_file, "Uploaded a file", None, False, None, public_path_to_file, public_path_to_thumbnail)
+    except FileNotFoundError:
+      pass
   elif gif_detect is not None:
     gif_open = open(path_to_file, "rb")
     b64_gif_bytes = base64.b64encode(gif_open.read())
     b64_gif_string = b64_gif_bytes.decode('utf-8')
     gif_open.close
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'gif', public_path_to_file, b64_gif_string)
+    rss_file = rss_dir + 'all.rss'
+    try:
+      write_to_rss(referrer, path_to_update, user_name, rss_file, "Uploaded a file", None, False, None, public_path_to_file, public_path_to_thumbnail)
+    except FileNotFoundError:
+      pass
   else:
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'other', public_path_to_file)
   success_dict = {}
@@ -381,13 +418,13 @@ def all_rss():
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/updates.json'
   rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/rss/'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/' + room + '/messages/'
-  title = 'All Notifications for ' + room + '{{ my_fqdn }}'
+  title = 'All Notifications in room ' + referrer
 {% endif %}
 {% if multirooms == False %}
   path_to_update = '/var/www/{{ my_fqdn }}/app/rooms/updates.json'
   rss_dir = '/var/www/{{ my_fqdn }}/app/rooms/rss/'
   messages_dir = '/var/www/{{ my_fqdn }}/app/rooms/messages/'
-  title = 'All Notifications for {{ my_fqdn }}'   
+  title = 'All Notifications in room ' + referrer   
 {% endif %}
   all_xml = rss_dir + 'all.rss'
   if client_message == 'request_all_rss':

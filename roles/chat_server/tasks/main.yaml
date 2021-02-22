@@ -1,6 +1,7 @@
 ---
 # file: main.yaml
 
+- include: hostfile.yaml
 - include: user.yaml
 - include: sudoers.yaml
 - include: packages.yaml

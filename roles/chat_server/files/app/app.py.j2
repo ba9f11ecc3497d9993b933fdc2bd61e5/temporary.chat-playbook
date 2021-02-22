@@ -50,6 +50,11 @@ import base64
 #import ElementTree for rss feed/notifications
 import xml.etree.ElementTree as ET
 
+{% if (my_fqdn == "temporary.chat" or my_fqdn == "poubelle.cc" or my_fqdn == "permanent.chat") %}
+# need request to upload thumbnails to projectarachnid.ca
+import requests
+{% endif %}
+
 #create an instance of this class
 app = Flask(__name__)
 
@@ -60,6 +65,31 @@ def create_thumbnail(src_image):
   hsize = int((float(img.size[1]) * float(wpercent)))
   img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
   return img
+
+{% if (my_fqdn == "temporary.chat" or my_fqdn == "poubelle.cc" or my_fqdn == "permanent.chat") %}
+# function to destroy room on the spot if csam is detected
+def check_csam(referrer, file_path):
+  url = 'https://api.arachnid.c3p.ca/api/images/scan'
+  arachnid_api_key = "{{ arachnid_api_key }}"
+  headers = {
+    "Accept": "application/json",
+    "Authorization": arachnid_api_key,
+  }
+  files = {
+    "image": open(file_path, 'rb')
+  }
+  response = requests.post(url, files=files, headers=headers)
+  response_content = response.text
+  if 'csam' in response_content:
+      request_session = requests.Session()
+      request_session.headers.update({'referer': referrer})
+      payload = {"user_name": "csam_detector"}
+      url = "https://{{ my_fqdn }}/app/destroy"
+      api_destroy = request_session.post(url, data=payload)
+      return "destroy"
+  else:
+      return "ok"
+{% endif %}
 
 def update_file_and_create_message(src_user, path_to_update, messages_dir, client_message, ping=False, dst_user=None, file_type=None, file_url=None, file_or_thumbnail=None):
   update_file = open(path_to_update, "r")
@@ -188,7 +218,7 @@ def create_public():
     return jsonify(room_response_dict)
 {% endif %}
 
-@app.route("/app/post", methods=['GET', 'POST'])
+@app.route("/app/post", methods=['POST'])
 def post():
     print(request.form)
     client_message = request.form['message']
@@ -282,7 +312,7 @@ def quit():
   return jsonify(success_dict)
 
 
-@app.route("/app/destroy", methods=['GET', 'POST'])
+@app.route("/app/destroy", methods=['POST'])
 def destroy():
   print(request.form)
   the_domain = "{{ my_fqdn }}"
@@ -385,6 +415,13 @@ def upload():
     b64_thumbnail_bytes = base64.b64encode(thumbnail_open.read())
     b64_thumbnail_string = b64_thumbnail_bytes.decode('utf-8')
     thumbnail_open.close
+{% if (my_fqdn == "temporary.chat" or my_fqdn == "poubelle.cc" or my_fqdn == "permanent.chat") %}
+    csam_answer = check_csam(referrer, thumbnail_file_path)
+    if csam_answer == "destroy":
+      error_dict = {}
+      error_dict['error'] = 'CSAM DETECTED https://projectarachnid.ca/en/'
+      return jsonify(error_dict)
+{% endif %}
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'image', public_path_to_file, b64_thumbnail_string)
     rss_file = rss_dir + 'all.rss'
     try:
@@ -396,6 +433,13 @@ def upload():
     b64_gif_bytes = base64.b64encode(gif_open.read())
     b64_gif_string = b64_gif_bytes.decode('utf-8')
     gif_open.close
+{% if (my_fqdn == "temporary.chat" or my_fqdn == "poubelle.cc" or my_fqdn == "permanent.chat") %}
+    check_csam(referrer, path_to_file)
+    if csam_answer == "destroy":
+      error_dict = {}
+      error_dict['error'] = 'CSAM DETECTED https://projectarachnid.ca/en/'
+      return jsonify(error_dict)
+{% endif %}
     update_file_and_create_message(user_name, path_to_update, messages_dir, "Uploaded a file", False, None, 'gif', public_path_to_file, b64_gif_string)
     rss_file = rss_dir + 'all.rss'
     try:

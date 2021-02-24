@@ -10,10 +10,9 @@ an ansible playbook to deploy a chat server on an ubuntu server (see CONTRIBUTIN
 ### requirements : 
 - having ansible installed 
 - having an *empty* ubuntu server 20.04 LTS with ssh access as a target for the deployment (not responsible of damages if you run this on a server with stuff on it already)
-  - having a user named ubuntu on the server that is allow to sudo without a password
-  - having port 22,80 and 443 open on the server firewall
-  - having an ssh config the the target server 
-  `use the config_helper.sh script to generate both your ssh config and your ansible config`
+  - having a user named ubuntu on the server that is allow to sudo without a password (will change this to a variable)
+  - having port `22`,`80` and `443` open on the server firewall
+  - having an ssh config the the target server (use the `config_helper.sh` script to generate both your ssh config and your ansible config)
 ### rooms options :
 - `multirooms:true` : will create a webpage where you can create random chatrooms (like temporary.chat)
 - `multirooms:false` : will create a webpage where you can create a single chatroom

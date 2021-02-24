@@ -32,6 +32,7 @@
 - CODE_IMPROVEMENTS/dont use shell=True in app.py (will have to catch the result of cmd = ['/some/prog', first_arg, second_arg]; subprocess.run(..)
 - CODE_IMPROVEMENTS/template ngnix.conf custom values
 ##### FAR BACKEND & DEPLOYMENT:
+- change user `ubuntu` to be a variable instead
 - make a "how to" guide on how to deploy on virtualbox or kvm
 - system updates
 - hostname : hard to template witout adding a variable.

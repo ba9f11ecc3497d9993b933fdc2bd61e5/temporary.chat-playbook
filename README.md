@@ -21,13 +21,14 @@ I wanted to abstract this totally from the user but it is not possible due to [l
 - `wildcard` : run this mode if you want to run a multi room setup able to create more than 50 chatrooms per week (will use let's encrypt)
   - requires a fully qualified domain name e.g : example.com
   - requires an interaction during the deployment
-    - you will need to add a TXT entry in your dns records ( the playbook will give you this information while running )
-- `normal` : run this mode if you intend to create a single chatroom or less than 50 chatrooms per week (will use let's encrypt)
-  - when used with multirooms:true
+    - you will need to add a TXT entry in your dns records (the playbook will give you this information while running)
+- `normal` : run this mode if you intend to create 50 chatrooms per week maximum (will use let's encrypt)
+  - when used with `multirooms:true`
     - requires a fully qualified domain name e.g : example.com
     - requires no interaction during deployment
-  - when used with multirooms: false
-    - you can use this to create a single chatroom with dynamic dns 
+    - rooms takes a bit longer to create (one certificate is issued per room)
+  - when used with `multirooms:false`
+    - you can use this to create a single chatroom with dynamic dns or with your fully qualified domain name.
 - `pki` : run this mode if you don't have a fully qualified domain 
   - does not require anything
   - will automatically create a self sign certificate 
@@ -45,7 +46,7 @@ or
 ### deploy with a fully qualified domain or subdomain name that you own (single room)
 ##### usage example : 
 `ansible-playbook -i inventory -l chat  -e '{"have_fqdn":true}' -e '{"multirooms":false}' -e "my_fqdn_=poubelle.cc" -e "tls_mode=normal" -e "le_mailaddress=all@200013.net" deploy_chat.yaml`
-(go to https://chat.example.com/launcher) to create your room once the deployment is done
+
 ### deploy *without* a fully qualified domain name (single room accessible via ip)
 ##### usage example : 
 `ansible-playbook -i inventory -l chat -e '{"have_fqdn":false}' -e '{"multirooms":false}' -e "my_fqdn=95.179.185.213" -e "tls_mode=pki" deploy_chat.yaml`

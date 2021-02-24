@@ -17,4 +17,5 @@
 - include: insert_cron.yaml
 - include: systemd.yaml
 - include: enable_restart_service.yaml
+- include: print_url.yaml
 

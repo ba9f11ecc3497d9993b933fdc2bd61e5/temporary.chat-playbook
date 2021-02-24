@@ -1,0 +1,23 @@
+- debug: 
+    msg: 
+    - "server ready, you can now go to https://{{ my_fqdn }}"
+  when: (have_fqdn == True) and
+        (multirooms == True) and
+        (tls_mode == "wildcard") or
+        (tls_mode == "normal")
+        
+- debug: 
+    msg: 
+    - "server ready, you can now go to https://{{ my_fqdn }}/launcher"
+    - "if you destroy the single room, go back to https://{{ my_fqdn }}/launcher to create a new one"
+  when: (multirooms == False) and
+        (have_fqdn == True) and
+        (tls_mode == "normal")
+        
+- debug: 
+    msg: 
+    - "server ready, you can now go to http://{{ my_fqdn }} to get help installing the certificate or"
+    - "go directly to http://{{ my_fqdn }}/launcher if you plan to ignore the certificate warning"
+  when: (have_fqdn == False) and
+        (tls_mode == "pki") and
+        (multirooms == False)

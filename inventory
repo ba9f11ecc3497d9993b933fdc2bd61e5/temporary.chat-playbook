@@ -3,6 +3,7 @@
 
 [qa]
 poubelle.cc ansible_ssh_private_key_file=/home/luciano/.ssh/temporarychat_rsa ansible_user=ubuntu
+qa.be.sexy ansible_ssh_private_key_file=/home/luciano/.ssh/temporarychat_rsa ansible_user=ubuntu
 95.179.185.213 ansible_ssh_private_key_file=/home/luciano/.ssh/temporarychat_rsa ansible_user=ubuntu
 
 [staging]

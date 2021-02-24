@@ -28,7 +28,7 @@ I wanted to abstract this totally from the user but it is not possible due to [l
     - requires a fully qualified domain name e.g : example.com
     - requires no interaction during deployment
   - when used with multirooms: false
-    - you may be able to use a dynamic dns if it is in the [Mozilla Public Suffix List](https://github.com/publicsuffix/list/blob/master/public_suffix_list.dat) and let's encrypt support it  
+    - you can use this to create a single chatroom with dynamic dns 
 - `pki` : run this mode if you don't have a fully qualified domain 
   - does not require anything
   - will automatically create a self sign certificate 

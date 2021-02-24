@@ -21,7 +21,7 @@
 - FEATURE/add timestamp on messages
 - FEATURE/copy url to clipboard & invite people on room creation
 - UX_IMPROVEMENTS/all rss feed in the room should be replaced with a new file with destruction message on destroy
-- UX_IMPROVEMENTS/and also, using skeuomorphic iconography these days is a pretty difficult thing to do right. I would absolutely wholeheartedly recommend switching all your icons/images to use a single cohesive "iconfont", such as FontAwesome
+- UX_IMPROVEMENTS/using skeuomorphic iconography these days is a pretty difficult thing to do right. I would absolutely wholeheartedly recommend switching all your icons/images to use a single cohesive "iconfont", such as FontAwesome
 - 
 ##### APP:
 - FEATURE/Create Named rooms (remove the uuid check and restrict the create rooms api endpoints.) New subdomain will be encrypted, neat (room familly.example.com, room friends.exmple.com) 

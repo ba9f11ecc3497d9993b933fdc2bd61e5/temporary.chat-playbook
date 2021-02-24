@@ -1,0 +1,8 @@
+- name: create hostfile from template
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  template:
+    src: roles/chat_server/files/system/hostfile.j2
+    dest: /etc/hosts
+    mode: 0644

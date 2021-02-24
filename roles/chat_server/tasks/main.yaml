@@ -1,6 +1,7 @@
 ---
 # file: main.yaml
 
+- include: hostfile.yaml
 - include: user.yaml
 - include: sudoers.yaml
 - include: packages.yaml
@@ -16,4 +17,5 @@
 - include: insert_cron.yaml
 - include: systemd.yaml
 - include: enable_restart_service.yaml
+- include: print_url.yaml
 

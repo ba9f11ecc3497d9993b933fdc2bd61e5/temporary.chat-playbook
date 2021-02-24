@@ -1,4 +1,10 @@
-[Screenshots](https://imgur.com/a/vhiiy8j)
+[Screenshot1](https://user-images.githubusercontent.com/70525822/108941864-d4241700-7623-11eb-9d6e-c8ccd8af5689.png)
+[Screenshot2](https://user-images.githubusercontent.com/70525822/108941906-ec943180-7623-11eb-8a50-f2f232cb80a0.png)
+[Screenshot3](https://user-images.githubusercontent.com/70525822/108942231-9e336280-7624-11eb-83e5-234e48424c61.png)
+[Screenshot4](https://user-images.githubusercontent.com/70525822/108942290-b905d700-7624-11eb-86a9-32fe4de12c38.png)
+[Screenshot5](https://user-images.githubusercontent.com/70525822/108942390-e81c4880-7624-11eb-9500-6015d0625524.png)
+[Screenshot6](https://user-images.githubusercontent.com/70525822/108942396-eb173900-7624-11eb-8af7-74788d77e34d.png)
+
 
 # deploy_chat.yaml
 ### Overview : 
